@@ -1,4 +1,4 @@
-package com.violation.logUtils;
+package com.SZZ.logUtils;
 
 import java.io.BufferedReader;
 import java.io.File;

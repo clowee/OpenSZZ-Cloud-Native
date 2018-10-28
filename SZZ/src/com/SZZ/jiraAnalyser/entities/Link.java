@@ -1,4 +1,4 @@
-package com.violation.jiraAnalyser.entities;
+package com.SZZ.jiraAnalyser.entities;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -17,11 +17,11 @@ import org.apache.log4j.Logger;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import com.violation.jiraAnalyser.entities.*;
-import com.violation.jiraAnalyser.entities.Issue.Resolution;
-import com.violation.jiraAnalyser.entities.Issue.Status;
-import com.violation.jiraAnalyser.entities.Transaction.FileInfo;
-import com.violation.jiraAnalyser.git.Git;
+import com.SZZ.jiraAnalyser.git.Git;
+import com.SZZ.jiraAnalyser.entities.*;
+import com.SZZ.jiraAnalyser.entities.Issue.Resolution;
+import com.SZZ.jiraAnalyser.entities.Issue.Status;
+import com.SZZ.jiraAnalyser.entities.Transaction.FileInfo;
 
 public class Link {
 

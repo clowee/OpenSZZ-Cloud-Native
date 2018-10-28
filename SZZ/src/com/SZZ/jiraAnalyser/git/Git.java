@@ -1,4 +1,4 @@
-package com.violation.jiraAnalyser.git;
+package com.SZZ.jiraAnalyser.git;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -32,8 +32,8 @@ import org.eclipse.jgit.treewalk.filter.AndTreeFilter;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 import org.eclipse.jgit.treewalk.filter.TreeFilter;
 
-import com.violation.jiraAnalyser.entities.*;
-import com.violation.jiraAnalyser.entities.Transaction.FileInfo;
+import com.SZZ.jiraAnalyser.entities.*;
+import com.SZZ.jiraAnalyser.entities.Transaction.FileInfo;
 
 
 public class Git {

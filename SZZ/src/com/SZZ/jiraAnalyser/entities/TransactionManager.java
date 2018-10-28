@@ -1,13 +1,12 @@
-package com.violation.jiraAnalyser.entities;
+package com.SZZ.jiraAnalyser.entities;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-
-import com.violation.*;
-import com.violation.jiraAnalyser.git.Git;
+import com.SZZ.jiraAnalyser.git.Git;
+import com.SZZ.*;
 
 public class TransactionManager {
 	

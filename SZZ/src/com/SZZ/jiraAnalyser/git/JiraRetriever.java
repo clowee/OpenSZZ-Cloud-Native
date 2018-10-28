@@ -1,4 +1,4 @@
-package com.violation.jiraAnalyser.git;
+package com.SZZ.jiraAnalyser.git;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -37,7 +37,7 @@ public class JiraRetriever {
 	 * @param jiraURL
 	 * @param projectName
 	 */
-	public JiraRetriever(String jiraURL, String projectName, Logger logger, String jiraKey ) {
+	public JiraRetriever(String jiraURL, Logger logger, String jiraKey ) {
 		this.jiraURL = jiraURL;
 		this.projectName = projectName;	
 		this.logger = logger;

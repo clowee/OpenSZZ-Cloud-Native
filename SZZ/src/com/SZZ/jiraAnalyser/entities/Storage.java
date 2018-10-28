@@ -1,4 +1,4 @@
-package com.violation.jiraAnalyser.entities;
+package com.SZZ.jiraAnalyser.entities;
 
 import java.net.URL;
 import java.nio.file.Path;
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.violation.jiraAnalyser.git.*;
+import com.SZZ.jiraAnalyser.git.*;
 
 public class Storage {
 	

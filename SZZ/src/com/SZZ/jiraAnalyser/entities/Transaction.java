@@ -1,4 +1,4 @@
-package com.violation.jiraAnalyser.entities;
+package com.SZZ.jiraAnalyser.entities;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
