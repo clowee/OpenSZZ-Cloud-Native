@@ -13,9 +13,9 @@ Release 0.1
 
 2. Download the faults from Jira: 
      
-     szz.jar -d jiraUrl
+     szz.jar -d jiraKey
      
-     eg: szz.jar https://issues.apache.org/jira/projects/AMBARI/issues
+     eg: szz.jar jiraKey
      
      The script saves the file faults.csv containing the issues reported in Jira  
 
@@ -36,7 +36,7 @@ Release 0.1
       
 ## Usage [alternative]:
 This command executes all the steps at once: 
-* szz.jar -all githubUrl, jiraUrl
+* szz.jar -all githubUrl, jiraKey
  
 The script first clones the gitHub repository, then download the Jira faults, and finally maps faults to commits. 
 
