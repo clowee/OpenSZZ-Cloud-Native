@@ -35,6 +35,7 @@ public class SZZApplication {
 			case "-d":
 				JiraRetriever jr = new JiraRetriever(DEFAULT_BUG_TRACKER, log, args[1]);
 				jr.printIssues();
+				jr.combineToOneFile();
 				break;
 			case "-l":
 				break;

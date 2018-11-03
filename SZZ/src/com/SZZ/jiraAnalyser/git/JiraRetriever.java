@@ -2,10 +2,14 @@ package com.SZZ.jiraAnalyser.git;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
@@ -23,7 +27,6 @@ import org.w3c.dom.NodeList;
 
 public class JiraRetriever {
 	private String jiraURL;
-	private String projectName;
 	private URL url;
 	private URLConnection connection;
 	private Document d;
@@ -39,7 +42,6 @@ public class JiraRetriever {
 	 */
 	public JiraRetriever(String jiraURL, Logger logger, String jiraKey ) {
 		this.jiraURL = jiraURL;
-		this.projectName = projectName;	
 		this.logger = logger;
 		this.jiraKey = jiraKey;
 	}
@@ -68,7 +70,7 @@ public class JiraRetriever {
 	private int getTotalNumberIssues(){
 		String tempQuery = "?jqlQuery=project+%3D+{0}+ORDER+BY+key+DESC&tempMax=1";
 		tempQuery = tempQuery.replace("{0}", jiraKey);
-		if (projectName.equals("EXEC")){
+		if (jiraKey.equals("EXEC")){
 			tempQuery = tempQuery.replace("EXEC", "'EXEC'");
 		}
 		try {
@@ -93,8 +95,8 @@ public class JiraRetriever {
 	public void printIssues(){
 		int page = 0;
 		int totalePages = (int) Math.ceil(((double) getTotalNumberIssues() / 1000));
-		String fileName = projectName + "_" + page + ".csv";
-		File file = new File(projectName + "/" + fileName);
+		String fileName = jiraKey + "_" + page + ".csv";
+		File file = new File(jiraKey + "/" + fileName);
 		/*while (file.exists() ) {
 			page++;
 			fileName = projectName + "_" + page + ".csv";
@@ -113,10 +115,7 @@ public class JiraRetriever {
 			if (jiraKey.equals("EXEC")){
 				tempQuery = tempQuery.replace("EXEC", "'EXEC'");
 			}
-			
-			
-			
-			
+		
 			tempQuery = tempQuery.replace("{1}", ((page) * 1000) + "");
 			if (totalePages >= (page + 1))
 				System.out.println("Download Jira issues. Page: " + (page + 1) + "/" + totalePages);
@@ -128,8 +127,8 @@ public class JiraRetriever {
 			NodeList descNodes = d.getElementsByTagName("item");
 			if (descNodes.getLength() == 0)
 				return;
-			 fileName = projectName + "_" + page + ".csv";
-			 file = new File("extraction/"+projectName + "/" + fileName);
+			 fileName = jiraKey + "_" + page + ".csv";
+			 file = new File("extraction/"+jiraKey + "/" + fileName);
 			
 			PrintWriter pw = null;
 			try {
@@ -159,6 +158,45 @@ public class JiraRetriever {
 		String header = "issueKey,title,resolution,status,assignee,createdDateEpoch,resolvedDateEpoch,type,attachments,priority,comments";
 		pw.println(header);
 	}
+	
+	/**
+	 * Combine to one file
+	 */
+	public void combineToOneFile() {
+		PrintWriter pw = null;
+		boolean headerFlag = false;
+		List<File> toRemove = new LinkedList<File>();
+		try {
+			 pw = new PrintWriter("faults.csv");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Path path = FileSystems.getDefault().getPath(".");
+		 for (File fileEntry : path.toFile().listFiles()) {
+			 if (fileEntry.getName().startsWith(jiraKey)){
+				 toRemove.add(fileEntry);
+				 try {
+					
+					List<String> list = Files.readAllLines(fileEntry.toPath());
+					if (!headerFlag) 
+						headerFlag = true;
+					else
+						list.remove(0);
+					for (String s : list){
+						pw.println(s);
+					}
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 }
+		 }
+		 for (int i = 0; i < toRemove.size(); i++){
+			 toRemove.get(i).delete();
+		 }
+	}
+	
 	
 
 	/**

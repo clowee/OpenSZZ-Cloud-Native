@@ -105,7 +105,7 @@ public class Application {
 	 * projectName_0.csv => it is the first page with the first 1000 issues of the project
 	 */
 	public void downloadIssues(){
-		JiraRetriever jr = new JiraRetriever(DEFAULT_BUG_TRACKER,projectName,logger,jiraKey);
+		JiraRetriever jr = new JiraRetriever(DEFAULT_BUG_TRACKER,logger,jiraKey);
 		jr.printIssues();
 		System.out.println("All Jira issues downloaded");
 	}
