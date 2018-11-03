@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.URL;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -38,17 +39,36 @@ import com.SZZ.jiraAnalyser.entities.Transaction.FileInfo;
 
 public class Git {
 	
-	public final String cloneCommand;
-	public final File storagePath;
-	public final String pullCommand;
+	public String cloneCommand;
+	public  File storagePath;
+	public  String pullCommand;
 	public  File workingDirectory;
-	public final String logCommand;
-	public final File logFile;
-	public final File csvFile;
+	public  String logCommand;
+	public  File logFile;
+	public  File csvFile;
 	private BlameResult blame;
 	private String projectName = "";
 	
 	private static final char DELIMITER = ';';
+	
+	
+	public Git(Path storagePath){
+		this.storagePath = storagePath.toFile();
+		System.out.println(storagePath.toString());
+		this.pullCommand = "git pull";
+		this.workingDirectory = new File("./extraction/"+projectName+"/"+projectName+"/.git");
+		this.logCommand ="git log " +
+				"--pretty=format:\'" +
+				"%H" + DELIMITER +
+				"%aI" + DELIMITER +
+				"%aN" + DELIMITER +
+				"%s" +  DELIMITER +
+				"\' " +
+				"--name-status -M100% " ;
+		workingDirectory.delete();
+	}
+	
+	
 	
 	public Git(Path storagePath, URL url, String projectName) {
 		this.projectName = projectName;
@@ -98,8 +118,8 @@ public class Git {
 	}
 	
 	public void saveLog() throws Exception {
-		File file = new File("./extraction/" + projectName);
-		executeToFile(this.logCommand, file, this.logFile);
+		Path path = FileSystems.getDefault().getPath(".");
+		executeToFile(this.logCommand, this.storagePath, new File("gitlog.csv"));
 	}
 	
 	private void execute(String command, File directory)

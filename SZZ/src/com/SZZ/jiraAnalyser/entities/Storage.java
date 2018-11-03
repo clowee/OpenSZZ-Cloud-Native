@@ -37,7 +37,7 @@ public class Storage {
 			try {
 				this.git.cloneRepository();
 				//this.git.pullUpdates();
-
+				
 				
 				this.git.saveLog();
 				

@@ -1,12 +1,16 @@
 package com.SZZ.app;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.SZZ.jiraAnalyser.Application;
+import com.SZZ.jiraAnalyser.entities.Transaction;
+import com.SZZ.jiraAnalyser.entities.TransactionManager;
+import com.SZZ.jiraAnalyser.git.Git;
 import com.SZZ.jiraAnalyser.git.JiraRetriever;
 
 public class SZZApplication {
@@ -38,6 +42,15 @@ public class SZZApplication {
 				jr.combineToOneFile();
 				break;
 			case "-l":
+				Git g = new Git((new File(args[1]).toPath()));
+				try {
+					g.saveLog();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
+			case "-m":
 				break;
 			case "-all":
 				break;

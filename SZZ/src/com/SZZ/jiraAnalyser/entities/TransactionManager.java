@@ -1,10 +1,14 @@
 package com.SZZ.jiraAnalyser.entities;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.SZZ.jiraAnalyser.entities.Transaction.FileInfo;
 import com.SZZ.jiraAnalyser.git.Git;
 import com.SZZ.*;
 
@@ -49,4 +53,12 @@ public class TransactionManager {
 	public Git getGit(){
 		return this.storage.getGit();
 	}
+	
+	
+
+	
+	
+	
+	
+	
 }
