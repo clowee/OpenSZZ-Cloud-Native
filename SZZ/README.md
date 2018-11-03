@@ -23,7 +23,7 @@ Release 0.1
      
      szz.jar -l gitRepositoryPath
    
-     e.g. szz.jar -m ./projects/ambari 
+     e.g. szz.jar -l ./projects/ambari 
       
      This script saves the file gitlog.csv containing the parsed gitlog with all the information needed to execute szz
 
