@@ -36,7 +36,7 @@ Release 0.1
       
 ## Usage [alternative]:
 This command executes all the steps at once: 
-* szz.jar -all githubUrl, jiraKey
+* szz.jar -all githubUrl jiraUrl jiraKey
  
 The script first clones the gitHub repository, then download the Jira faults, and finally maps faults to commits. 
 
