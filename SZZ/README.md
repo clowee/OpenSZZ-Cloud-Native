@@ -29,7 +29,7 @@ Release 0.1
 
 4. Map Faults to commits
       
-      szz.jar -m gitRepositoryPath
+      szz.jar -m jiraKey
      
      the script takes in input the files generated before (faults.csv and gitlog.csv) and generate the final result in the file FaultInducingCommits.csv
       
