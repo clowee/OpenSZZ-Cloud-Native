@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.Git;
 
 import com.SZZ.jiraAnalyser.entities.Link;
 import com.SZZ.jiraAnalyser.entities.LinkManager;
@@ -57,7 +58,7 @@ public class Application {
 	 * It retrieves the bugs inducing commits applying SZZ algortihm and save
 	 * the results on the file projectName+"_BugInducingCommits.csv
 	 */
-	public void calculateBugInducingCommits() {
+	public void calculateBugInducingCommits(com.SZZ.jiraAnalyser.git.Git g) {
 		System.out.println("Calculating Bug Inducing Commits");
 		int count = linksBugFixing.size();
 		PrintWriter printWriter;
@@ -67,7 +68,7 @@ public class Application {
 			for (Link l : linksBugFixing) {
 				if (count % 100 == 0)
 					System.out.println(count + " Commits left");
-				l.calculateSuspects(transactionManager.getGit(), logger);
+				l.calculateSuspects(g, logger);
 				String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 				SimpleDateFormat format1 = new SimpleDateFormat(pattern);
 				for (Suspect s : l.getSuspects()) {

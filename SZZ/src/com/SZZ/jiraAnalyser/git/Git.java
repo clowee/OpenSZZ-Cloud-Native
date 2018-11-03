@@ -56,7 +56,7 @@ public class Git {
 		this.storagePath = storagePath.toFile();
 		System.out.println(storagePath.toString());
 		this.pullCommand = "git pull";
-		this.workingDirectory = new File("./extraction/"+projectName+"/"+projectName+"/.git");
+		this.workingDirectory = new File("./"+storagePath+"/.git");
 		this.logCommand ="git log " +
 				"--pretty=format:\'" +
 				"%H" + DELIMITER +

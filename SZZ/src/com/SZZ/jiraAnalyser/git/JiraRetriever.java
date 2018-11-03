@@ -150,7 +150,7 @@ public class JiraRetriever {
 			if (descNodes.getLength() == 0)
 				return;
 			 fileName = jiraKey + "_" + page + ".csv";
-			 file = new File("extraction/"+jiraKey + "/" + fileName);
+			 file = new File(fileName);
 			
 			PrintWriter pw = null;
 			try {

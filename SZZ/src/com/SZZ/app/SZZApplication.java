@@ -21,14 +21,12 @@ public class SZZApplication {
 	  /* Get actual class name to be printed on */
 	static Logger log = Logger.getLogger(SZZApplication.class.getName());
 	public static final String DEFAULT_BUG_TRACKER = "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
-
 	
-
 	public static void main(String[] args)  {
 		if (args.length == 0) {
 			System.out.println("Welcome to SZZ Calculation script.");
 			System.out.println("Here a guide how to use the script");
-			System.out.println("szz.jar -d jiraUrl");
+			System.out.println("szz.jar -d jiraUrl jiraKey");
 			System.out.println("The script saves the file faults.csv containing the issues reported in Jira");
 			System.out.println("szz.jar -l gitRepositoryPath");
 			System.out.println(
@@ -69,8 +67,9 @@ public class SZZApplication {
 				TransactionManager tm = new TransactionManager();
 				List<Transaction> transactions =  tm.getBugFixingCommits(args[1]);
 				Application a = new Application(args[1]);
+				Git g1 = new Git((new File(args[2]).toPath()));
 				a.calculateBugFixingCommits(transactions);
-				a.calculateBugInducingCommits();
+				a.calculateBugInducingCommits(g1);
 				break;
 			case "-all":
 				Git git;
@@ -90,7 +89,7 @@ public class SZZApplication {
 					List<Transaction> transactions1 =  t1.getBugFixingCommits(args[3]);
 					Application a1 = new Application(args[3]);
 					a1.calculateBugFixingCommits(transactions1);
-					a1.calculateBugInducingCommits();
+					//a1.calculateBugInducingCommits(git);
 				} catch (MalformedURLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
