@@ -13,9 +13,9 @@ Release 0.1
 
 2. Download the faults from Jira: 
      
-     szz.jar -d jiraKey
+     szz.jar -d jiraUrtl jiraKey
      
-     eg: szz.jar jiraKey
+     eg: szz.jar https://issues.apache.org/jira AMBARI
      
      The script saves the file faults.csv containing the issues reported in Jira  
 
