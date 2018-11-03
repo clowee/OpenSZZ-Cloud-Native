@@ -90,7 +90,7 @@ public class JiraRetriever {
 		} 
 		return 0;
 		}
-
+	
 		
 	public void printIssues(){
 		int page = 0;

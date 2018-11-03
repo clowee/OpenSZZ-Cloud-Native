@@ -25,15 +25,15 @@ public class TransactionManager {
 	 * @param url
 	 * @return
 	 */
-	public List<Transaction> getBugFixingCommits(URL url, String projectName, String jiraKey) {
+	public List<Transaction> getBugFixingCommits(String jiraKey) {
 		if (this.transactions != null) return this.transactions;
 		
 		this.transactions = new ArrayList<Transaction>(); //Arrays.asList(new Transaction[] { Transaction.EXAMPLE_TRANSACTION1, Transaction.EXAMPLE_TRANSACTION2,Transaction.EXAMPLE_TRANSACTION3,Transaction.EXAMPLE_TRANSACTION4,});
 	
 		// TODO: Parse stuff from url
 		try {
-			storage = new Storage(projectName);
-			transactions = this.storage.checkoutCvs(url,projectName, jiraKey);
+			storage = new Storage();
+			transactions = this.storage.checkoutCvs(jiraKey);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

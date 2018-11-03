@@ -37,9 +37,18 @@ public class SZZApplication {
 		} else {
 			switch (args[0]) {
 			case "-d":
+				if (args.length == 1){
+					System.out.println("Jira key not given");
+					break;
+				}
+				try{	
 				JiraRetriever jr = new JiraRetriever(DEFAULT_BUG_TRACKER, log, args[1]);
 				jr.printIssues();
 				jr.combineToOneFile();
+				}
+				catch(Exception e){
+					
+				}
 				break;
 			case "-l":
 				Git g = new Git((new File(args[1]).toPath()));
@@ -51,6 +60,11 @@ public class SZZApplication {
 				}
 				break;
 			case "-m":
+				TransactionManager tm = new TransactionManager();
+				List<Transaction> transactions =  tm.getBugFixingCommits(args[1]);
+				Application a = new Application(args[1]);
+				a.calculateBugFixingCommits(transactions);
+				a.calculateBugInducingCommits();
 				break;
 			case "-all":
 				break;

@@ -29,7 +29,6 @@ public class Link {
 	public final Transaction transaction;
 	
 	public Issue issue = null;
-	private String projectName = "";
 
 	private int syntacticConfidence = 0;
 
@@ -50,11 +49,10 @@ public class Link {
 	 * @param b
 	 * @param number
 	 */
-	public Link(Transaction t, long number, String projectName, String jiraKey) {
+	public Link(Transaction t, long number, String jiraKey) {
 		this.transaction = t;
 		this.jiraKey = jiraKey;
 		this.number = number;
-		this.projectName = projectName;
 		this.setBug();
 		this.setSyntacticConfidence();
 		this.setSemanticConfidence();
@@ -184,11 +182,7 @@ public class Link {
 	 * @return true false
 	 */
 	private void setBug() {
-		int page = (int)Math.floor(number / 1000);
-		while(!new File("extraction/"+projectName+"/"+projectName+"_"+page+".csv").exists()){
-			page--;
-		}
-		try (BufferedReader br = new BufferedReader(new FileReader(("extraction/"+projectName+"/"+projectName+"_"+page+".csv")))) {
+		try (BufferedReader br = new BufferedReader(new FileReader(("faults.csv")))) {
 			String sCurrentLine;
 			while ((sCurrentLine = br.readLine()) != null) {
 				sCurrentLine = sCurrentLine.replaceAll("\"", "");

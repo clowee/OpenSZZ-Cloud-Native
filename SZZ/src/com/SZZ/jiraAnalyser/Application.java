@@ -24,47 +24,33 @@ public class Application {
 
 	public static final String DEFAULT_BUG_TRACKER = "https://issues.apache.org/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
 
-	public final URL sourceCodeRepository;
-	public final URL bugTracker;
-	private String projectName;
-	private final TransactionManager transactionManager = new TransactionManager();
-	private final LinkManager linkManager = new LinkManager();
-	private List<Transaction> transactionsWithFault;
+
+	private  TransactionManager transactionManager = new TransactionManager();
+	private  LinkManager linkManager = new LinkManager();
 	private List<Link> linksBugFixing;
 	private String jiraKey;
 
-	public Application(String projectName, String sourceCodeRepository, String jiraKey) throws MalformedURLException {
-		this.projectName = projectName;
-		System.out.println(sourceCodeRepository);
-		this.sourceCodeRepository = new URL(sourceCodeRepository);
-		this.bugTracker = new URL(DEFAULT_BUG_TRACKER);
+	public Application( String jiraKey)  {
 		this.jiraKey   = jiraKey;
-		System.setProperty("logfile.name", (projectName + "/" + projectName + "_JiraAnalyserLogger.log"));
+		System.setProperty("logfile.name", (jiraKey + "/" + jiraKey + "_JiraAnalyserLogger.log"));
 		logger = Logger.getLogger(Application.class);
 	}
 
-	/*
-	 * It downloads the logFile and import commits with fault keys
-	 */
-	public void mineData() {
-		System.out.println("Downloading Git logs for project " + projectName);
-		transactionsWithFault = transactionManager.getBugFixingCommits(sourceCodeRepository, projectName,jiraKey);
-		System.out.println("Git logs downloaded for project " + projectName);
-	}
+
 
 	/*
 	 * It calculates the bugFixing Commits showing syntatic/semantic scores.
 	 * Commits accepted are saved on the projectName_BugFixingCommits.csv file.
 	 */
-	public void calculateBugFixingCommits() {
-		System.out.println("Calculating bug fixing commits for project " + projectName);
-		List<Link> links = linkManager.getLinks(transactionsWithFault, projectName, logger, jiraKey);
+	public void calculateBugFixingCommits(List<Transaction> transactionsWithFault) {
+		System.out.println("Calculating bug fixing commits for project " + jiraKey);
+		List<Link> links = linkManager.getLinks(transactionsWithFault, logger, jiraKey);
 		printData(links);
 		discartLinks(links);
 		saveBugFixingCommits(links);
 		linksBugFixing = links;
-		System.out.println("Bug fixing commits for project " + projectName + "calculated");
-		System.out.println(links.size() + " bug fixing commits for project " + projectName + "found");
+		System.out.println("Bug fixing commits for project " + jiraKey + "calculated");
+		System.out.println(links.size() + " bug fixing commits for project " + jiraKey + "found");
 	}
 
 	/**
@@ -76,7 +62,7 @@ public class Application {
 		int count = linksBugFixing.size();
 		PrintWriter printWriter;
 		try {
-			printWriter = new PrintWriter("extraction/"+projectName + "/" + projectName + "_BugInducingCommits.csv");
+			printWriter = new PrintWriter("FaultInducingCommits.csv");
 			printWriter.println("bugFixingId,bugFixingTs,bugFixingfileChanged,bugInducingId,bugInducingTs,issueType,issueKey");
 			for (Link l : linksBugFixing) {
 				if (count % 100 == 0)
@@ -187,7 +173,7 @@ public class Application {
 	 */
 	private void saveBugFixingCommits(List<Link> links){
 		try {
-			PrintWriter printWriter = new PrintWriter(new File("extraction/"+projectName + "/"+projectName+"_BugFixingCommits.csv"));
+			PrintWriter printWriter = new PrintWriter(new File("FaultFixingCommits.csv"));
 			printWriter.println("commitsSha,commitTs,commitComment,issueKey,issueOpen,issueClose,issueTitle");
 			String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 		    SimpleDateFormat format = new SimpleDateFormat(pattern);
@@ -195,7 +181,7 @@ public class Application {
 				String row = l.transaction.getId() + ","
 						+    format.format(l.transaction.getTimeStamp()) + ","
 						+    l.transaction.getComment() + ","
-						+    projectName+"-"+l.issue.getId()	+","
+						+    jiraKey+"-"+l.issue.getId()	+","
 						+    format.format(new Date(l.issue.getOpen())) + ","
 					    +    format.format(new Date(l.issue.getClose())) + ","
 					    +    l.issue.getTitle()
@@ -214,7 +200,7 @@ public class Application {
 			int count = links.size();
 			PrintWriter printWriter;
 			try {
-				printWriter = new PrintWriter("extraction/"+projectName+"/"+projectName+"_BugInducingCommits.csv");
+				printWriter = new PrintWriter("FaultInducingCommits.csv");
 				printWriter.println("bugFixingId,bugFixingTs,bugFixingfileChanged,bugInducingId,bugInducingTs,issueType,jiraKey");
 				for (Link l : links){
 					if (count % 100 == 0)

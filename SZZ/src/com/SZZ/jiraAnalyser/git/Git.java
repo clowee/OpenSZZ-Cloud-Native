@@ -144,7 +144,7 @@ public class Git {
         p.waitFor();
 	}
 	
-	public List<Transaction> getCommits() {
+	public List<Transaction> getCommits(File logFile) {
 		List<Transaction> transactions = new ArrayList<Transaction>();
 		int count = 1;
 		 String line="";

@@ -18,14 +18,14 @@ public class LinkManager {
 	 * @param ts
 	 * @return
 	 */
-	public List<Link> getLinks(List<Transaction> ts, String projectName, Logger logger, String jiraKey) {
+	public List<Link> getLinks(List<Transaction> ts, Logger logger, String jiraKey) {
 		int counter=ts.size();
 		List<Link> links = new ArrayList<Link>(); // Arrays.asList(new Link[] { Link.EXAMPLE_LINK});
 		for(Transaction t : ts) {
 			if (counter%100==0)
 				System.out.println("Missing "+counter +" commits");
 			for (long bugId : t.getBugIds()){
-				Link l = new Link(t, bugId, projectName,jiraKey);
+				Link l = new Link(t, bugId,jiraKey);
 				links.add(l);
 			}
 			counter--;

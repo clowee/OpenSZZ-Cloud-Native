@@ -1,5 +1,8 @@
 package com.SZZ.jiraAnalyser.entities;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -8,6 +11,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.SZZ.jiraAnalyser.entities.Transaction.FileInfo;
 import com.SZZ.jiraAnalyser.git.*;
 
 public class Storage {
@@ -17,8 +21,8 @@ public class Storage {
 	private Git git = null;
 	private final Pattern pGit = Pattern.compile(".+\\.git$");
 	
-	public Storage(String projectName) {
-		FILE_STORAGE_PATH =  Paths.get("./extraction/"+projectName);
+	public Storage() {
+		
 	}
 	
 	
@@ -28,28 +32,12 @@ public class Storage {
 	 * @param projectName
 	 * @return
 	 */
-	public List<Transaction> checkoutCvs(URL url, String projectName, String jiraKey) {
-		List<Transaction> list = new ArrayList<Transaction>();
+	public List<Transaction> checkoutCvs(String jiraKey) {
+		List<Transaction> list = getCommits(new  File("gitlog.csv"));
 		List<Transaction> result = new ArrayList<Transaction>();
-		Matcher mGit = pGit.matcher(url.toString());
-		if(mGit.find()) {
-			this.git = new Git(FILE_STORAGE_PATH, url, projectName);
-			try {
-				this.git.cloneRepository();
-				//this.git.pullUpdates();
-				
-				
-				this.git.saveLog();
-				
-				list = git.getCommits();
-				for (Transaction t : list){
-					if (isBugPresumedFixing(t.getComment(),jiraKey))
-						result.add(t);}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		
+		for (Transaction t : list){
+		if (isBugPresumedFixing(t.getComment(),jiraKey)){
+			result.add(t);}}
 		return result;
 	}
 	
@@ -68,5 +56,62 @@ public class Storage {
 	
 	public Git getGit(){
 		return this.git;
+	}
+	
+	public List<Transaction> getCommits(File logFile) {
+		List<Transaction> transactions = new ArrayList<Transaction>();
+		int count = 1;
+		 String line="";
+		 String line1="";
+		 String hashId = "";
+		try (BufferedReader br = new BufferedReader(new FileReader(logFile))) {
+			while ((line = br.readLine()) != null) {
+		       if (!line.isEmpty() && line.startsWith("\'")){
+		    	   line = line.replaceAll("\'", "");
+		    	   String[] array = line.split(";");
+		    	   hashId = array[0];
+				   String timestamp = array[1];
+				   String author = array[2];
+				   String comment = array[3];
+		       List<FileInfo> filesAffected = new ArrayList<FileInfo>();
+		       line1 = br.readLine();
+		       if (line1 != null){
+		    	 
+	
+		       while (!(line1).equals("")){
+		    	  
+		    	   int BUFFER_SIZE = 100000;
+		    	   br.mark(BUFFER_SIZE);
+		    	   if (!line1.startsWith("\'")){
+		    		   String[] subarray = line1.split("	");
+		    		   String status = subarray[0];
+		    		   String file = subarray[1];
+		    		   FileInfo fileInfo = new FileInfo(status, file);
+		    		   filesAffected.add(fileInfo);}
+		    	   else{
+		    		 br.reset();
+		    		 break;
+		    	   }
+		    	   line1 = br.readLine();
+		    	   
+		       }
+		       }
+		       Transaction transaction = new Transaction(
+						hashId,
+						timestamp,
+						author,
+						comment,
+						filesAffected
+				);
+				transactions.add(transaction);
+		    }
+		}
+		}
+		catch(Exception e){
+				e.printStackTrace();
+			
+		}
+			
+		return transactions;
 	}
 }
