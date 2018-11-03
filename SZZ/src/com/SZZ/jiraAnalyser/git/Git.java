@@ -64,14 +64,13 @@ public class Git {
 				"%aN" + DELIMITER +
 				"%s" +  DELIMITER +
 				"\' " +
-				"--name-status -M100% " ;
+				"--name-status -M100% " ;  
 		workingDirectory.delete();
 	}
 	
 	
 	
-	public Git(Path storagePath, URL url, String projectName) {
-		this.projectName = projectName;
+	public Git(Path storagePath, URL url) {
 		this.cloneCommand = "git clone " + url.toString() + " " +projectName;
 		this.storagePath = storagePath.toFile();
 		System.out.println(storagePath.toString());
