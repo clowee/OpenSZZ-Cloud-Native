@@ -67,6 +67,28 @@ public class JiraRetriever {
 		return doc;
 	}
 	
+	public boolean testURL(){
+		String tempQuery = "?jqlQuery=project+%3D+{0}+ORDER+BY+key+DESC&tempMax=1";
+		tempQuery = tempQuery.replace("{0}", jiraKey);
+		if (jiraKey.equals("EXEC")){
+			tempQuery = tempQuery.replace("EXEC", "'EXEC'");
+		}
+		try {
+			url = new URL(jiraURL + tempQuery);
+			connection = url.openConnection();
+			d = parseXML(connection.getInputStream());
+			NodeList descNodes = d.getElementsByTagName("item");
+		
+		} catch (Exception e) {
+			return false;
+	} 
+		return true;
+		
+	}
+	
+	
+	
+	
 	private int getTotalNumberIssues(){
 		String tempQuery = "?jqlQuery=project+%3D+{0}+ORDER+BY+key+DESC&tempMax=1";
 		tempQuery = tempQuery.replace("{0}", jiraKey);

@@ -44,14 +44,17 @@ public class SZZApplication {
 					System.out.println("Jira key not given");
 					break;
 				}
-				try{	
+		
 				JiraRetriever jr = new JiraRetriever(DEFAULT_BUG_TRACKER, log, args[1]);
+				if (jr.testURL()){
 				jr.printIssues();
 				jr.combineToOneFile();
 				}
-				catch(Exception e){
+				else{
+					System.out.println("JiraKey is wrong or is not of the apache foundation");
 					break;
 				}
+		
 				break;
 			case "-l":
 				Git g = new Git((new File(args[1]).toPath()));
@@ -72,9 +75,9 @@ public class SZZApplication {
 			case "-all":
 				Git git;
 				try{	
-				JiraRetriever jr = new JiraRetriever(DEFAULT_BUG_TRACKER, log, args[2]);
-				jr.printIssues();
-				jr.combineToOneFile();
+				JiraRetriever jr1 = new JiraRetriever(DEFAULT_BUG_TRACKER, log, args[2]);
+				jr1.printIssues();
+				jr1.combineToOneFile();
 				}
 				catch(Exception e){
 					break;
