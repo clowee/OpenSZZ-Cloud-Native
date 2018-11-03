@@ -20,7 +20,7 @@ public class SZZApplication {
 	
 	  /* Get actual class name to be printed on */
 	static Logger log = Logger.getLogger(SZZApplication.class.getName());
-	public static final String DEFAULT_BUG_TRACKER = "https://issues.apache.org/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
+	public static final String DEFAULT_BUG_TRACKER = "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
 
 	
 
@@ -45,7 +45,7 @@ public class SZZApplication {
 					break;
 				}
 		
-				JiraRetriever jr = new JiraRetriever(DEFAULT_BUG_TRACKER, log, args[1]);
+				JiraRetriever jr = new JiraRetriever(args[1] + DEFAULT_BUG_TRACKER, log, args[2]);
 				if (jr.testURL()){
 				jr.printIssues();
 				jr.combineToOneFile();
@@ -75,7 +75,7 @@ public class SZZApplication {
 			case "-all":
 				Git git;
 				try{	
-				JiraRetriever jr1 = new JiraRetriever(DEFAULT_BUG_TRACKER, log, args[2]);
+				JiraRetriever jr1 = new JiraRetriever(args[2]+DEFAULT_BUG_TRACKER, log, args[3]);
 				jr1.printIssues();
 				jr1.combineToOneFile();
 				}
@@ -83,12 +83,12 @@ public class SZZApplication {
 					break;
 				}
 				try {
-					git = new  Git((new File(args[2])).toPath(), new URL(args[1]));
+					git = new  Git((new File(args[3])).toPath(), new URL(args[1]));
 					git.cloneRepository();
 					git.saveLog();
 					TransactionManager t1 = new TransactionManager();
-					List<Transaction> transactions1 =  t1.getBugFixingCommits(args[1]);
-					Application a1 = new Application(args[1]);
+					List<Transaction> transactions1 =  t1.getBugFixingCommits(args[3]);
+					Application a1 = new Application(args[3]);
 					a1.calculateBugFixingCommits(transactions1);
 					a1.calculateBugInducingCommits();
 				} catch (MalformedURLException e) {
