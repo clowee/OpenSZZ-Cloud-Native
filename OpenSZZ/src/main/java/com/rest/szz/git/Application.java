@@ -41,10 +41,7 @@ public class Application {
 		
 		try {
 			writer =  new PrintWriter(projectName+".log");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	
 		
 		JiraRetriever jr = new JiraRetriever((jira),projectName);
 		jr.printIssues();
@@ -75,7 +72,10 @@ public class Application {
 		writer.println("Calculating Bug inducing commits for project " + projectName);
 		calculateBugInducingCommits(links,projectName,token);
 		writer.println("Bug inducing commits for project calculated");
-		writer.close();
+		writer.close();}
+		catch(Exception e){
+			return  new AsyncResult<Boolean>(false);
+		}
 		
 		return  new AsyncResult<Boolean>(true);
 	}

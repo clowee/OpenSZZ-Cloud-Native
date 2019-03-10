@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import javax.servlet.http.HttpServletRequest;
@@ -130,8 +131,17 @@ public class AppController {
 		List<String> toRemove = new LinkedList<String>();
 		for (String key : map.keySet()){
 			if (map.get(key).isDone()){
-				Email e = new Email(mapEmails.get(key),key,mapNames.get(key),requestUrl+"/getInducingCommits?token="+key);
-				e.sentEmail();
+				try {
+					if ((boolean)(map.get(key).get())){
+					Email e = new Email(mapEmails.get(key),key,mapNames.get(key),requestUrl+"/getInducingCommits?token="+key);
+					e.sentEmail();}
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				toRemove.add(key);
 			}
 		}
