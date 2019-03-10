@@ -12,7 +12,7 @@
 	<artifactId>SZZRest</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>SZZRest</name>
-
+<packaging>jar</packaging>
 	<properties>
 		<java.version>1.8</java.version>
 		<docker.image.prefix>OpenSZZ</docker.image.prefix>
@@ -130,15 +130,16 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+                <repository>localhost/openszz</repository>
+                 <tag>${project.version}</tag>
+             </configuration>
 			</plugin>
 		</plugins>
 	</build>
 
 
-
-
-
-
+   
 
 
 
