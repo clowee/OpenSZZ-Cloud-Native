@@ -1,13 +1,18 @@
 package com.rest.szz.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +22,22 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rest.szz.git.Application;
 import com.rest.szz.git.JiraRetriever;
+import com.rest.szz.helpers.Email;
 
 @RestController
 public class AppController {
 	private HashMap<String, Future> map = new HashMap<String, Future>();
+	private HashMap<String, String> mapNames = new HashMap<String, String>();
+	private HashMap<String, String> mapEmails = new HashMap<String, String>();
 	private String jiraAPI = "/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
+	private String requestUrl = "";
 
 	@Autowired
 	Application a;
@@ -40,7 +50,10 @@ public class AppController {
 	 * @return
 	 */
 	@RequestMapping("/SZZ")
-	public String szz(@RequestParam(value = "git") String git, @RequestParam(value = "jiraUrl") String jiraUrl) {
+	public String szz(@RequestParam(value = "git") String git, 
+			          @RequestParam(value = "jiraUrl") String jiraUrl,
+			          @RequestParam(value = "email") String email,
+			          HttpServletRequest request) {
 
 		String[] array = null;
 		String projectName = "";
@@ -64,8 +77,15 @@ public class AppController {
 
 		} else {
 			try {
-				Future f = a.mineData(git, jiraUrl.replace("{0}", projectName), projectName);
-				map.put(projectName, f);
+				String token = java.util.UUID.randomUUID().toString().split("-")[0];
+				Future f = a.mineData(git, jiraUrl.replace("{0}", projectName), projectName,token);
+				map.put(token, f);
+				mapNames.put(token, projectName);
+				mapEmails.put(token, email);
+				requestUrl = request.getScheme() + "://" +   // "http" + "://
+			             request.getServerName() +       // "myhost"
+			             ":" +                           // ":"
+			             request.getServerPort();    // "8080"
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 				return null;
@@ -77,13 +97,13 @@ public class AppController {
 
 	@RequestMapping("/getInducingCommits")
 	public ResponseEntity<InputStreamResource> inducingCommits(
-			@RequestParam(value = "projectName") String projectName) {
-		File file = new File(projectName + "_BugInducingCommits.csv");
+			@RequestParam(value = "token") String token) {
+		File file = new File(token + ".csv");
 		if (file.exists()) {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
 			headers.add("Pragma", "no-cache");
-			headers.add("content-disposition", "attachment; filename=" + projectName + "_BugInducingCommits.csv");
+			headers.add("content-disposition", "attachment; filename=" + mapNames.get(token) + "_BugInducingCommits.csv");
 			headers.add("Expires", "0");
 			InputStreamResource resource;
 			try {
@@ -106,5 +126,23 @@ public class AppController {
 	public String test() {
 		return "test";
 	}
+	
+	@Scheduled(cron = "0 0/1 * * * *")
+	public void sendNotificationEmails(){
+		List<String> toRemove = new LinkedList<String>();
+		for (String key : map.keySet()){
+			if (map.get(key).isDone()){
+				Email e = new Email(mapEmails.get(key),key,mapNames.get(key),requestUrl+"/getInducingCommits?token="+key);
+				e.sentEmail();
+				toRemove.add(key);
+			}
+		}
+		for(String key : toRemove){
+			map.remove(key);
+		}
+			
+	}
+	
+	
 
 }

@@ -34,7 +34,7 @@ public class Application {
 	
 		
 	@Async
-	public Future<Boolean> mineData(String git, String jira, String projectName) throws MalformedURLException {
+	public Future<Boolean> mineData(String git, String jira, String projectName, String token) throws MalformedURLException {
 		this.sourceCodeRepository = new URL(git);
 		this.bugTracker = new URL(jira);
 		this.projectName = projectName;
@@ -73,9 +73,10 @@ public class Application {
 			e.printStackTrace();
 		}
 		writer.println("Calculating Bug inducing commits for project " + projectName);
-		calculateBugInducingCommits(links,projectName);
+		calculateBugInducingCommits(links,projectName,token);
 		writer.println("Bug inducing commits for project calculated");
 		writer.close();
+		
 		return  new AsyncResult<Boolean>(true);
 	}
 	
@@ -171,12 +172,12 @@ public class Application {
 			e.printStackTrace();
 		}}
 		
-		private void calculateBugInducingCommits(List<Link> links,String projectName){
+		private void calculateBugInducingCommits(List<Link> links,String projectName, String token){
 			writer.println("Calculating Bug Inducing Commits");
 			int count = links.size();
 			PrintWriter printWriter;
 			try {
-				printWriter = new PrintWriter(projectName+"_BugInducingCommits.csv");
+				printWriter = new PrintWriter(token+".csv");
 				printWriter.println("bugFixingId;bugFixingTs;bugFixingfileChanged;bugInducingId;bugInducingTs;issueType");
 				for (Link l : links){
 					if (count % 100 == 0)
