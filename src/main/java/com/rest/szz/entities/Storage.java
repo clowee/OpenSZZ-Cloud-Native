@@ -12,20 +12,20 @@ import com.rest.szz.git.*;
 
 public class Storage {
 	
-	private Path FILE_STORAGE_PATH = Paths.get(
+	private Path fileStoragePath = Paths.get(
 			System.getProperty("user.dir")
 	);
 	
 	{
 		// Create working directory if it does not exist.
-		FILE_STORAGE_PATH.toFile().mkdirs();
+		fileStoragePath.toFile().mkdirs();
 	}
 	
 	private Git git = null;
 	private final Pattern pGit = Pattern.compile(".+\\.git$");
 	
 	public Storage(String projectName) {
-		FILE_STORAGE_PATH = Paths.get(
+		fileStoragePath = Paths.get(
 				System.getProperty("user.dir") 
 				);
 	}
@@ -42,7 +42,7 @@ public class Storage {
 		List<Transaction> result = new ArrayList<Transaction>();
 		Matcher mGit = pGit.matcher(url.toString());
 		if(mGit.find()) {
-			this.git = new Git(FILE_STORAGE_PATH, url);
+			this.git = new Git(fileStoragePath, url);
 			try {
 				this.git.cloneRepository();
 				this.git.pullUpdates();
