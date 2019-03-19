@@ -17,7 +17,6 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
 import com.rest.szz.entities.*;
-import com.rest.szz.git.*;
 
 @Service
 public class Application {
