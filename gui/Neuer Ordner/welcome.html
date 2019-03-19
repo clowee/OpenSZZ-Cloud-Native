@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{fragments/layout :: layout (~{::body},'home')}">
+<body>
+	<div class="container">
+
+		<div class="main">
+			<h2>Welcome to OpenSZZ</h2>
+			<p>
+			<p>Here you can apply the SZZ algorithm inserting some
+				information about the project you want to analyze.
+			<p></p>
+			<br>
+			<p>
+				If I want to analyze the project BCEL of the Apache Software
+				Foundation, I have to fill the formular in this way: <br></br>
+			<p>
+				<b>Project Name</b> = BCEL <br></br>
+			<p>
+				<b>Git URL</b> = <a href=https://github.com/apache/commons-bcel.git>
+					https://github.com/apache/commons-bcel.git </a> <br></br>
+			<p>
+				<b>Jira URL</b> = <a
+					href=https://issues.apache.org/jira/projects/BCEL />
+				https://issues.apache.org/jira/projects/BCEL/ </a> <br></br>
+			<p>
+				<b>Email</b> = example@email.com
+			<div>
+				<p></p>
+				<p></p>
+			</div>
+			<div>
+				<table class="table">
+					<tr>
+						<td colspan="1">
+							<form class="well form-horizontal"
+								style="background-color: white;">
+								<fieldset>
+									<div class="form-group">
+										<label class="col-md-4 control-label">Project Name</label>
+										<div class="col-md-8 inputGroupContainer">
+											<div class="input-group">
+												<span class="input-group-addon"><i class="glyphicon"></i></span><input
+													id="fullName" name="fullName" placeholder="Project Name"
+													class="form-control" required="true" value="" type="text">
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-4 control-label">Git URL</label>
+										<div class="col-md-8 inputGroupContainer">
+											<div class="input-group">
+												<span class="input-group-addon"></span><input id="gitUrl"
+													name="gitUrl" placeholder="Git URL" class="form-control"
+													required="true" value="" type="url">
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-4 control-label">Jira URL</label>
+										<div class="col-md-8 inputGroupContainer">
+											<div class="input-group">
+												<span class="input-group-addon"></span><input id="jiraUrl"
+													name="jiraUrl" placeholder="Jira URL" class="form-control"
+													required="true" value="" type="url">
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-4 control-label">Email</label>
+										<div class="col-md-8 inputGroupContainer">
+											<div class="input-group">
+												<span class="input-group-addon"></span><input id="email"
+													name="email" placeholder="Email" class="form-control"
+													required="true" value="" type="email">
+											</div>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-4 control-label"></label>
+										<div class="col-md-8 inputGroupContainer">
+											<div class="input-group">
+												<input class="btn btn-success" value="Start Analysis"
+													type="submit">
+											</div>
+										</div>
+									</div>
+								</fieldset>
+
+
+							</form>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html>
