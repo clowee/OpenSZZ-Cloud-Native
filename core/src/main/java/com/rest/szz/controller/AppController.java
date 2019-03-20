@@ -12,7 +12,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -42,13 +41,13 @@ public class AppController {
 
 	/**
 	 * jiraUrl input Format https://issues.apache.org/jira/projects/AMBARI/
-	 * 
+	 *
 	 * @param git
 	 * @param jiraUrlProjects
 	 * @return
 	 */
 	@RequestMapping("/SZZ")
-	public String szz(@RequestParam(value = "git") String git, 
+	public String szz(@RequestParam(value = "git") String git,
 			          @RequestParam(value = "jiraUrl") String jiraUrl,
 			          @RequestParam(value = "email") String email,
 			          HttpServletRequest request) {
@@ -124,7 +123,7 @@ public class AppController {
 	public String test() {
 		return "test";
 	}
-	
+
 	@Scheduled(cron = "0 0/1 * * * *")
 	public void sendNotificationEmails(){
 		List<String> toRemove = new LinkedList<String>();
@@ -147,9 +146,9 @@ public class AppController {
 		for(String key : toRemove){
 			map.remove(key);
 		}
-			
+
 	}
-	
-	
+
+
 
 }
