@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -50,11 +49,12 @@ public class SzzRestApplication {
         return container;
     }
     
-    @Bean
-    public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
-        return new RabbitAdmin(connectionFactory);
-    }
 
+    @Bean
+    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+       RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+       return rabbitTemplate;
+    }
 
 }
 
