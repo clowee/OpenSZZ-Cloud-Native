@@ -55,11 +55,6 @@ public class SzzRestApplication {
         return new RabbitAdmin(connectionFactory);
     }
 
-    @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-       RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-       return rabbitTemplate;
-    }
 
 }
 
