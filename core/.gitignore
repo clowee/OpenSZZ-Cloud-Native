@@ -1,25 +1,16 @@
-/target/
-!.mvn/wrapper/maven-wrapper.jar
-
-### STS ###
-.apt_generated
+target/*
+.settings/*
 .classpath
-.factorypath
 .project
-.settings
-.springBeans
-.sts4-cache
-
-### IntelliJ IDEA ###
+.factorypath
+.attach_pid*
 .idea
-*.iws
 *.iml
-*.ipr
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-/build/
+/target
+.sts4-cache/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+_site/

@@ -9,6 +9,7 @@ import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 
 import com.rest.szz.helpers.Email;
@@ -25,6 +26,7 @@ public class SzzRestApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SzzRestApplication.class, args);
 	}
+	
 	
     @Bean
     Queue queue() {
@@ -60,6 +62,8 @@ public class SzzRestApplication {
        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
        return rabbitTemplate;
     }
+    
+
 
 }
 
