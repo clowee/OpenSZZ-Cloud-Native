@@ -232,10 +232,7 @@ public class Link {
 		Matcher p2 = patter2.matcher(comment);
 		boolean b1 = p1.find();
 		boolean b2 = p2.find();
-		if (b1 || b2)
-			return true;
-		else
-			return false;
+		return (b1 || b2);
 	}
 
 	public int getSyntacticConfidence() {
