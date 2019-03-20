@@ -18,7 +18,6 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.rest.szz.entities.*;
 import com.rest.szz.entities.Issue.Resolution;
-import com.rest.szz.entities.Issue.Status;
 import com.rest.szz.entities.Transaction.FileInfo;
 import com.rest.szz.git.*;
 
