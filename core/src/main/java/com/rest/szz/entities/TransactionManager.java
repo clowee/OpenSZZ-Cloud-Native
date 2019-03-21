@@ -23,7 +23,7 @@ public class TransactionManager {
 	public List<Transaction> getBugFixingCommits(URL url, String projectName) {
 		if (this.transactions != null) return this.transactions;
 		
-		this.transactions = new ArrayList<Transaction>(); //Arrays.asList(new Transaction[] { Transaction.EXAMPLE_TRANSACTION1, Transaction.EXAMPLE_TRANSACTION2,Transaction.EXAMPLE_TRANSACTION3,Transaction.EXAMPLE_TRANSACTION4,});
+		this.transactions = new ArrayList<Transaction>(); 
 	
 		// TODO: Parse stuff from url
 		try {
