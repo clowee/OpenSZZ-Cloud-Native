@@ -26,7 +26,6 @@ public class Link {
 
 	public final long number;
 	public final Transaction transaction;
-	
 	public Issue issue = null;
 	private String projectName = "";
 
@@ -196,14 +195,14 @@ public class Link {
 						comments.add(s[i]);
 						i++;
 					}
-					Status status = Status.UNCONFIRMED;
+					Issue.Status status = Issue.Status.UNCONFIRMED;
 					Resolution resolution = Resolution.NONE;
 					
 					try{
-						Status.valueOf(s[3].toUpperCase());
+						Issue.Status.valueOf(s[3].toUpperCase());
 					}
 					catch(Exception e){
-						status = Status.UNCONFIRMED;
+						status = Issue.Status.UNCONFIRMED;
 					}
 					
 					try{
@@ -285,7 +284,7 @@ public class Link {
     	long tempDifference = Long.MAX_VALUE; 
     	for (int i : linesMinus){ 
     		try{ 
-    			String sha = git.getBlameAt(previous,fileName,l,i); 
+    			String sha = git.getBlameAt(previous,fileName,i);
     			if (sha == null)
     				break;
     			RevCommit commit = git.getCommit(sha,l); 
