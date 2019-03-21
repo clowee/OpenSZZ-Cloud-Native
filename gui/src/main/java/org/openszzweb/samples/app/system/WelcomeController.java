@@ -1,6 +1,9 @@
 package org.openszzweb.samples.app.system;
 
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.openszzweb.samples.app.model.Analysis;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Controller;
@@ -16,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 class WelcomeController {
 	
 	 private final RabbitTemplate rabbitTemplate;
+	 
+	 private static final String topicExchangeSzz = "szz-analysis-exchange";
+	 private static final String queueNameSzz = "szz-analysis";
 	
     public WelcomeController (RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
@@ -28,8 +34,15 @@ class WelcomeController {
     }
     
 	@PostMapping("/doAnalysis")
-    public String doAnalysis(@ModelAttribute Analysis analysis,BindingResult result, Model model) {
-       System.out.println("Ciao");
-		return "welcome";
+    public boolean doAnalysis(@ModelAttribute Analysis analysis,BindingResult result, Model model) {
+	       List<String> t = new LinkedList<String>();
+	        t.add(analysis.getGitUrl());
+	        t.add(analysis.getJiraUrl());
+	        rabbitTemplate.convertAndSend("szz-analysis-exchange", "project.name."+analysis.getProjectName(), t);
+	        return true;
     }
+	
+	private boolean checkCorrectness(Analysis analysis){
+		return true;
+	}
 }
