@@ -120,7 +120,7 @@ public class Git {
 		Process p = pb.start();
         p.waitFor();
 	}
-
+	//more comments
 	public List<Transaction> getCommits() {
 		List<Transaction> transactions = new ArrayList<Transaction>();
 		int count = 1;
