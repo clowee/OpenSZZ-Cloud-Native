@@ -122,7 +122,7 @@ public class Git {
 	}
 	public List<Transaction> getCommits() {
 		List<Transaction> transactions = new ArrayList<Transaction>();
-		int count = 1;
+		
 		 String line="";
 		 String line1="";
 		 String hashId = "";
