@@ -1,8 +1,8 @@
 version: '3'
 services:
   rabbitmq:
-    image: "rabbitmq"
-    hostname: "rabbit"
+    image: rabbitmq:3.7
+    hostname: "rabbitmq"
     environment:
       RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
       RABBITMQ_DEFAULT_USER: "guest"
@@ -23,8 +23,6 @@ services:
     - "1111:8080"
     networks:
     - spring-cloud-network
-    links:
-     - rabbitmq
     depends_on:
       - rabbitmq
   
@@ -35,8 +33,6 @@ services:
     - "2222:8080"
     networks:
     - spring-cloud-network
-    links:
-     - rabbitmq
     depends_on:
       - rabbitmq
     
@@ -60,8 +56,6 @@ services:
     - "8081:8080"
     networks:
     - spring-cloud-network
-    links:
-     - rabbitmq
   
 networks:
   spring-cloud-network:
