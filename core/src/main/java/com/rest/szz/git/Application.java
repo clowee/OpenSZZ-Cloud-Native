@@ -28,14 +28,12 @@ public class Application {
     private PrintWriter writer; 
     public boolean hasFinished = false;
     
-    private String projectName;
 	
 		
 	@Async
 	public Future<Boolean> mineData(String git, String jira, String projectName, String token) throws MalformedURLException {
 		this.sourceCodeRepository = new URL(git);
 		this.bugTracker = new URL(jira);
-		this.projectName = projectName;
 		
 		try {
 			writer =  new PrintWriter(projectName+".log");
@@ -170,7 +168,7 @@ public class Application {
 			e.printStackTrace();
 		}}
 		
-		private void calculateBugInducingCommits(List<Link> links,String projectName, String token){
+		private void calculateBugInducingCommits(List<Link> links, String token){
 			writer.println("Calculating Bug Inducing Commits");
 			int count = links.size();
 			PrintWriter printWriter;
