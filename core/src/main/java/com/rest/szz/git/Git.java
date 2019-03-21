@@ -120,7 +120,6 @@ public class Git {
 		Process p = pb.start();
         p.waitFor();
 	}
-	//more comments
 	public List<Transaction> getCommits() {
 		List<Transaction> transactions = new ArrayList<Transaction>();
 		int count = 1;
@@ -223,7 +222,6 @@ public class Git {
 			return null;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			//test comments
 			e.printStackTrace();
 			l.println(e);
 			return null;
@@ -296,8 +294,7 @@ public class Git {
 	   * @param git
 	   * @return
 	   */
-
-	  public  String getBlameAt(String commitSha, String file,PrintWriter l, int lineNumber) {
+	  public  String getBlameAt(String commitSha, String file, int lineNumber) {
 		  File  localRepo1 = new File(workingDirectory+"");
 		try {
 			if (blame==null){
