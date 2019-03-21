@@ -294,6 +294,7 @@ public class Git {
 	   * @param git
 	   * @return
 	   */
+		//removed unused parameter PrintWriter l
 	  public  String getBlameAt(String commitSha, String file, int lineNumber) {
 		  File  localRepo1 = new File(workingDirectory+"");
 		try {
