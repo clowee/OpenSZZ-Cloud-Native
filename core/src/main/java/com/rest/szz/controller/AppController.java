@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rest.szz.git.Application;
-import com.rest.szz.git.JiraRetriever;
 import com.rest.szz.helpers.Email;
 
 @RestController
