@@ -198,7 +198,7 @@ public class Git {
 		            .call();
 		    ByteArrayOutputStream out = new ByteArrayOutputStream();
 		    DiffFormatter df = new DiffFormatter(out);
-		   // df.setDiffComparator(RawTextComparator.WS_IGNORE_LEADING);
+		   
 		    df.setRepository(git.getRepository());
 
 		    for(DiffEntry diff : diffs)
