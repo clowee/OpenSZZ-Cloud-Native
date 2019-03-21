@@ -11,7 +11,7 @@ public class TransactionManager {
 	
 	private List<Transaction> transactions;
 	
-	private List<Transaction> totalTransactions;
+	//private List<Transaction> totalTransactions;
 	
 	private Storage storage;
 
@@ -44,7 +44,7 @@ public class TransactionManager {
 		return transactions;
 	}
 	
-	
+	//This is a message
 	public Git getGit(){
 		return this.storage.getGit();
 	}
