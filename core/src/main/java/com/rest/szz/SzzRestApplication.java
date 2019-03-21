@@ -12,7 +12,6 @@ import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 
-import com.rest.szz.helpers.Email;
 import com.rest.szz.helpers.MessageReceivedComponent;
 
 @SpringBootApplication
