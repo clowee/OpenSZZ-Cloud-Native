@@ -27,10 +27,7 @@ public class Application {
 	private final LinkManager linkManager = new LinkManager();
     private PrintWriter writer; 
     public boolean hasFinished = false;
-    
-    private String projectName;
-	
-		
+    		
 	@Async
 	public Future<Boolean> mineData(String git, String jira, String projectName, String token) throws MalformedURLException {
 		this.sourceCodeRepository = new URL(git);
