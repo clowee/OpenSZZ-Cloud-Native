@@ -4,11 +4,9 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 /**
  * @author LucaPellegrini
- * 
+ *
  * Class for the links management
  */
 public class LinkManager {
