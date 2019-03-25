@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{fragments/layout :: layout (~{::body},'home')}">
+<body>
+	<div class="container">
+
+		<div class="main">
+			<h2>Results will be sent to </h2><h2 th:text="${analysis.email}">Text ...</h2>
+			<br>
+
+	</div>
+</div>
+</body>
+
+</html>
