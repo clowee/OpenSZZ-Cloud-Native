@@ -28,9 +28,9 @@ services:
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
     environment:
-    - SERVER="localhost"
-    - EMAIL="noreply.openszz@gmail.com";
-    - PWD="Aa30011992"   
+    - SERVER=http://localhost
+    - EMAIL=noreply.openszz@gmail.com
+    - PWD=Aa30011992
   
 
   app:
