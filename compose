@@ -20,18 +20,35 @@ services:
   web:
     build: ./core
     ports:
-    - "1000-2000:8080"
+    - "1111:8080"
     networks:
     - spring-cloud-network
     depends_on:
-    - rabbitmq
-    volumes:
-    - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-    - SERVER="localhost"
-    - EMAIL="noreply.openszz@gmail.com";
-    - PWD="Aa30011992"   
+      - rabbitmq
   
+
+  web1:
+    build: ./core
+    ports:
+    - "2222:8080"
+    networks:
+    - spring-cloud-network
+    depends_on:
+      - rabbitmq
+    
+
+
+  web2:
+    build: ./core
+    ports:
+    - "3333:8080"
+    networks:
+    - spring-cloud-network
+    links:
+     - rabbitmq
+    depends_on:
+      - rabbitmq
+ 
 
   app:
     build: ./gui
@@ -39,8 +56,6 @@ services:
     - "8081:8080"
     networks:
     - spring-cloud-network
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
   
 networks:
   spring-cloud-network:

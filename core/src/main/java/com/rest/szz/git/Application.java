@@ -17,8 +17,9 @@ import org.springframework.stereotype.Service;
 
 import com.rest.szz.entities.*;
 
-@Service
 public class Application {
+	
+	
 	
 	public  URL sourceCodeRepository;
 	public  URL bugTracker;
@@ -30,9 +31,11 @@ public class Application {
     
     private String projectName;
 	
+    
+    public Application(){}
 		
-	@Async
-	public Future<Boolean> mineData(String git, String jira, String projectName, String token) throws MalformedURLException {
+	
+	public boolean mineData(String git, String jira, String projectName, String token) throws MalformedURLException {
 		this.sourceCodeRepository = new URL(git);
 		this.bugTracker = new URL(jira);
 		this.projectName = projectName;
@@ -53,6 +56,7 @@ public class Application {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return  false;
 		}
 		writer.println("Calculating bug fixing commits for project " + projectName);
 		List<Link> links = linkManager.getLinks(transactions, projectName, writer);
@@ -66,16 +70,17 @@ public class Application {
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return  false;
 		}
 		writer.println("Calculating Bug inducing commits for project " + projectName);
 		calculateBugInducingCommits(links,projectName,token);
 		writer.println("Bug inducing commits for project calculated");
 		writer.close();}
 		catch(Exception e){
-			return  new AsyncResult<Boolean>(false);
+			return  false;
 		}
 		
-		return  new AsyncResult<Boolean>(true);
+		return  true;
 	}
 	
 	/**

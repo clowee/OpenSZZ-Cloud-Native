@@ -12,23 +12,25 @@ import java.util.concurrent.Future;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.rest.szz.git.Application;
 
 @Component
+@RestController
 public class MessageReceivedComponent implements MessageListener {
 
 	RabbitTemplate rabbitTemplate;
 	private String jiraAPI = "/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
 
-	
-	@Autowired
-	Application a;
+	private Application a;
 
 	public MessageReceivedComponent(RabbitTemplate rabbitTemplate) {
 		this.rabbitTemplate = rabbitTemplate;
@@ -37,6 +39,7 @@ public class MessageReceivedComponent implements MessageListener {
 	@Override
 	public void onMessage(Message message) {
 		{
+			Logger l = Logger.getLogger(MessageReceivedComponent.class);
 			String routingKey = message.getMessageProperties().getReceivedRoutingKey();
 			int index = routingKey.lastIndexOf(".") + 1;
 			String projectName = routingKey.substring(index);
@@ -48,17 +51,18 @@ public class MessageReceivedComponent implements MessageListener {
 				ois = new ObjectInputStream(new ByteArrayInputStream(message.getBody()));
 				list = (LinkedList<String>) ois.readObject();
 				String gitUrl = list.get(0);
+				l.info(gitUrl);
 				String jiraUrl = list.get(1);
+				l.info(jiraUrl);
 				String email = list.get(2);
+				
 				array = jiraUrl.split("/jira/projects/");
 				projectName = array[1].replaceAll("/", "");
 				jiraUrl = array[0] + jiraAPI;
 				String token = java.util.UUID.randomUUID().toString().split("-")[0];
-				Future f = a.mineData(gitUrl, jiraUrl.replace("{0}", projectName), projectName, token);
-				while(!f.isDone()){
-					Thread.sleep(10);
-				}
-			    
+				a = new Application();
+				if (a.mineData(gitUrl, jiraUrl.replace("{0}", projectName), projectName, token));
+				  sendNotificationEmails(email,projectName,token);
 				ois.close();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -68,8 +72,9 @@ public class MessageReceivedComponent implements MessageListener {
 	}
 	
 	
-	public void sendNotificationEmails(String email, String projectName, String token, String requestUrl){
-		Email e = new Email(email,token,projectName,requestUrl+"/getInducingCommits?token="+token);
+	public void sendNotificationEmails(String email, String projectName, String token){
+		DockerHelper dh = new DockerHelper();
+		Email e = new Email(email,token,projectName,System.getenv("SERVER")+":"+dh.getPort()+"/getInducingCommits?token="+token+"&projectName="+projectName);
 	    e.sentEmail();
 	}
 	

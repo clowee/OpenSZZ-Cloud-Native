@@ -38,6 +38,7 @@ class WelcomeController {
 	       List<String> t = new LinkedList<String>();
 	        t.add(analysis.getGitUrl());
 	        t.add(analysis.getJiraUrl());
+	        t.add(analysis.getEmail());
 	        rabbitTemplate.convertAndSend("szz-analysis-exchange", "project.name."+analysis.getProjectName(), t);
 	        return true;
     }

@@ -1,7 +1,9 @@
 package com.rest.szz;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -18,6 +20,7 @@ import com.rest.szz.helpers.MessageReceivedComponent;
 @SpringBootApplication
 @EnableAsync
 @EnableScheduling
+@EnableAutoConfiguration(exclude=RabbitAutoConfiguration.class)
 public class SzzRestApplication {
 	
 	static final String topicExchangeSzz = "szz-analysis-exchange";
@@ -27,7 +30,18 @@ public class SzzRestApplication {
 		SpringApplication.run(SzzRestApplication.class, args);
 	}
 	
-	
+
+
+@Bean
+public ConnectionFactory connectionFactory() {
+    com.rabbitmq.client.ConnectionFactory connectionFactory = new com.rabbitmq.client.ConnectionFactory();
+    connectionFactory.setHost("rabbitmq");
+    connectionFactory.setUsername("guest");
+    connectionFactory.setPassword("guest");
+    connectionFactory.setVirtualHost("/");
+	CachingConnectionFactory connectionFactoryq = new CachingConnectionFactory(connectionFactory);
+    return connectionFactoryq;
+}
     @Bean
     Queue queue() {
         return new Queue(queueNameSzz, false);
@@ -46,20 +60,20 @@ public class SzzRestApplication {
     @Bean
     SimpleMessageListenerContainer containerAnaylsis(ConnectionFactory connectionFactory) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
+        container.setConnectionFactory(connectionFactory());
         container.setQueueNames(queueNameSzz);
-        container.setMessageListener(new MessageReceivedComponent(rabbitTemplate(connectionFactory)));
+        container.setMessageListener(new MessageReceivedComponent(rabbitTemplate(connectionFactory())));
         return container;
     }
     
     @Bean
     public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
-        return new RabbitAdmin(connectionFactory);
+        return new RabbitAdmin(connectionFactory());
     }
 
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-       RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+       RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
        return rabbitTemplate;
     }
     
