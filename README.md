@@ -6,7 +6,7 @@ SZZ Algorithm To Detect Fault-Inducing Commits
 Docker compose should be modified in the following way:
 
 SERVER=http://localhost
-It should contains the ip or dress of the server where the container is running. 
+It should contains the ip address of the server where the container is running. 
 
 cd gui
 mvn install
