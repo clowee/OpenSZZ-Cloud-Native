@@ -39,7 +39,7 @@ public class AppController {
 			@RequestParam(value = "token") String token,
 			@RequestParam(value = "projectName") String projectName
 			) {
-		File file = new File(token + ".csv");
+		File file = new File("mydata/"+ token + ".csv");
 		if (file.exists()) {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Cache-Control", "no-cache, no-store, must-revalidate");

@@ -73,8 +73,7 @@ public class MessageReceivedComponent implements MessageListener {
 	
 	
 	public void sendNotificationEmails(String email, String projectName, String token){
-		DockerHelper dh = new DockerHelper();
-		Email e = new Email(email,token,projectName,System.getenv("SERVER")+":"+dh.getPort()+"/getInducingCommits?token="+token+"&projectName="+projectName);
+		Email e = new Email(email,token,projectName,System.getenv("SERVER")+":8888/getInducingCommits?token="+token+"&projectName="+projectName);
 	    e.sentEmail();
 	}
 	

@@ -27,11 +27,27 @@ services:
     - rabbitmq
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
+    - mydata:/mydata
     environment:
     - SERVER=http://localhost
     - EMAIL=noreply.openszz@gmail.com
     - PWD=Aa30011992
-  
+
+  results:
+    build: ./core
+    ports:
+    - "8888:8080"
+    networks:
+    - spring-cloud-network
+    depends_on:
+    - rabbitmq
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - mydata:/mydata
+    environment:
+    - SERVER=http://localhost
+    - EMAIL=noreply.openszz@gmail.com
+    - PWD=Aa30011992
 
   app:
     build: ./gui
@@ -45,7 +61,9 @@ services:
 networks:
   spring-cloud-network:
    driver: bridge
-    
+
+volumes:
+  mydata:
 
     
     
