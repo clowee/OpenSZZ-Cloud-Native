@@ -34,9 +34,11 @@ services:
     - PWD=Aa30011992
 
   results:
-    build: ./core
+    container_name: results
+    build: ./dispatcher
     ports:
-    - "8888:8080"
+    - 8888
+    - "8888:8888"
     networks:
     - spring-cloud-network
     depends_on:

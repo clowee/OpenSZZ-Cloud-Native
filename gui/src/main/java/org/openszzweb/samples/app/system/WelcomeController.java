@@ -8,6 +8,10 @@ import java.util.List;
 
 import org.openszzweb.samples.app.model.Analysis;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,6 +20,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Controller
 class WelcomeController {
@@ -23,6 +29,8 @@ class WelcomeController {
 	 private final RabbitTemplate rabbitTemplate;
      private String jiraAPI = "/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
 
+     final String uri = "http://results:8888/doAnalysis";
+     
 	 private static final String topicExchangeSzz = "szz-analysis-exchange";
 	 private static final String queueNameSzz = "szz-analysis";
 	
@@ -38,14 +46,20 @@ class WelcomeController {
     
 	@PostMapping("/doAnalysis")
     public String doAnalysis(@ModelAttribute Analysis analysis,BindingResult result, Model model) {
-	       List<String> t = new LinkedList<String>();
-	        t.add(analysis.getGitUrl());
-	        t.add(analysis.getJiraUrl());
-	        t.add(analysis.getEmail());
-	        rabbitTemplate.convertAndSend("szz-analysis-exchange", "project.name."+analysis.getProjectName(), t);
+		RestTemplate restTemplate = new RestTemplate();
 	        if (!checkCorrectness(analysis))
 	        		return "error";
-	        model.addAttribute(analysis);
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+	        
+	        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(uri)
+	                .queryParam("jira", analysis.getJiraUrl())
+	                .queryParam("email", analysis.getEmail())
+	                .queryParam("git", analysis.getGitUrl());
+
+			String temp = builder.build().encode().toUri().toString();
+			System.out.println(temp);
+			restTemplate.getForEntity(temp, String.class).getBody();
 	        return "resultPage";
     }
 	

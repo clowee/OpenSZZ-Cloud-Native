@@ -14,5 +14,5 @@ RUN apk update && apk add \
 git && apk add bash 
 
 
-COPY  target/SZZRest-0.0.1-SNAPSHOT.jar  app.jar
+COPY  target/SZZRestScheduler-0.0.1-SNAPSHOT.jar  app.jar
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]

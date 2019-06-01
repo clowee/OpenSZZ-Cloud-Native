@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -49,12 +50,16 @@ public class AppController {
 		return "test";
 	}
 	
-	@RequestMapping(value = "/doAnalysis", method = RequestMethod.POST)
-	public String doAnalysis(@RequestBody Analysis analysis, Model model) {
+	@RequestMapping(value = "/doAnalysis",method = RequestMethod.GET)
+	public String doAnalysis(@RequestParam String git,@RequestParam String jira,@RequestParam String email, Model model) {
 	       List<String> t = new LinkedList<String>();
-	        t.add(analysis.getGitUrl());
-	        t.add(analysis.getJiraUrl());
-	        t.add(analysis.getEmail());
+	        t.add(git);
+	        t.add(jira);
+	        t.add(email); 
+	        Analysis analysis = new Analysis();
+	        analysis.setEmail(email);
+	        analysis.setGitUrl(git);
+	        analysis.setJiraUrl(jira);
 	        rabbitTemplate.convertAndSend("szz-analysis-exchange", "project.name."+analysis.getProjectName(), t);
 	        if (!checkCorrectness(analysis))
 	        		return "error";
