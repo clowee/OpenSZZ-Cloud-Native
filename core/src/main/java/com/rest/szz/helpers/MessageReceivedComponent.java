@@ -1,8 +1,13 @@
 package com.rest.szz.helpers;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -12,11 +17,14 @@ import java.util.concurrent.Future;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.MessageListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,14 +63,23 @@ public class MessageReceivedComponent implements MessageListener {
 				String jiraUrl = list.get(1);
 				l.info(jiraUrl);
 				String email = list.get(2);
-				
 				array = jiraUrl.split("/jira/projects/");
 				projectName = array[1].replaceAll("/", "");
 				jiraUrl = array[0] + jiraAPI;
 				String token = java.util.UUID.randomUUID().toString().split("-")[0];
 				a = new Application();
-				if (a.mineData(gitUrl, jiraUrl.replace("{0}", projectName), projectName, token));
-				  sendNotificationEmails(email,projectName,token);
+				if (a.mineData(gitUrl, jiraUrl.replace("{0}", projectName), projectName, token)){
+					File file = new File("mydata/"+ token + ".csv");
+					ObjectOutputStream objectOutputStream = 
+						    new ObjectOutputStream(new FileOutputStream("object.data"));
+					objectOutputStream.writeObject(Files.readAllBytes(file.toPath()));
+					objectOutputStream.close();
+					
+					Message m = MessageBuilder.withBody(Files.readAllBytes(file.toPath())).setHeader("ContentType", "text/csv").build();
+							
+					rabbitTemplate.convertAndSend("szz-results-exchange", "project.results."+projectName +"." +token+"."+email, m);
+					FileUtils.cleanDirectory(new File("mydata")); 
+				}
 				ois.close();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

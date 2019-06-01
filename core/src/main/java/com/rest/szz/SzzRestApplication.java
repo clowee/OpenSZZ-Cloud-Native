@@ -30,8 +30,6 @@ public class SzzRestApplication {
 		SpringApplication.run(SzzRestApplication.class, args);
 	}
 	
-
-
 @Bean
 public ConnectionFactory connectionFactory() {
     com.rabbitmq.client.ConnectionFactory connectionFactory = new com.rabbitmq.client.ConnectionFactory();
@@ -42,20 +40,24 @@ public ConnectionFactory connectionFactory() {
 	CachingConnectionFactory connectionFactoryq = new CachingConnectionFactory(connectionFactory);
     return connectionFactoryq;
 }
+
     @Bean
     Queue queue() {
         return new Queue(queueNameSzz, false);
     }
+    
     
     @Bean
     TopicExchange exchange() {
         return new TopicExchange(topicExchangeSzz);
     }
     
+    
     @Bean
     Binding binding(Queue queue, TopicExchange exchange) {
         return BindingBuilder.bind(queue).to(exchange).with("project.name.#");
     }
+    
     
     @Bean
     SimpleMessageListenerContainer containerAnaylsis(ConnectionFactory connectionFactory) {

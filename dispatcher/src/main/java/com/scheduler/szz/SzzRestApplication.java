@@ -7,6 +7,9 @@ import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+
+import com.scheduler.szz.helpers.MessageReceivedComponent;
+
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -20,8 +23,8 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 @EnableAutoConfiguration(exclude=RabbitAutoConfiguration.class)
 public class SzzRestApplication {
 	
-	static final String topicExchangeSzz = "szz-analysis-exchange";
-    static final String queueNameSzz = "szz-analysis";
+	static final String topicExchangeSzz = "szz-results-exchange";
+    static final String queueNameSzz = "szz-results";
 
 	public static void main(String[] args) {
 		SpringApplication.run(SzzRestApplication.class, args);
@@ -49,7 +52,7 @@ public ConnectionFactory connectionFactory() {
     
     @Bean
     Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with("project.name.#");
+        return BindingBuilder.bind(queue).to(exchange).with("project.results.#");
     }
     
     
@@ -62,6 +65,15 @@ public ConnectionFactory connectionFactory() {
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
        return rabbitTemplate;
+    }
+    
+    @Bean
+    SimpleMessageListenerContainer containerAnaylsis(ConnectionFactory connectionFactory) {
+        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+        container.setConnectionFactory(connectionFactory());
+        container.setQueueNames(queueNameSzz);
+        container.setMessageListener(new MessageReceivedComponent(rabbitTemplate(connectionFactory())));
+        return container;
     }
     
 

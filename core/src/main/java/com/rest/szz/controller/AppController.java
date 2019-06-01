@@ -34,7 +34,7 @@ public class AppController {
 	private String requestUrl = "";
 
 
-	@RequestMapping("/getInducingCommits")
+	/*@RequestMapping("/getInducingCommits")
 	public ResponseEntity<InputStreamResource> inducingCommits(
 			@RequestParam(value = "token") String token,
 			@RequestParam(value = "projectName") String projectName
@@ -61,7 +61,7 @@ public class AppController {
 			return null;
 		}
 
-	}
+	}*/
 
 	@RequestMapping("/test")
 	public String test() {

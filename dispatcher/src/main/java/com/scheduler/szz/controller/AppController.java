@@ -89,5 +89,35 @@ public class AppController {
 		} 
 		return true;
 	}
+	
+	@RequestMapping("/getInducingCommits")
+	public ResponseEntity<InputStreamResource> inducingCommits(
+			@RequestParam(value = "token") String token,
+			@RequestParam(value = "projectName") String projectName
+			) {
+		File file = new File("mydata/"+ token + ".csv");
+		if (file.exists()) {
+			HttpHeaders headers = new HttpHeaders();
+			headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+			headers.add("Pragma", "no-cache");
+			headers.add("content-disposition", "attachment; filename=" + projectName + "_BugInducingCommits.csv");
+			headers.add("Expires", "0");
+			InputStreamResource resource;
+			try {
+				resource = new InputStreamResource(new FileInputStream(file));
+				return ResponseEntity.ok().headers(headers).contentLength(file.length())
+						.contentType(MediaType.parseMediaType("application/csv")).body(resource);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return null;
+			}
+
+		} else {
+			return null;
+		}
+
+	}
+
 
 }
