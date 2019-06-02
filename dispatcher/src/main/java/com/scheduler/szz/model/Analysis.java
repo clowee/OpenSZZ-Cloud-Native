@@ -12,8 +12,14 @@ public class Analysis extends BaseEntity {
 	private String gitUrl;
 	private String projectName;
 	private String email;
+	private String token;
 	
-
+	public String getToken() {
+		return token;
+	}
+	public void setToken(String token) {
+		this.token = token;
+	}
 	public String getJiraUrl() {
 		return jiraUrl;
 	}

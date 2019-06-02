@@ -8,12 +8,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.scheduler.szz.helpers.DBEntryDao;
 import com.scheduler.szz.helpers.MessageReceivedComponent;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 
@@ -25,6 +27,7 @@ public class SzzRestApplication {
 	
 	static final String topicExchangeSzz = "szz-results-exchange";
     static final String queueNameSzz = "szz-results";
+    
 
 	public static void main(String[] args) {
 		SpringApplication.run(SzzRestApplication.class, args);

@@ -58,14 +58,23 @@ services:
     networks:
     - spring-cloud-network
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-  
+      - /var/run/docker.sock:/var/run/docker.sock    
+
+  mongodb:
+    container_name: sonar-scheduler-mongodb
+    image: mongo                           
+    networks:                                 
+      - spring-cloud-network                             
+    volumes:                                  
+      - scheduler_db:/data/db   
+
 networks:
   spring-cloud-network:
    driver: bridge
 
 volumes:
-  mydata:
+  mydata:              
+  scheduler_db:
 
     
     

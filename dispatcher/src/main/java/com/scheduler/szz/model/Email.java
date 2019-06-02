@@ -1,4 +1,4 @@
-package com.scheduler.szz.helpers;
+package com.scheduler.szz.model;
 
 import java.util.Properties;
 

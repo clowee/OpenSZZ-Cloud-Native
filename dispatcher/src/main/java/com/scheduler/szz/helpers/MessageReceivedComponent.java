@@ -22,14 +22,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.scheduler.szz.controller.AppController;
+import com.scheduler.szz.model.DBEntry;
+import com.scheduler.szz.model.Email;
 
 @Component
-@RestController
 public class MessageReceivedComponent implements MessageListener {
 
 	RabbitTemplate rabbitTemplate;
+	DBEntryDao dbEntryDao;
 
 	public MessageReceivedComponent(RabbitTemplate rabbitTemplate) {
 		this.rabbitTemplate = rabbitTemplate;
@@ -54,7 +58,13 @@ public class MessageReceivedComponent implements MessageListener {
 			try {
 				byte[] resource = message.getBody();
 				FileUtils.writeByteArrayToFile(new File("mydata/"+ token + ".csv"), resource);
-				sendNotificationEmails(email,projectName,token);
+				sendNotificationEmails(email,projectName,token);	
+				AppController ap = new AppController(rabbitTemplate);
+				dbEntryDao = ap.getDao();
+				DBEntry dbentry = dbEntryDao.findByToken(token);
+				dbentry.setStatus(DBEntry.Status.ANALYSED);
+				dbEntryDao.save(dbentry);
+				
 			}
 			catch (Exception e){
 				e.printStackTrace();

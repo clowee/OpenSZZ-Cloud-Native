@@ -66,7 +66,7 @@ public class MessageReceivedComponent implements MessageListener {
 				array = jiraUrl.split("/jira/projects/");
 				projectName = array[1].replaceAll("/", "");
 				jiraUrl = array[0] + jiraAPI;
-				String token = java.util.UUID.randomUUID().toString().split("-")[0];
+                String token = list.get(3);
 				a = new Application();
 				if (a.mineData(gitUrl, jiraUrl.replace("{0}", projectName), projectName, token)){
 					File file = new File("mydata/"+ token + ".csv");
