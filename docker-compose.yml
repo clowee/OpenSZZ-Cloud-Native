@@ -20,7 +20,7 @@ services:
   web:
     build: ./core
     ports:
-    - "1000-2000:8080"
+    - "${PORTRANGE_FROM}-${PORTRANGE_TO}:8080"
     networks:
     - spring-cloud-network
     depends_on:
@@ -28,17 +28,13 @@ services:
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
     - mydata:/mydata
-    environment:
-    - SERVER=http://localhost
-    - EMAIL=noreply.openszz@gmail.com
-    - PWD=Aa30011992
 
   results:
     container_name: results
     build: ./dispatcher
     ports:
-    - 8888
-    - "8888:8888"
+    - ${DISPATCHER_PORT}
+    - "${DISPATCHER_PORT}:8888"
     networks:
     - spring-cloud-network
     depends_on:
@@ -47,14 +43,14 @@ services:
     - /var/run/docker.sock:/var/run/docker.sock
     - mydata:/mydata
     environment:
-    - SERVER=http://localhost
-    - EMAIL=noreply.openszz@gmail.com
-    - PWD=Aa30011992
+    - SERVER=${SERVER}
+    - EMAIL=${EMAIL}
+    - PWD=${PWD}
 
   app:
     build: ./gui
     ports:
-    - "8081:8080"
+    - "${APP_PORT}:8080"
     networks:
     - spring-cloud-network
     volumes:
