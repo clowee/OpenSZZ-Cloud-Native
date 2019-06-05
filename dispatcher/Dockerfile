@@ -3,8 +3,8 @@
 #COPY pom.xml .
 #RUN mvn dependency:go-offline
 
-#COPY src/ ./src
-#RUN mvn install -X
+COPY src/ ./src
+RUN mvn install -X
 
 FROM openjdk:8-jdk-alpine
 VOLUME /tmp
