@@ -26,10 +26,10 @@ Configure the ports to your liking modifing the .env file.
 
 The application is scalable and the core part can be replicated in n different containers with random ports.
 <p>Here it is possible to configure the range of ports. 
-```
+
 PORTRANGE_FROM=1000
 PORTRANGE_TO=2000
-```
+
 DISPATCHER_PORT=8888 => Port where the Dispatcher Container is supposed to run
 <p>APP_PORT=8081 => Port where the Application Container (Frontend) is supposed to run
 
@@ -50,12 +50,12 @@ You can show the services down with
 docker-compose down
 ```
 
-##Checking status
+<b>Checking status</b>
 ```
 docker-compose ps
 ```
-
-##Updating If the Webservice or Webapp projects are updated, you need to update the submodules and rebuild the source and the docker-images. Just rerun
+<b>Updating</b> 
+<i>If the Webservice or Webapp projects are updated, you need to update the submodules and rebuild the source and the docker-images</i>. Just rerun
 ```
 sudo docker-compose up --build -d -scale web=#replicates
 ```
