@@ -14,7 +14,7 @@ BugFixingCommit, the issueType and the involved file.
 
 # Pre-requisites
 Docker 
-Docker Compose
+<p>Docker Compose
 
 # Setup
 Configure the ports to your liking modifing the .env file.
