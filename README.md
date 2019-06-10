@@ -6,8 +6,8 @@ The web application needs as input:
 - Jira repository URL
 
 For example for Apache BCEL import shoud have the following Format:
-Git URL = https://github.com/apache/commons-bcel.git
-Jira URL = https://issues.apache.org/jira/projects/BCEL/ 
+<p>Git URL = https://github.com/apache/commons-bcel.git
+<p>Jira URL = https://issues.apache.org/jira/projects/BCEL/ 
 
 The output is an excel file containing each identified BugInducingCommit the corresponding
 BugFixingCommit, the issueType and the involved file.
