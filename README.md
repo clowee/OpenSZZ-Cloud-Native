@@ -35,18 +35,21 @@ DISPATCHER_PORT=8888 => Port where the Dispatcher Container is supposed to run
 SERVER=http://localhost => URL where the dispatcher server it is reachable.
 
 # How to Run
-Docker compose should be modified in the following way:
+##Running Just run the following command
 
-SERVER=http://localhost
-It should contains the ip address of the server where the container is running. 
+sudo docker-compose up --build -d -scale web=#replicates
 
-cd gui
-mvn install
+This will build both of the docker images and will launch them in the background with the database container. 
+<p>Remove the --build option if you don't want to rebuild the images.
+<p>The scale option indicates how many times the container web should be replicated. 
+<p><i>sudo docker-compose up --build -d -scale web=5</i> will create in total 5 containers web.
 
-cd ..
+You can show the services down with
+docker-compose down
 
-cd core 
-mvn install
+##Checking status
+docker-compose ps
 
-docker-compose up --scale web=#containers
-(docker-compose up --scale web=5 will create 5 containers 5 connected to 5 random ports)
+##Updating If the Webservice or Webapp projects are updated, you need to update the submodules and rebuild the source and the docker-images. Just rerun
+
+sudo docker-compose up --build -d -scale web=#replicates
