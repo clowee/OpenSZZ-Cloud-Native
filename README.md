@@ -26,16 +26,17 @@ Configure the ports to your liking modifing the .env file.
 
 The application is scalable and the core part can be replicated in n different containers with random ports.
 <p>Here it is possible to configure the range of ports. 
-<p>PORTRANGE_FROM=1000
-<p>PORTRANGE_TO=2000
-
+```
+PORTRANGE_FROM=1000
+PORTRANGE_TO=2000
+```
 DISPATCHER_PORT=8888 => Port where the Dispatcher Container is supposed to run
 <p>APP_PORT=8081 => Port where the Application Container (Frontend) is supposed to run
 
 SERVER=http://localhost => URL where the dispatcher server it is reachable.
 
 # How to Run
-##Running Just run the following command
+<b>Just run the following command</b>
 ```
 sudo docker-compose up --build -d -scale web=#replicates
 ```
