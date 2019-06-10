@@ -12,6 +12,23 @@ Jira URL = https://issues.apache.org/jira/projects/BCEL/
 The output is an excel file containing each identified BugInducingCommit the corresponding
 BugFixingCommit, the issueType and the involved file.
 
+# Pre-requisites
+Docker 
+Docker Compose
+
+# Setup
+Configure the ports to your liking modifing the .env file.
+
+The application is scalable and the core part can be replicated in n different containers with random ports.
+Here it is possible to configure the range of ports. 
+PORTRANGE_FROM=1000
+PORTRANGE_TO=2000
+
+DISPATCHER_PORT=8888 => It is where the dispatcher container it is running
+APP_PORT=8081 => It is where the GUI Application is running. 
+
+SERVER=http://localhost => URL where the dispatcher server it is reachable without port.
+
 # How to Run
 Docker compose should be modified in the following way:
 
