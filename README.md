@@ -12,8 +12,10 @@ For example for Apache BCEL import shoud have the following Format:
 <p>Git URL = https://github.com/apache/commons-bcel.git
 <p>Jira URL = https://issues.apache.org/jira/projects/BCEL/ 
 
-The output is an csv file containing for each identified <i>BugInducingCommit</i> the corresponding
-<i>BugFixingCommit</i>, the <i>issueType</i> and the involved file.
+The output is a csv file containing for each identified <i>BugInducingCommit</i> the corresponding
+<i>BugFixingCommit</i>, the <i>issueType</i> and the involved changed file.
+
+ 
 
 # Pre-requisites
 Docker 
