@@ -1,6 +1,7 @@
-COPY src/ ./src
-RUN mvn install -X
-
+FROM maven:alpine as build
+WORKDIR /src/app
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
 
 COPY src/ ./src
