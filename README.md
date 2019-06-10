@@ -21,8 +21,8 @@ Configure the ports to your liking modifing the .env file.
 
 The application is scalable and the core part can be replicated in n different containers with random ports.
 Here it is possible to configure the range of ports. 
-PORTRANGE_FROM=1000
-PORTRANGE_TO=2000
+<p>PORTRANGE_FROM=1000
+<p>PORTRANGE_TO=2000
 
 DISPATCHER_PORT=8888 => It is where the dispatcher container it is running
 APP_PORT=8081 => It is where the GUI Application is running. 
