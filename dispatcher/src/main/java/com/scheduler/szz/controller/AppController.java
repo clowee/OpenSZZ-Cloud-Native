@@ -30,6 +30,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.github.lite2073.emailvalidator.EmailValidationResult.State;
+import com.github.lite2073.emailvalidator.EmailValidator;
+import com.github.lite2073.emailvalidator.impl.IsEmailEmailValidator;
 import com.scheduler.szz.helpers.DBEntryDao;
 import com.scheduler.szz.model.Analysis;
 import com.scheduler.szz.model.DBEntry;
@@ -55,7 +58,7 @@ public class AppController {
 	@RequestMapping(value = "/doAnalysis",method = RequestMethod.GET)
 	public String doAnalysis(@RequestParam String git,@RequestParam String jira,@RequestParam String email, Model model) {
 		String token = java.util.UUID.randomUUID().toString().split("-")[0];   
-		List<String> t = new LinkedList<String>();
+		 List<String> t = new LinkedList<String>();
 	        t.add(git);
 	        t.add(jira);
 	        t.add(email); 
@@ -65,9 +68,9 @@ public class AppController {
 	        analysis.setGitUrl(git);
 	        analysis.setJiraUrl(jira);
 	        analysis.setToken(token);
+	   	    if (!checkCorrectness(analysis))
+	     		return "error";
 	        rabbitTemplate.convertAndSend("szz-analysis-exchange", "project.name."+analysis.getProjectName(), t);
-	        if (!checkCorrectness(analysis))
-	        		return "error";
 	        insertAnalysisDb(analysis);
 	        model.addAttribute(analysis);
 	        return "resultPage";
@@ -97,6 +100,9 @@ public class AppController {
 	 * @return
 	 */
 	private boolean checkCorrectness(Analysis analysis){
+		if (!analysis.getGitUrl().endsWith(".git"))
+			return false;
+		
 		//Checks url github
 		try {
 		    URL url = new URL(analysis.getGitUrl());
@@ -116,6 +122,16 @@ public class AppController {
 		} catch (Exception e) {
 		    return false;
 		} 
+		
+		  boolean result = true;
+		  EmailValidator emailValidator = new IsEmailEmailValidator();
+		  State emailState = emailValidator.validate(analysis.getEmail()).getState();
+		  System.out.println(emailState);
+		  if (emailState != State.OK){
+			  System.out.println(emailState);
+			  return false;
+		  }
+		  
 		return true;
 	}
 	

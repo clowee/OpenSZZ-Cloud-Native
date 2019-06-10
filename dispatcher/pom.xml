@@ -19,19 +19,25 @@
 
 	</properties>
 	<dependencies>
-	<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-mongodb</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>javax.cache</groupId>
 			<artifactId>cache-api</artifactId>
 		</dependency>
-<dependency>
-    <groupId>org.springframework.data</groupId>
-    <artifactId>spring-data-mongodb</artifactId>
-    <version>2.1.8.RELEASE</version>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-mongodb</artifactId>
+			<version>2.1.8.RELEASE</version>
+		</dependency>
+		<dependency>
+    <groupId>com.github.lite2073</groupId>
+    <artifactId>email-validator</artifactId>
+    <version>1.0</version>
 </dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-amqp</artifactId>

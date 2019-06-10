@@ -47,8 +47,10 @@ class WelcomeController {
 	@PostMapping("/doAnalysis")
     public String doAnalysis(@ModelAttribute Analysis analysis,BindingResult result, Model model) {
 		RestTemplate restTemplate = new RestTemplate();
-	        if (!checkCorrectness(analysis))
+	        if (!checkCorrectness(analysis)){
+	        	    model.addAttribute("analysis", analysis);
 	        		return "error";
+	        }
 	        HttpHeaders headers = new HttpHeaders();
 	        headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 	        
@@ -59,8 +61,7 @@ class WelcomeController {
 
 			String temp = builder.build().encode().toUri().toString();
 			System.out.println(temp);
-			restTemplate.getForEntity(temp, String.class).getBody();
-	        return "resultPage";
+			return restTemplate.getForEntity(temp, String.class).getBody();  
     }
 	
 	private boolean checkCorrectness(Analysis analysis){
