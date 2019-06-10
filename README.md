@@ -30,7 +30,7 @@ The application is scalable and the core part can be replicated in n different c
 <p>PORTRANGE_TO=2000
 
 DISPATCHER_PORT=8888 => Port where the Dispatcher Container is supposed to run
-APP_PORT=8081 => Port where the Application Container (Frontend) is supposed to run
+<p>APP_PORT=8081 => Port where the Application Container (Frontend) is supposed to run
 
 SERVER=http://localhost => URL where the dispatcher server it is reachable.
 
