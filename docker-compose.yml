@@ -44,8 +44,7 @@ services:
     - mydata:/mydata
     environment:
     - SERVER=${SERVER}
-    - EMAIL=${EMAIL}
-    - PWD=${PWD}
+    - PASS=${PASS}
 
   app:
     build: ./gui

@@ -17,8 +17,8 @@ import javax.mail.internet.MimeMessage;
  */
 public class Email {
 	
-	final String username = System.getenv("EMAIL");
-	final String password = System.getenv("PWD");
+	final String username = "noreply.openszz@gmail.com";
+	final String password = System.getenv("PASS");
 	private String projectName = "";
 	private String emailTo  = "";
 	private String token = "";
@@ -42,7 +42,7 @@ public class Email {
 	    props.put("mail.smtp.starttls.enable", "true");
 	    props.put("mail.smtp.host", "smtp.gmail.com");
 	    props.put("mail.smtp.port", "587");
-	    
+	      
 	    session = Session.getInstance(props,
 	  		  new javax.mail.Authenticator() {
 	  			protected PasswordAuthentication getPasswordAuthentication() {
