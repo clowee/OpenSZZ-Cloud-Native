@@ -36,20 +36,25 @@ SERVER=http://localhost => URL where the dispatcher server it is reachable.
 
 # How to Run
 ##Running Just run the following command
-
+```
 sudo docker-compose up --build -d -scale web=#replicates
-
+```
 This will build both of the docker images and will launch them in the background with the database container. 
 <p>Remove the --build option if you don't want to rebuild the images.
 <p>The scale option indicates how many times the container web should be replicated. 
 <p><i>sudo docker-compose up --build -d -scale web=5</i> will create in total 5 containers web.
 
 You can show the services down with
+```
 docker-compose down
+```
 
 ##Checking status
+```
 docker-compose ps
+```
 
 ##Updating If the Webservice or Webapp projects are updated, you need to update the submodules and rebuild the source and the docker-images. Just rerun
-
+```
 sudo docker-compose up --build -d -scale web=#replicates
+```
