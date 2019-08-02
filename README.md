@@ -38,7 +38,9 @@ SERVER=http://localhost => URL where the dispatcher server it is reachable.
 # How to Run
 <b>Just run the following command</b>
 ```
-sudo docker-compose up --build -d -scale web=#replicates
+sudo docker-compose build
+
+sudo docker-compose up -d -scale web=#replicates
 ```
 This will build both of the docker images and will launch them in the background with the database container. 
 <p>Remove the --build option if you don't want to rebuild the images.
