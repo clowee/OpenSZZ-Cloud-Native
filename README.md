@@ -44,7 +44,7 @@ sudo docker-compose up -d -scale web=#replicates
 ```
 This will build both of the docker images and will launch them in the background with the database container. 
 <p>The scale option indicates how many times the container web should be replicated. 
-<p><i>sudo docker-compose up --build -d -scale web=5</i> will create in total 5 containers web.
+<p><i>sudo docker-compose up -d -scale web=5</i> will create in total 5 containers web.
 
 You can show the services down with
 ```
