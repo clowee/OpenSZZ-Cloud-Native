@@ -45,6 +45,7 @@ services:
     environment:
     - SERVER=${SERVER}
     - PASS=${PASS}
+    - GMAIL=${GMAIL}
 
   app:
     build: ./gui
