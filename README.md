@@ -25,7 +25,7 @@ Docker
 
 Clone the Repository 
 ```
-https://github.com/clowee/OpenSZZ.git
+git clone https://github.com/clowee/OpenSZZ.git
 ```
 
 Configure .env file.
