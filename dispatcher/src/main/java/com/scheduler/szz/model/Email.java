@@ -17,7 +17,7 @@ import javax.mail.internet.MimeMessage;
  */
 public class Email {
 	
-	final String username = "noreply.openszz@gmail.com";
+	final String username = System.getenv("EMAIL");
 	final String password = System.getenv("PASS");
 	private String projectName = "";
 	private String emailTo  = "";
