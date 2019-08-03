@@ -22,7 +22,13 @@ Docker
 <p>Docker Compose
 
 # Setup
-Configure the ports to your liking modifing the .env file.
+
+Clone the Repository 
+```
+https://github.com/clowee/OpenSZZ.git
+```
+
+Configure .env file.
 
 The application is scalable and the core part can be replicated in n different containers with random ports.
 <p>Here it is possible to configure the range of ports. 
