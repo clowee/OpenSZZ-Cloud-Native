@@ -35,6 +35,11 @@ DISPATCHER_PORT=8888 => Port where the Dispatcher Container is supposed to run
 
 SERVER=http://localhost => URL where the dispatcher server it is reachable.
 
+<p>Configure the email address from which you want to send the confirmation email (tested with gmail accounts)
+EMAIL=
+PASS=
+
+
 # How to Run
 <b>Just run the following command</b>
 ```
