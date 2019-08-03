@@ -45,7 +45,7 @@ PASS=
 ```
 sudo docker-compose build
 
-sudo docker-compose up -d -scale web=#replicates
+sudo docker-compose up -d --scale web=#replicates
 ```
 This will build both of the docker images and will launch them in the background with the database container. 
 <p>The scale option indicates how many times the container web should be replicated. 
