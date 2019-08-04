@@ -57,7 +57,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock    
 
   mongodb:
-    container_name: sonar-scheduler-mongodb
+    container_name: open-szz-mongo
     image: mongo                           
     networks:                                 
       - spring-cloud-network                             
