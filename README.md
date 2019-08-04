@@ -22,7 +22,13 @@ Docker
 <p>Docker Compose
 
 # Setup
-Configure the ports to your liking modifing the .env file.
+
+Clone the Repository 
+```
+git clone https://github.com/clowee/OpenSZZ.git
+```
+
+Configure .env file.
 
 The application is scalable and the core part can be replicated in n different containers with random ports.
 <p>Here it is possible to configure the range of ports. 
@@ -45,11 +51,11 @@ PASS=
 ```
 sudo docker-compose build
 
-sudo docker-compose up -d -scale web=#replicates
+sudo docker-compose up -d --scale web=#replicates
 ```
 This will build both of the docker images and will launch them in the background with the database container. 
 <p>The scale option indicates how many times the container web should be replicated. 
-<p><i>sudo docker-compose up -d -scale web=5</i> will create in total 5 containers web.
+<p><i>sudo docker-compose up -d --scale web=5</i> will create in total 5 containers web.
 
 You can show the services down with
 ```
@@ -63,5 +69,5 @@ docker-compose ps
 <b>Updating</b> 
 <i>If the Webservice or Webapp projects are updated, you need to update the submodules and rebuild the source and the docker-images</i>. Just rerun
 ```
-sudo docker-compose up --build -d -scale web=#replicates
+sudo docker-compose up --build -d --scale web=#replicates
 ```
