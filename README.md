@@ -2,7 +2,7 @@
 
 <a href="https://ibb.co/SdtJLnG"><img src="https://i.ibb.co/b2s7fBD/Ohne-Titel.png" alt="Ohne-Titel" border="0"></a>
 
-Web Application that apply SZZ Algorithm to calculate <i>BugInducingCommits</i> of any project. 
+Web Application that apply SZZ Algorithm to calculate <i>BugInducingCommits</i> of any project using Git as versioning system and Jira as issue tracker. 
 
 The web application needs as input:
 - Git repository URL of the project to be analysed
