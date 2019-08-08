@@ -1,27 +1,42 @@
 # OpenSZZ
 
-<a href="https://ibb.co/SdtJLnG"><img src="https://i.ibb.co/b2s7fBD/Ohne-Titel.png" alt="Ohne-Titel" border="0"></a>
+OpenSZZ is our open source implementation of the SZZ Algorithm to calculate <i>BugInducingCommits</i> of any project using Git as versioning system and Jira as issue tracker. 
 
-Web Application that apply SZZ Algorithm to calculate <i>BugInducingCommits</i> of any project using Git as versioning system and Jira as issue tracker. 
+OpenSZZ can be used as standalone Java application, or as a web application. 
+We recommend to use the web application for analyzing several projects in parallel.
 
-The web application needs as input:
+Both versions need as input:
 - Git repository URL of the project to be analysed
 - Jira repository URL
 
-For example for Apache BCEL import shoud have the following Format:
+As example,  for Apache BCEL import shoud have the following Format:
 <p>Git URL = https://github.com/apache/commons-bcel.git
 <p>Jira URL = https://issues.apache.org/jira/projects/BCEL/ 
 
 The output is a csv file containing for each identified <i>BugInducingCommit</i> the corresponding
 <i>BugFixingCommit</i>, the <i>issueType</i> and the involved changed file.
 
- 
 
-# Pre-requisites
+# Standalone Application
+
+## Pre-requisites
+Java 1.8 or higher 
+
+## How to run it
+
+# Web-Based Application
+
+The web-based is a cloud-native application, based on three microservices, deployed as docker containers.  
+
+<a href="https://ibb.co/SdtJLnG"><img src="https://i.ibb.co/b2s7fBD/Ohne-Titel.png" alt="Ohne-Titel" border="0"></a>
+
+
+
+## Pre-requisites
 Docker 
 <p>Docker Compose
 
-# Setup
+## Setup
 
 Clone the Repository 
 ```
@@ -46,7 +61,7 @@ EMAIL=
 PASS=
 
 
-# How to Run
+## How to Run
 <b>Just run the following command</b>
 ```
 sudo docker-compose build
