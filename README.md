@@ -1,6 +1,6 @@
 # OpenSZZ
 
-OpenSZZ is our open source implementation of the SZZ Algorithm to calculate <i>BugInducingCommits</i> of any project using Git as versioning system and Jira as issue tracker. 
+OpenSZZ is our open source implementation of the SZZ Algorithm [1] to calculate the <i>BugInducingCommits</i> of any project using Git as versioning system and Jira as issue tracker. 
 
 OpenSZZ can be used as standalone Java application, or as a web application. 
 We recommend to use the web application for analyzing several projects in parallel.
@@ -16,6 +16,7 @@ As example,  for Apache BCEL import shoud have the following Format:
 The output is a csv file containing for each identified <i>BugInducingCommit</i> the corresponding
 <i>BugFixingCommit</i>, the <i>issueType</i> and the involved changed file.
 
+A dataset including the analysis of 33 projects, has been published in 2019 [2]. 
 
 # Standalone Application
 
@@ -86,3 +87,9 @@ docker-compose ps
 ```
 sudo docker-compose up --build -d --scale web=#replicates
 ```
+
+# References
+
+[1] Jacek Śliwerski, Thomas Zimmermann, and Andreas Zeller. 2005. When do changes induce fixes?. In Proceedings of the 2005 international workshop on Mining software repositories (MSR '05). ACM, New York, NY, USA, 1-5. DOI=http://dx.doi.org/10.1145/1082983.1083147
+
+[2] V. Lenarduzzi, N. Saarimäki, and D. Taibi,“The Technical Debt Dataset”, in The Fifteenth International Conference on Predictive Models and Data Analytics in Software Engineering (PROMISE’19), Brazil, 2019.
