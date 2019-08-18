@@ -27,7 +27,6 @@ services:
     - rabbitmq
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
-    - mydata:/mydata
 
   results:
     container_name: results
@@ -46,6 +45,7 @@ services:
     - SERVER=${SERVER}
     - PASS=${PASS}
     - GMAIL=${GMAIL}
+    - DISPATCHER_PORT=${DISPATCHER_PORT}
 
   app:
     build: ./gui
@@ -55,6 +55,9 @@ services:
     - spring-cloud-network
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock    
+    environment:
+    - DISPATCHER_PORT=${DISPATCHER_PORT}
+
 
   mongodb:
     container_name: open-szz-mongo

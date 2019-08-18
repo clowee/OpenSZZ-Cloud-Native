@@ -1,6 +1,6 @@
 package com.scheduler.szz.model;
 
-public class DBEntry {
+public class DBEntry extends BaseEntity {
 	
 	public enum Status{
 		ANALYSED,
@@ -15,13 +15,21 @@ public class DBEntry {
 	private String ipAddress;
 	private String gitUrl;
 	private Status status;
-	private long epoch;
+	private long startEpoch;
+	private long endEpoch;
 	
-	public long getEpoch() {
-		return epoch;
+	public long getStartEpoch() {
+		return startEpoch;
 	}
-	public void setEpoch(long epoch) {
-		this.epoch = epoch;
+	public void setStartEpoch(long epoch) {
+		this.startEpoch = epoch;
+	}
+	
+	public long getEndEpoch() {
+		return endEpoch;
+	}
+	public void setEndEpoch(long epoch) {
+		this.endEpoch = epoch;
 	}
 	public String getEmail() {
 		return email;

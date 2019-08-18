@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -70,7 +69,7 @@ public class MessageReceivedComponent implements MessageListener {
                 System.out.println(token);
 				a = new Application();
 				if (a.mineData(gitUrl, jiraUrl.replace("{0}", projectName), projectName, token)){
-					File file = new File("mydata/"+ token + ".csv");
+					File file = new File("home/"+ token + ".csv");
 					ObjectOutputStream objectOutputStream = 
 						    new ObjectOutputStream(new FileOutputStream("object.data"));
 					objectOutputStream.writeObject(Files.readAllBytes(file.toPath()));
@@ -79,7 +78,7 @@ public class MessageReceivedComponent implements MessageListener {
 					Message m = MessageBuilder.withBody(Files.readAllBytes(file.toPath())).setHeader("ContentType", "text/csv").build();
 							
 					rabbitTemplate.convertAndSend("szz-results-exchange", "project.results."+projectName +"." +token+"."+email, m);
-					FileUtils.cleanDirectory(new File("mydata")); 
+					FileUtils.cleanDirectory(new File("home")); 
 				}
 				ois.close();
 			} catch (Exception e) {

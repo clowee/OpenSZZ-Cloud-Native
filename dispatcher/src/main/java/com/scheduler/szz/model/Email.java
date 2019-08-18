@@ -38,10 +38,7 @@ public class Email {
 		this.token = token;
 		this.urlWebService = urlWebService;
 		
-		System.out.println(username);
-		System.out.println(password);
 
-		
 		props.put("mail.smtp.auth", "true");
 	    props.put("mail.smtp.starttls.enable", "true");
 	    props.put("mail.smtp.host", "smtp.gmail.com");

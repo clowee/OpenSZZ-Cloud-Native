@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,10 +52,15 @@ public class AppController {
     public AppController (RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
+    
+    @RequestMapping(value = "/removeAnalysis",method = RequestMethod.GET)
+	public String remove(@RequestParam String token) {
+    	dbEntryDao.deleteByToken(token);
+    	return "remove";
+    }
 	
-		
 	@RequestMapping(value = "/doAnalysis",method = RequestMethod.GET)
-	public String doAnalysis(@RequestParam String git,@RequestParam String jira,@RequestParam String email, Model model) {
+	public String doAnalysis(@RequestParam String git,@RequestParam String jira,@RequestParam String email, @RequestParam String projectName, Model model) {
 		String token = java.util.UUID.randomUUID().toString().split("-")[0];   
 		 List<String> t = new LinkedList<String>();
 	        t.add(git);
@@ -68,6 +72,9 @@ public class AppController {
 	        analysis.setGitUrl(git);
 	        analysis.setJiraUrl(jira);
 	        analysis.setToken(token);
+	        analysis.setStatus("PROCESSING");
+	        analysis.setDateStart(new Date().getTime());
+	        analysis.setProjectName(projectName);
 	   	    if (!checkCorrectness(analysis))
 	     		return "error";
 	        rabbitTemplate.convertAndSend("szz-analysis-exchange", "project.name."+analysis.getProjectName(), t);
@@ -75,6 +82,28 @@ public class AppController {
 	        model.addAttribute(analysis);
 	        return "resultPage";
 	}
+	
+	@RequestMapping(value = "/getAnalyses",method = RequestMethod.GET)
+	public List<Analysis> getAnalyses() {
+		List<DBEntry> ded = dbEntryDao.findAll();
+		List<Analysis> analyses = new LinkedList<Analysis>();
+		for (DBEntry d : ded){
+			Analysis a = new Analysis();
+			a.setProjectName(d.getProjectName());
+			a.setDateStart(d.getStartEpoch());
+			a.setDateEnd(d.getEndEpoch());
+			a.setEmail(d.getEmail());
+			a.setGitUrl(d.getGitUrl());
+			a.setJiraUrl(d.getJiraUrl());
+			a.setStatus(d.getStatus().toString());
+			a.setToken(d.getToken());
+			if (a.getStatus().equals("ANALYSED"))
+				a.setMessage(System.getenv("SERVER")+":"+System.getenv("DISPATCHER_PORT")+"/getInducingCommits?token="+a.getToken()+"&projectName="+a.getProjectName());
+			analyses.add(a);
+		}
+		return analyses;
+	}
+	
 	
 	/**
 	 * Inserts analysis into a mongo  db
@@ -88,9 +117,9 @@ public class AppController {
 		dbe.setGitUrl(a.getGitUrl());
 		dbe.setProjectName(a.getProjectName());
 		Date now = new Date();
-		dbe.setEpoch(now.getTime());
+		dbe.setStartEpoch(now.getTime());
 		dbe.setStatus(DBEntry.Status.PROCESSING);
-		dbEntryDao.save(dbe);
+		dbEntryDao.insert(dbe);
 	}
 	
 	

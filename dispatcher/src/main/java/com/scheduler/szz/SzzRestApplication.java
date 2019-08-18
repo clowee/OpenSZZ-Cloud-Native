@@ -16,7 +16,7 @@ import com.scheduler.szz.helpers.DBEntryDao;
 import com.scheduler.szz.helpers.MessageReceivedComponent;
 
 import javax.annotation.PostConstruct;
-import javax.ws.rs.core.Application;
+
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;

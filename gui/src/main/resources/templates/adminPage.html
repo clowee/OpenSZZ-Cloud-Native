@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{fragments/layout :: layout (~{::body},'home')}">
+<body>
+	<h1>The Analyses launched so far:</h1>
+	<div class="w-100">
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Project</th>
+					<th>JiraURL</th>
+					<th>GitURL</th>
+					<th>Start</th>
+					<th>End</th>
+					<th>Status</th>
+					<th>Download</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:if="${analyses.empty}">
+					<td colspan="2">No Projects Analysed</td>
+				</tr>
+				<tr th:each="analysis : ${analyses}">
+
+					<td><span th:text="${analysis.projectName}">
+							ProjectName </span></td>
+					<td><a th:href="${analysis.jiraUrl}"><span
+							th:text="${analysis.jiraUrl}"> JiraUrl </span></a></td>
+					<td><a th:href="${analysis.gitUrl}"><span
+							th:text="${analysis.gitUrl}"> GitUrl </span></a></td>
+					<td><span
+						th:text="${#dates.format(analysis.dateStart, 'dd-MM-yyyy HH:mm:ss')}">
+							DateStart </span></td>
+					<td th:if="${analysis.dateEnd} > 0"><span
+						th:text="${#dates.format(analysis.dateEnd, 'dd-MM-yyyy HH:mm:ss')}">
+							DateEnd </span></td>
+					<td th:if="${analysis.dateEnd} == 0"></td>
+					<td><span th:text="${analysis.status}"> Status </span></td>
+					<td th:if="${analysis.message} != ''  "><a
+						th:href="${analysis.message}"><span
+							th:text="${analysis.token}"> Download </span></a></td>
+					<td th:if="${analysis.message} == ''  "></td>
+
+					<td>
+						<form id="${analysis.token}" class="well form-horizontal"
+							th:action="@{/remove}" th:object="${analysisToSend}"
+							method="post">
+							<input type="hidden" id="token" name="token"
+								th:value="${analysis.token}" />
+							<button type="submit" class="btn btn-default btn-sm">
+								<span class="glyphicon glyphicon-remove"></span>
+							</button>
+						</form>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</body>
+
+</html>

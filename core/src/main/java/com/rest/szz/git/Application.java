@@ -180,7 +180,7 @@ public class Application {
 			int count = links.size();
 			PrintWriter printWriter;
 			try {
-				printWriter = new PrintWriter("mydata/"+token+".csv");
+				printWriter = new PrintWriter("home/"+token+".csv");
 				printWriter.println("bugFixingId;bugFixingTs;bugFixingfileChanged;bugInducingId;bugInducingTs;issueType");
 				for (Link l : links){
 					if (count % 100 == 0)

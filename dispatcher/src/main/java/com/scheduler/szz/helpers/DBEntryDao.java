@@ -10,5 +10,6 @@ import com.scheduler.szz.model.DBEntry;
 @Transactional
 public interface DBEntryDao extends MongoRepository<DBEntry, String> {
     public DBEntry findByToken(String token);
+    public DBEntry deleteByToken(String token);
 
 }

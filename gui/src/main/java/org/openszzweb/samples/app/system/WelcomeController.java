@@ -3,15 +3,18 @@ package org.openszzweb.samples.app.system;
 
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.openszzweb.samples.app.model.Analysis;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,8 +31,10 @@ class WelcomeController {
 	
 	 private final RabbitTemplate rabbitTemplate;
      private String jiraAPI = "/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
-
-     final String uri = "http://results:8888/doAnalysis";
+     final String port = System.getenv("DISPATCHER_PORT");
+     final String analysisUri = "http://results:"+port+"/doAnalysis";
+     final String analysesUri  = "http://results:"+port+"/getAnalyses";
+     final String removeUri  = "http://results:"+port+"/removeAnalysis";
      
 	 private static final String topicExchangeSzz = "szz-analysis-exchange";
 	 private static final String queueNameSzz = "szz-analysis";
@@ -46,23 +51,75 @@ class WelcomeController {
     
 	@PostMapping("/doAnalysis")
     public String doAnalysis(@ModelAttribute Analysis analysis,BindingResult result, Model model) {
+	 System.out.println(analysisUri);
 		RestTemplate restTemplate = new RestTemplate();
 	        if (!checkCorrectness(analysis)){
 	        	    model.addAttribute("analysis", analysis);
 	        		return "error";
-	        }
+	        }        
 	        HttpHeaders headers = new HttpHeaders();
 	        headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 	        
-	        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(uri)
+	        System.out.println(analysisUri);
+	        
+	        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(analysisUri)
 	                .queryParam("jira", analysis.getJiraUrl())
 	                .queryParam("email", analysis.getEmail())
-	                .queryParam("git", analysis.getGitUrl());
+	                .queryParam("git", analysis.getGitUrl())
+	                	.queryParam("projectName", analysis.getProjectName());
 
 			String temp = builder.build().encode().toUri().toString();
-			System.out.println(temp);
 			return restTemplate.getForEntity(temp, String.class).getBody();  
     }
+	
+	@RequestMapping(value = "/adminPage", method = RequestMethod.GET)
+    public String getAdminPage(Model model) {
+		RestTemplate restTemplate = new RestTemplate();  
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+	        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(analysesUri);
+			String temp = builder.build().encode().toUri().toString();
+			//List<Analysis> analyses = restTemplate.getForObject(temp, Analysis.class);  
+			ResponseEntity<List<Analysis>> response = restTemplate.exchange(
+					  analysesUri,
+					  HttpMethod.GET,
+					  null,
+					  new ParameterizedTypeReference<List<Analysis>>(){});
+					List<Analysis> analyses = response.getBody();			
+			model.addAttribute("analyses", analyses);
+			return "adminPage";
+	}
+	
+	@PostMapping("/remove")
+    public String remove(@ModelAttribute Analysis analysis,BindingResult result,Model model) {
+		    HttpHeaders headers = new HttpHeaders();
+	        headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+	           
+	        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(removeUri)
+	                .queryParam("token", analysis.getToken());
+
+			String temp = builder.build().encode().toUri().toString();
+			RestTemplate restTemplate = new RestTemplate(); 
+			try{
+			restTemplate.getForEntity(temp, String.class).getBody();
+			}
+			catch(Exception e){}
+	        headers = new HttpHeaders();
+	        headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+	        builder = UriComponentsBuilder.fromHttpUrl(analysesUri);
+			temp = builder.build().encode().toUri().toString();
+			//List<Analysis> analyses = restTemplate.getForObject(temp, Analysis.class);  
+			ResponseEntity<List<Analysis>> response = restTemplate.exchange(
+					  analysesUri,
+					  HttpMethod.GET,
+					  null,
+					  new ParameterizedTypeReference<List<Analysis>>(){});
+			List<Analysis> analyses = response.getBody();			
+			model.addAttribute("analyses", analyses);
+			
+			return "adminPage"; 
+	}
+	
 	
 	private boolean checkCorrectness(Analysis analysis){
 		//Checks url github
