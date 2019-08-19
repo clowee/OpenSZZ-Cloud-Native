@@ -8,7 +8,6 @@ A dataset including the analysis of 33 projects, has been published in 2019 [2].
 * [Setup](https://github.com/clowee/OpenSZZ/blob/master/README.md#setup)
     * [Launch the application server](https://github.com/clowee/OpenSZZ/blob/master/README.md#launch-the-application-server)
 * [How to Use it](https://github.com/clowee/OpenSZZ/blob/master/README.md#how-to-use-it)
-* [Software Architecture](https://github.com/clowee/OpenSZZ/blob/master/README.md#software-architecture)
 * [References](https://github.com/clowee/OpenSZZ/blob/master/README.md#references)
 
 ## Pre-requisites
@@ -79,13 +78,8 @@ As example,  for Apache BCEL import shoud have the following Format:
 
 The output is a csv file containing for each identified <i>BugInducingCommit</i> the corresponding
 <i>BugFixingCommit</i>, the <i>issueType</i> and the involved changed file.
-
-
-# Software Architecture
-
-The web-based is a cloud-native application, based on three microservices, deployed as docker containers.  
-
 <a href="https://ibb.co/SdtJLnG"><img src="https://i.ibb.co/b2s7fBD/Ohne-Titel.png" alt="Ohne-Titel" border="0"></a>
+
 
 
 # References
