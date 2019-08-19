@@ -6,7 +6,10 @@ A dataset including the analysis of 33 projects, has been published in 2019 [2].
 
 * [Pre-Requisites](https://github.com/clowee/OpenSZZ/blob/master/README.md#pre-requisites)
 * [Setup](https://github.com/clowee/OpenSZZ/blob/master/README.md#setup)
-...* [Launch the application server](https://github.com/clowee/OpenSZZ/blob/master/README.md#launch-the-application-server)
+    * [Launch the application server](https://github.com/clowee/OpenSZZ/blob/master/README.md#launch-the-application-server)
+* How to Use it
+* Software Architecture
+* References
 
 ## Pre-requisites
 Docker 
