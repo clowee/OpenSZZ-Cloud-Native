@@ -4,7 +4,8 @@ OpenSZZ is our open source implementation of the SZZ Algorithm [1] to calculate 
 
 A dataset including the analysis of 33 projects, has been published in 2019 [2]. 
 
-* [Pre-Requisites](https://github.com/clowee/OpenSZZ/blob/master/README.md#pre-requisites}
+* [Pre-Requisites](https://github.com/clowee/OpenSZZ/blob/master/README.md#pre-requisites)
+* [Setup](https://github.com/clowee/OpenSZZ/blob/master/README.md#setup)
 
 ## Pre-requisites
 Docker 
@@ -35,7 +36,7 @@ EMAIL=
 PASS=
 
 
-## How to Run the Application Server
+### Launch the Application Server
 <b>Just run the following command</b>
 ```
 sudo docker-compose build
@@ -76,7 +77,7 @@ The output is a csv file containing for each identified <i>BugInducingCommit</i>
 <i>BugFixingCommit</i>, the <i>issueType</i> and the involved changed file.
 
 
-# Architecture
+# Software Architecture
 
 The web-based is a cloud-native application, based on three microservices, deployed as docker containers.  
 
