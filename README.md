@@ -34,7 +34,7 @@ EMAIL=
 PASS=
 
 
-## How to Run
+## How to Run the Application Server
 <b>Just run the following command</b>
 ```
 sudo docker-compose build
