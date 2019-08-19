@@ -4,6 +4,7 @@ OpenSZZ is our open source implementation of the SZZ Algorithm [1] to calculate 
 
 A dataset including the analysis of 33 projects, has been published in 2019 [2]. 
 
+- [Pre-Requisites](https://github.com/clowee/OpenSZZ/blob/master/README.md#pre-requisites}
 
 ## Pre-requisites
 Docker 
