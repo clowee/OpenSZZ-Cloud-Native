@@ -1,0 +1,85 @@
+version: '3'
+services:
+  rabbitmq:
+    image: rabbitmq:3.7
+    hostname: "rabbitmq"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    labels:
+      NAME: "rabbitmq"
+    networks:
+    - spring-cloud-network
+   
+
+  web:
+    build: ./core
+    ports:
+    - "${PORTRANGE_FROM}-${PORTRANGE_TO}:8080"
+    networks:
+    - spring-cloud-network
+    depends_on:
+    - rabbitmq
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+
+  results:
+    container_name: results
+    build: ./dispatcher
+    ports:
+    - ${DISPATCHER_PORT}
+    - "${DISPATCHER_PORT}:8888"
+    networks:
+    - spring-cloud-network
+    depends_on:
+    - rabbitmq
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - mydata:/mydata
+    environment:
+    - SERVER=${SERVER}
+    - PASS=${PASS}
+    - GMAIL=${GMAIL}
+    - DISPATCHER_PORT=${DISPATCHER_PORT}
+
+  app:
+    build: ./gui
+    ports:
+    - "${APP_PORT}:8080"
+    networks:
+    - spring-cloud-network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock    
+    environment:
+    - DISPATCHER_PORT=${DISPATCHER_PORT}
+
+
+  mongodb:
+    container_name: open-szz-mongo
+    image: mongo                           
+    networks:                                 
+      - spring-cloud-network                             
+    volumes:                                  
+      - scheduler_db:/data/db   
+
+networks:
+  spring-cloud-network:
+   driver: bridge
+
+volumes:
+  mydata:              
+  scheduler_db:
+
+    
+    
+
+
+
+
+
+

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'error')}">
+
+  <body>
+    <h2>Something happened...</h2>
+    <h2>Inputs could be incorrect</h2>
+    <p th:text="${analysis.message}">Exception message</p>
+    <p th:text="${message}">Exception message</p>
+  </body>
+
+</html>
