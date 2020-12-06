@@ -309,7 +309,7 @@ public class Git {
 		      blamer.setStartCommit(commitID);
 		      blamer.setFilePath(file);
 		      blame = blamer.call();
-		      RevCommit commit = blame.getSourceCommit(lineNumber);
+		      RevCommit commit = blame.getSourceCommit(lineNumber - 1);
 		      return commit.getName();
 		} catch (Exception e) {
 			return null;
