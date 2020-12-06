@@ -206,7 +206,7 @@ public class Link {
 					}
 					
 					try{
-						Resolution.valueOf(s[2].toUpperCase().replace(" ", "").replace("'", ""));
+						resolution = Resolution.valueOf(s[2].toUpperCase().replace(" ", "").replace("'", ""));
 					}
 					catch(Exception e){
 						 resolution = Resolution.NONE;
