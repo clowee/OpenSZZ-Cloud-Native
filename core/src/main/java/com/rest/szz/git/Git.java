@@ -298,7 +298,6 @@ public class Git {
 	  public  String getBlameAt(String commitSha, String file, int lineNumber) {
 		  File  localRepo1 = new File(workingDirectory+"");
 		try {
-			if (blame==null){
 			  org.eclipse.jgit.api.Git git = org.eclipse.jgit.api.Git.open(localRepo1);
 			  Repository repository = git.getRepository();
 		      BlameCommand blamer = new BlameCommand(repository);
@@ -306,7 +305,7 @@ public class Git {
 			  commitID = repository.resolve(commitSha);
 		      blamer.setStartCommit(commitID);
 		      blamer.setFilePath(file);
-		      blame = blamer.call();}
+		      blame = blamer.call();
 		      RevCommit commit = blame.getSourceCommit(lineNumber);
 		      return commit.getName();
 		} catch (Exception e) {
