@@ -19,7 +19,7 @@ Docker
 
 Clone the Repository 
 ```
-git clone https://github.com/clowee/OpenSZZ.git
+git clone https://github.com/clowee/OpenSZZ-Cloud-Native.git
 ```
 
 Configure .env file.
