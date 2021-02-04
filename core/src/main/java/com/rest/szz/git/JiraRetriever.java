@@ -42,7 +42,7 @@ public class JiraRetriever {
 		this.projectName = projectName;	
 		try {
 			 pw = new PrintWriter(new FileOutputStream(
-				    new File(projectName + "-log.txt"), 
+				    new File("home" + File.separator + projectName + "-log.txt"), 
 				    true /* append = true */));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -97,16 +97,16 @@ public class JiraRetriever {
 		int page = 0;
 		int totalePages = (int) Math.ceil(((double) getTotalNumberIssues() / 1000));
 		String fileName = projectName + "_" + page + ".csv";
-		File file = new File(projectName + "/" + fileName);
+		File file = new File("home" + File.separator + projectName + "/" + fileName);
 		while (file.exists() ) {
 			page++;
 			fileName = projectName + "_" + page + ".csv";
-			file = new File(projectName + "/" + fileName);
+			file = new File("home" + File.separator + projectName + "/" + fileName);
 		}
 		if (page > 0){
 			page--;
 			fileName = projectName + "_" + page + ".csv";
-			file = new File(projectName + "/" + fileName);
+			file = new File("home" + File.separator + projectName + "/" + fileName);
 			file.delete();
 		}
 		
@@ -125,7 +125,7 @@ public class JiraRetriever {
 			if (descNodes.getLength() == 0)
 				return;
 			 fileName = projectName + "_" + page + ".csv";
-			 file = new File( fileName);
+			 file = new File("home" + File.separator + fileName);
 			if (file.exists() && !file.isDirectory()) {
 				return;
 			}

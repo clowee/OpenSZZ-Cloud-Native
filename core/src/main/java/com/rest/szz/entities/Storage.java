@@ -1,5 +1,6 @@
 package com.rest.szz.entities;
 
+import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,7 +14,7 @@ import com.rest.szz.git.*;
 public class Storage {
 	
 	private Path fileStoragePath = Paths.get(
-			System.getProperty("user.dir")
+			System.getProperty("user.dir") + File.separator + "home"
 	);
 	
 	{
@@ -26,7 +27,7 @@ public class Storage {
 	
 	public Storage(String projectName) {
 		fileStoragePath = Paths.get(
-				System.getProperty("user.dir") 
+				System.getProperty("user.dir") + File.separator + "home"
 				);
 	}
 	
@@ -44,9 +45,12 @@ public class Storage {
 		if(mGit.find()) {
 			this.git = new Git(fileStoragePath, url);
 			try {
-				this.git.cloneRepository();
-				this.git.pullUpdates();
-				this.git.saveLog();
+				File bugFixingCommitsFile = new File("home" + File.separator + projectName + ".txt");
+				if(!bugFixingCommitsFile.exists()) {
+					this.git.cloneRepository();
+					this.git.pullUpdates();
+					this.git.saveLog();
+				}
 				list = git.getCommits();
 				for (Transaction t : list){
 					if (isBugPresumedFixing(t.getComment(),projectName))

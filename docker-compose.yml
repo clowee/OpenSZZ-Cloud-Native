@@ -27,6 +27,7 @@ services:
     - rabbitmq
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
+    - home:/home
 
   results:
     container_name: results
@@ -54,7 +55,7 @@ services:
     networks:
     - spring-cloud-network
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock    
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
     - DISPATCHER_PORT=${DISPATCHER_PORT}
 
@@ -72,7 +73,8 @@ networks:
    driver: bridge
 
 volumes:
-  mydata:              
+  mydata:
+  home:
   scheduler_db:
 
     

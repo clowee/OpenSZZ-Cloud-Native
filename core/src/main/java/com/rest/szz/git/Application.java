@@ -1,6 +1,7 @@
 package com.rest.szz.git;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
@@ -41,16 +42,22 @@ public class Application {
 		this.projectName = projectName;
 		
 		try {
-			writer =  new PrintWriter(projectName+".log");
+			File logFile = new File("home" + File.separator + projectName+".log");
+			logFile.getParentFile().mkdirs();
+			writer = new PrintWriter(new FileOutputStream(logFile, false));
 	
 		
-		JiraRetriever jr = new JiraRetriever((jira),projectName);
-		jr.printIssues();
+		File jiraIssuesFile = new File("home" + File.separator + projectName + "_0.csv");
+		if(!jiraIssuesFile.exists()) {
+			JiraRetriever jr = new JiraRetriever((jira),projectName);
+			jr.printIssues();
+		}
 		
 		
 		writer.println("Downloading Git logs for project " + projectName);
 		List<Transaction> transactions = transactionManager.getBugFixingCommits(sourceCodeRepository,projectName);
 		writer.println("Git logs downloaded for project " + projectName);
+		writer.flush();
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
@@ -153,7 +160,7 @@ public class Application {
 	 */
 	private void saveBugFixingCommits(List<Link> links,String projectName){
 		try {
-			PrintWriter printWriter = new PrintWriter(new File( projectName+"_BugFixingCommit.csv"));
+			PrintWriter printWriter = new PrintWriter(new File("home" + File.separator + projectName+"_BugFixingCommit.csv"));
 			printWriter.println("commitsSha;commitTs;commitComment;issueKey;issueOpen;issueClose;issueTitle");
 			String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 		    SimpleDateFormat format = new SimpleDateFormat(pattern);
