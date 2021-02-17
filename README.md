@@ -11,6 +11,9 @@ A dataset including the analysis of 33 projects, has been published in 2019 [2].
 * [How to Use it](https://github.com/clowee/OpenSZZ/blob/master/README.md#how-to-use-it)
 * [References](https://github.com/clowee/OpenSZZ/blob/master/README.md#references)
 
+## How to cite
+Valentina Lenarduzzi, Fabio Palomba, Davide Taibi, and Damian Andrew Tamburri. 2020. OpenSZZ: A Free, Open-Source, Web-Accessible Implementation of the SZZ Algorithm. In Proceedings of the 28th International Conference on Program Comprehension (ICPC '20). DOI:https://doi.org/10.1145/3387904.3389295
+
 ## Pre-requisites
 Docker 
 <p>Docker Compose
