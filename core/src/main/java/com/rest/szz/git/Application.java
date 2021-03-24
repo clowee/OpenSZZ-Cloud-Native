@@ -136,13 +136,12 @@ public class Application {
 	private void discartLinks(List<Link> links){
 		List<Link> linksToDelete = new LinkedList<Link>();
 		for (Link l : links){
-			if (l.getSemanticConfidence() < 1 && (l.getSemanticConfidence() != 1 ||  l.getSyntacticConfidence() < 0)) {
-				linksToDelete.add(l);
-				}
-			else
-				if (l.transaction.getTimeStamp().getTime() > l.issue.getClose()){
+			if (l.issue == null
+				|| !l.issue.getType().equals("Bug")
+				|| !(l.getSemanticConfidence() > 1 || (l.getSemanticConfidence() == 1 ||  l.getSyntacticConfidence() > 0))
+				|| l.transaction.getTimeStamp().getTime() > l.issue.getClose()) {
 					linksToDelete.add(l);
-				}
+			}
 		}
 		String print = "\n";
 		print += "\n";
@@ -188,7 +187,7 @@ public class Application {
 			PrintWriter printWriter;
 			try {
 				printWriter = new PrintWriter("home/"+token+".csv");
-				printWriter.println("bugFixingId;bugFixingTs;bugFixingfileChanged;bugInducingId;bugInducingTs;issueType");
+				printWriter.println("bugFixingId;bugFixingTs;bugFixingfileChanged;bugInducingId;bugInducingTs;issueId");
 				for (Link l : links){
 					if (count % 100 == 0)
 						writer.println(count + " Commits left");
@@ -196,14 +195,13 @@ public class Application {
 					String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 			        SimpleDateFormat format1 = new SimpleDateFormat(pattern);
 			        for (Suspect s : l.getSuspects()){
-			        	printWriter.println();
 			        	printWriter.println(
 			        			l.transaction.getId() + ";" + 
 			        			format1.format(l.transaction.getTimeStamp()) +";" +
 			        			s.getFileName()		+ ";" +
 			        			s.getCommitId()     + ";" +
 			        			format1.format(s.getTs()) +";"+
-			        			l.issue.getType()
+			        			projectName + "-" + l.issue.getId()
 			        			);
 			        }
 			        count--;
