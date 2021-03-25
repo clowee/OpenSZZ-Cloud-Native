@@ -6,158 +6,174 @@
 	<div class="container">
 
 		<div class="main" id="page">
-			<h2>Welcome to OpenSZZ</h2>
-			<p>Here you can apply the SZZ algorithm inserting some
-				information about the project you want to analyze.
-			</p>
-			<p>
-				If I want to analyze the project BCEL of the Apache Software
-				Foundation, I have to fill the formular in this way:
-			</p>
-            <p class="example-project-name"><b>Project Name</b> = BCEL</p>
-            <p class="example-git">
-                <b>Git URL</b> =
-                <a href=https://github.com/apache/commons-bcel.git>https://github.com/apache/commons-bcel.git </a>
-            </p>
-            <p class="example-search-query"><b>Search Query</b> = (fix(e[ds])?|bugs?|defects?|patch)+</p>
-            <p class="example-jira">
-                <b>Jira URL</b> =
-                <a href=https://issues.apache.org/jira/projects/BCEL /> https://issues.apache.org/jira/projects/BCEL/ </a>
-            </p>
-            <p class="example-email"><b>Email</b> = example@email.com</p>
-			<div>
-				<table class="table">
-					<tr>
-						<td colspan="1">
-							<form class="well form-horizontal"
-								style="background-color: white;"
-							    th:action="@{/doAnalysis}" th:object="${analysis}" method="post"
-								>
-								<fieldset>
-									<div class="form-group">
-										<label class="col-md-4 control-label">Use Jira</label>
-										<div class="col-md-8 inputGroupContainer">
-											<div class="input-group">
-												<input
-                                                    type="checkbox"
-                                                    id="useJiraCheckbox"
-                                                    name="use-jira"
-                                                    th:field="*{useJira}"
-                                                >
-											</div>
-										</div>
-									</div>
+            <div>
+                <h2>Welcome to OpenSZZ</h2>
+                <p>Here you can apply the SZZ algorithm inserting some
+                    information about the project you want to analyze.
+                </p>
+                <div class="text-block">
+                    <p>Example values to analyze the project BCEL of the Apache Software Foundation:</p>
+                    <p class="example-project-name"><b>Project Name</b> = BCEL</p>
+                    <p class="example-git">
+                        <b>Git URL</b> =
+                        <a href=https://github.com/apache/commons-bcel.git>https://github.com/apache/commons-bcel.git </a>
+                    </p>
+                    <p class="example-search-query"><b>Search Query</b> = (fix(e[ds])?|bugs?|defects?|patch)+</p>
+                    <p class="example-jira">
+                        <b>Jira URL</b> =
+                        <a href=https://issues.apache.org/jira/projects/BCEL /> https://issues.apache.org/jira/projects/BCEL/ </a>
+                    </p>
+                    <p class="example-email"><b>Email</b> = example@email.com</p>
+                </div>
+            </div>
+            <form class="well form-horizontal"
+                style="background-color: white;"
+                th:action="@{/doAnalysis}" th:object="${analysis}" method="post"
+                >
+                <fieldset>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Use Jira</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <input
+                                    type="checkbox"
+                                    id="useJiraCheckbox"
+                                    name="use-jira"
+                                    th:field="*{useJira}"
+                                >
+                            </div>
+                        </div>
+                    </div>
 
-                                    <div class="form-group" id="projectNameRow">
-                                        <label class="col-md-4 control-label">Project Name</label>
-                                        <div class="col-md-8 inputGroupContainer">
-                                            <div class="input-group">
-                                                <span class="input-group-addon">
-                                                    <i class="glyphicon"></i>
-                                                </span>
-                                                <input
-                                                    id="projectName"
-                                                    name="projectName"
-                                                    placeholder="Project Name"
-                                                    class="form-control"
-                                                    value=""
-                                                    type="text"
-                                                    th:field="*{projectName}"
-                                                >
-                                            </div>
-                                        </div>
-                                    </div>
+                    <div class="form-group" id="projectNameRow">
+                        <label class="col-md-2 control-label">Project Name</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="glyphicon"></i>
+                                </span>
+                                <input
+                                    id="projectName"
+                                    name="projectName"
+                                    placeholder="Project Name"
+                                    class="form-control"
+                                    value=""
+                                    type="text"
+                                    th:field="*{projectName}"
+                                >
+                            </div>
+                        </div>
+                    </div>
 
-									<div class="form-group">
-										<label class="col-md-4 control-label">Git URL *</label>
-										<div class="col-md-8 inputGroupContainer">
-											<div class="input-group">
-												<span class="input-group-addon"></span>
-                                                <input
-                                                    id="gitUrl"
-                                                    name="gitUrl"
-                                                    placeholder="Git URL"
-                                                    class="form-control"
-                                                    required="true"
-                                                    value=""
-                                                    type="url"
-                                                    th:field="*{gitUrl}" >
-											</div>
-										</div>
-									</div>
-									<div class="form-group" id="jiraUrlRow">
-										<label class="col-md-4 control-label">Jira URL *</label>
-										<div class="col-md-8 inputGroupContainer">
-											<div class="input-group">
-												<span class="input-group-addon"></span>
-                                                <input
-                                                    id="jiraUrl"
-                                                    name="jiraUrl"
-                                                    placeholder="Jira URL"
-                                                    class="form-control"
-                                                    required="true"
-                                                    value=""
-                                                    type="url"
-                                                    th:field="*{jiraUrl}"
-                                                >
-											</div>
-										</div>
-									</div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Git URL *</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <span class="input-group-addon"></span>
+                                <input
+                                    id="gitUrl"
+                                    name="gitUrl"
+                                    placeholder="Git URL"
+                                    class="form-control"
+                                    required="true"
+                                    value=""
+                                    type="url"
+                                    th:field="*{gitUrl}" >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="jiraUrlRow">
+                        <label class="col-md-2 control-label">Jira URL *</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <span class="input-group-addon"></span>
+                                <input
+                                    id="jiraUrl"
+                                    name="jiraUrl"
+                                    placeholder="Jira URL"
+                                    class="form-control"
+                                    required="true"
+                                    value=""
+                                    type="url"
+                                    th:field="*{jiraUrl}"
+                                >
+                            </div>
+                        </div>
+                    </div>
 
-                                    <div class="form-group" id="searchQueryRow">
-                                        <label class="col-md-4 control-label">Search query *</label>
-                                        <div class="col-md-8 inputGroupContainer">
-                                            <div class="input-group">
-                                                <span class="input-group-addon"></span>
-                                                <input
-                                                    id="searchQuery"
-                                                    name="searchQuery"
-                                                    placeholder="Regular expression to search bug-fixing commits"
-                                                    class="form-control"
-                                                    value=""
-                                                    type="text"
-                                                    th:field="*{searchQuery}"
-                                                >
-                                            </div>
-                                        </div>
-                                    </div>
+                    <div class="form-group" id="searchQueryRow">
+                        <label class="col-md-2 control-label">Search query *</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <span class="input-group-addon"></span>
+                                <input
+                                    id="searchQuery"
+                                    name="searchQuery"
+                                    placeholder="Regular expression to search bug-fixing commits"
+                                    class="form-control"
+                                    value=""
+                                    type="text"
+                                    th:field="*{searchQuery}"
+                                >
+                            </div>
+                        </div>
+                    </div>
 
-									<div class="form-group">
-										<label class="col-md-4 control-label">Email</label>
-										<div class="col-md-8 inputGroupContainer">
-											<div class="input-group">
-												<span class="input-group-addon"></span>
-                                                <input
-                                                    id="email"
-                                                    name="email"
-                                                    placeholder="Email"
-                                                    class="form-control"
-                                                    value=""
-                                                    type="email"
-                                                    th:field="*{email}"
-                                                >
-											</div>
-										</div>
-									</div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Email</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <span class="input-group-addon"></span>
+                                <input
+                                    id="email"
+                                    name="email"
+                                    placeholder="Email"
+                                    class="form-control"
+                                    value=""
+                                    type="email"
+                                    th:field="*{email}"
+                                >
+                            </div>
+                        </div>
+                    </div>
 
-									<div class="form-group">
-										<label class="col-md-4 control-label"></label>
-										<div class="col-md-8 inputGroupContainer">
-											<div class="input-group">
-												<input
-                                                    class="btn btn-success"
-                                                    value="Start Analysis"
-                                                    type="submit"
-                                                >
-											</div>
-										</div>
-									</div>
-								</fieldset>
-							</form>
-						</td>
-					</tr>
-				</table>
-			</div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label"></label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <input
+                                    class="btn btn-success"
+                                    value="Start Analysis"
+                                    type="submit"
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+            <div>
+                <p>Fields description:</p>
+                <p>
+                    <b>Use Jira</b> - required. True by default. If defines whether bug-fixing commits will be
+                    searched by linking commits to issues from Jira or by applying Search Query to commit messages.
+                </p>
+                <p>
+                    <b>Project Name</b> - optional. Value of the field is used on ANALYZED PROJECTS page.
+                    If not set repository name will be used by default.
+                </p>
+                <p><b>Git URL</b> - required. It defines repository to be analysed.</p>
+                <p>
+                    <b>Jira URL</b> - required (when Use Jira is checked).
+                    It defines path to the Jira project used to track issues of specified repository.
+                </p>
+                <p>
+                    <b>Search Query</b> - required (when Use Jira is unchecked). It takes a regular expression as a value.
+                    The regular expression is applied to commit messages to filter specific commits.
+                </p>
+                <p>
+                    <b>Email</b> - optional. It defines email where result of the analysis will be sent.
+                </p>
+            </div>
 		</div>
 	</div>
 
@@ -169,7 +185,6 @@
             } else {
                 page.classList.add('withoutJira');
             }
-
             var jiraUrlInput = document.getElementById('jiraUrl').required = e.target.checked;
             var searchQueryInput = document.getElementById('searchQuery').required = !e.target.checked;
         }, false);
