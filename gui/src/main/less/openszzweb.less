@@ -240,6 +240,32 @@ hr {
   border-top: 1px dotted @spring-brown;
 }
 
+#page {
+    p {
+        margin: 10px 0;
+    }
+    &:not(.withoutJira) {
+        #jiraUrlRow,
+        .example-jira {
+            display: block;
+        }
+        #searchQueryRow,
+        .example-search-query {
+            display: none;
+        }
+    }
+    &.withoutJira {
+        #jiraUrlRow,
+        .example-jira  {
+            display: none;
+        }
+        #searchQueryRow,
+        .example-search-query {
+            display: block;
+        }
+    }
+}
+
 @import "typography.less";
 @import "header.less";
 @import "responsive.less";

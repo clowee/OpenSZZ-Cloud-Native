@@ -2,29 +2,21 @@ package com.rest.szz.helpers;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.MessageListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -62,23 +54,36 @@ public class MessageReceivedComponent implements MessageListener {
 				String jiraUrl = list.get(1);
 				l.info(jiraUrl);
 				String email = list.get(2);
-				array = jiraUrl.split("/jira/projects/");
-				projectName = array[1].replaceAll("/", "");
-				jiraUrl = array[0] + jiraAPI;
+				if (jiraUrl != null) {
+                    array = jiraUrl.split("/jira/projects/");
+                    projectName = array[1].replaceAll("/", "");
+                    jiraUrl = array[0] + jiraAPI;
+                    jiraUrl = jiraUrl.replace("{0}", projectName);
+                }
                 String token = list.get(3);
                 System.out.println(token);
+                String searchQuery = list.get(4);
+
+                if (searchQuery != null) {
+                    searchQuery = URLDecoder.decode(searchQuery, StandardCharsets.UTF_8.name());
+                    searchQuery = URLDecoder.decode(searchQuery, StandardCharsets.UTF_8.name());
+                }
+
 				a = new Application();
-				if (a.mineData(gitUrl, jiraUrl.replace("{0}", projectName), projectName, token)){
+				if (a.mineData(gitUrl, jiraUrl, projectName, searchQuery, token)){
 					File file = new File("home/"+ token + ".csv");
-					ObjectOutputStream objectOutputStream = 
+					ObjectOutputStream objectOutputStream =
 						    new ObjectOutputStream(new FileOutputStream("object.data"));
 					objectOutputStream.writeObject(Files.readAllBytes(file.toPath()));
 					objectOutputStream.close();
-					
+
 					Message m = MessageBuilder.withBody(Files.readAllBytes(file.toPath())).setHeader("ContentType", "text/csv").build();
-							
-					rabbitTemplate.convertAndSend("szz-results-exchange", "project.results."+projectName +"." +token+"."+email, m);
-					FileUtils.cleanDirectory(new File("home")); 
+
+					if (email == null) {
+                        email = "example@email.com";
+                    }
+                    rabbitTemplate.convertAndSend("szz-results-exchange", "project.results."+projectName +"." +token+"."+email, m);
+//					FileUtils.cleanDirectory(new File("home"));
 				}
 				ois.close();
 			} catch (Exception e) {
@@ -87,16 +92,16 @@ public class MessageReceivedComponent implements MessageListener {
 			}
 		}
 	}
-	
-	
+
+
 	public void sendNotificationEmails(String email, String projectName, String token){
 		Email e = new Email(email,token,projectName,System.getenv("SERVER")+":8888/getInducingCommits?token="+token+"&projectName="+projectName);
 	    e.sentEmail();
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 }

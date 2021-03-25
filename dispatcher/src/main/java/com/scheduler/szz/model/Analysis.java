@@ -5,18 +5,20 @@ import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 
 @Entity
-public class Analysis extends BaseEntity { 
-	
+public class Analysis extends BaseEntity {
+
 	private String jiraUrl;
 	private String gitUrl;
 	private String projectName;
 	private String email;
+    private Boolean useJira = true;
+    private String searchQuery;
 	private String message;
 	private String status;
 	private String token;
 	private long dateStart;
 	private long dateEnd;
-	
+
 	public long getDateStart() {
 		return dateStart;
 	}
@@ -47,6 +49,18 @@ public class Analysis extends BaseEntity {
 	public void setMessage(String message) {
 		this.message = message;
 	}
+    public Boolean getUseJira() {
+        return useJira;
+    }
+    public void setUseJira(Boolean useJira) {
+        this.useJira = useJira;
+    }
+    public String getSearchQuery() {
+        return searchQuery;
+    }
+    public void setSearchQuery(String searchQuery) {
+        this.searchQuery = searchQuery;
+    }
 	public String getJiraUrl() {
 		return jiraUrl;
 	}
@@ -70,5 +84,5 @@ public class Analysis extends BaseEntity {
 	}
 	public void setEmail(String email) {
 		this.email = email;
-	}	
+	}
 }

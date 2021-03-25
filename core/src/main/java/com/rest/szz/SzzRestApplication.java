@@ -14,7 +14,6 @@ import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 
-import com.rest.szz.helpers.Email;
 import com.rest.szz.helpers.MessageReceivedComponent;
 
 @SpringBootApplication
@@ -22,14 +21,14 @@ import com.rest.szz.helpers.MessageReceivedComponent;
 @EnableScheduling
 @EnableAutoConfiguration(exclude=RabbitAutoConfiguration.class)
 public class SzzRestApplication {
-	
+
 	static final String topicExchangeSzz = "szz-analysis-exchange";
     static final String queueNameSzz = "szz-analysis";
 
 	public static void main(String[] args) {
 		SpringApplication.run(SzzRestApplication.class, args);
 	}
-	
+
 @Bean
 public ConnectionFactory connectionFactory() {
     com.rabbitmq.client.ConnectionFactory connectionFactory = new com.rabbitmq.client.ConnectionFactory();
@@ -45,20 +44,20 @@ public ConnectionFactory connectionFactory() {
     Queue queue() {
         return new Queue(queueNameSzz, false);
     }
-    
-    
+
+
     @Bean
     TopicExchange exchange() {
         return new TopicExchange(topicExchangeSzz);
     }
-    
-    
+
+
     @Bean
     Binding binding(Queue queue, TopicExchange exchange) {
         return BindingBuilder.bind(queue).to(exchange).with("project.name.#");
     }
-    
-    
+
+
     @Bean
     SimpleMessageListenerContainer containerAnaylsis(ConnectionFactory connectionFactory) {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
@@ -67,7 +66,7 @@ public ConnectionFactory connectionFactory() {
         container.setMessageListener(new MessageReceivedComponent(rabbitTemplate(connectionFactory())));
         return container;
     }
-    
+
     @Bean
     public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
         return new RabbitAdmin(connectionFactory());
@@ -78,7 +77,7 @@ public ConnectionFactory connectionFactory() {
        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory());
        return rabbitTemplate;
     }
-    
+
 
 
 }

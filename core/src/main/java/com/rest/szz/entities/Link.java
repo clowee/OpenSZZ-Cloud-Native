@@ -34,17 +34,17 @@ public class Link {
 	private int semanticConfidence = 0;
 
 	private List<Suspect> suspects = new LinkedList<Suspect>();
-	
+
 
 
 	/**
 	 * Object Representation of a Link Transaction, commit found from the log
 	 * files Corresponding bug in Bugzilla The number, who links the transition
 	 * with the bug
-	 * 
+	 *
 	 * @param t
-	 * @param b
 	 * @param number
+	 * @param projectName
 	 */
 	public Link(Transaction t, long number, String projectName) {
 		this.transaction = t;
@@ -54,6 +54,12 @@ public class Link {
 		this.setSyntacticConfidence();
 		this.setSemanticConfidence();
 	}
+
+    public Link(Transaction t, String projectName) {
+        this.transaction = t;
+        this.number = 0;
+        this.projectName = projectName;
+    }
 
 	public List<Suspect> getSuspects() {
 		return suspects;
@@ -121,7 +127,7 @@ public class Link {
 	/**
 	 * It checks whether one or more of the files affected by the transaction t
 	 * have been attached to the bug b
-	 * 
+	 *
 	 * @return
 	 */
 	private boolean checkAttachments() {
@@ -142,7 +148,7 @@ public class Link {
 
 	/**
 	 * It checks whether a bug has been fixed at least once
-	 * 
+	 *
 	 * @return
 	 */
 	/*
@@ -152,15 +158,15 @@ public class Link {
 	 * (sCurrentLine.startsWith(number+"")){ if (sCurrentLine.contains("FIXED"))
 	 * return true; else return false; } } } catch (IOException e) {
 	 * e.printStackTrace();
-	 * 
+	 *
 	 * }
-	 * 
+	 *
 	 * return false; }
 	 */
 
 	/**
 	 * It checks whether the number is really a bug.
-	 * 
+	 *
 	 * @return true false
 	 */
 	private boolean isBugInJira() {
@@ -174,7 +180,7 @@ public class Link {
 
 	/**
 	 * It gets from Jira Log File
-	 * 
+	 *
 	 * @return true false
 	 */
 	private void setBug() {
@@ -197,21 +203,21 @@ public class Link {
 					}
 					Issue.Status status = Issue.Status.UNCONFIRMED;
 					Resolution resolution = Resolution.NONE;
-					
+
 					try{
 						Issue.Status.valueOf(s[3].toUpperCase());
 					}
 					catch(Exception e){
 						status = Issue.Status.UNCONFIRMED;
 					}
-					
+
 					try{
 						resolution = Resolution.valueOf(s[2].toUpperCase().replace(" ", "").replace("'", ""));
 					}
 					catch(Exception e){
 						 resolution = Resolution.NONE;
 					}
-					
+
 					issue = new Issue(number, s[1], status,resolution, s[4],
 							Long.parseLong(s[5]), Long.parseLong(s[6]),attachments, comments,s[7]);
 					break;
@@ -246,7 +252,7 @@ public class Link {
 
 	/**
 	 * For each modified file it calculates the suspect
-	 * 
+	 *
 	 * @param git
 	 */
 	public void calculateSuspects(Git git, PrintWriter l) {
@@ -272,7 +278,7 @@ public class Link {
 
 	/**
 	 * It gets the commit closest to the Bug Open reposrt date
-	 * 
+	 *
 	 * @param previous
 	 * @param git
 	 * @param fileName
@@ -280,31 +286,37 @@ public class Link {
 	 * @return
 	 */
 	private Suspect getSuspect(String previous, Git git, String fileName, List<Integer> linesMinus, PrintWriter l) {
-    	RevCommit closestCommit = null; 
-    	long tempDifference = Long.MAX_VALUE; 
-    	for (int i : linesMinus){ 
-    		try{ 
+    	RevCommit closestCommit = null;
+    	long tempDifference = Long.MAX_VALUE;
+    	for (int i : linesMinus){
+    		try{
     			String sha = git.getBlameAt(previous,fileName,i);
     			if (sha == null)
     				break;
-    			RevCommit commit = git.getCommit(sha,l); 
-    			long difference =(issue.getOpen()/1000) - (commit.getCommitTime()); 
-    			if (difference > 0){ 
+    			RevCommit commit = git.getCommit(sha,l);
+    			long difference;
+    			if (issue == null) {
+                    RevCommit bugFixingCommit = git.getCommit(transaction.getId(), l);
+                    difference = bugFixingCommit.getCommitTime() - commit.getCommitTime();
+                } else {
+                    difference = (issue.getOpen()/1000) - (commit.getCommitTime());
+                }
+    			if (difference > 0){
     				if (difference < tempDifference ){
-    					closestCommit = commit; 
-    					tempDifference = difference; } 
+    					closestCommit = commit;
+    					tempDifference = difference; }
     				}
-    			} catch (Exception e){ 
+    			} catch (Exception e){
     				e.printStackTrace();
     				l.println(e);
     			}
-    	} 
-    	if (closestCommit != null){ 
-    		Long temp = Long.parseLong(closestCommit.getCommitTime()+"") * 1000; 
-    		Suspect s = new Suspect(closestCommit.getName(), new Date(temp), fileName);
-    	return s; 
     	}
-  
+    	if (closestCommit != null){
+    		Long temp = Long.parseLong(closestCommit.getCommitTime()+"") * 1000;
+    		Suspect s = new Suspect(closestCommit.getName(), new Date(temp), fileName);
+    	    return s;
+    	}
+
 		return null;
 	}
 

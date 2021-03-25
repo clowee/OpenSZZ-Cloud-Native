@@ -17,17 +17,22 @@ public class LinkManager {
 	 * @param ts
 	 * @return
 	 */
-	public List<Link> getLinks(List<Transaction> ts, String projectName, PrintWriter writer) {
+	public List<Link> getLinks(List<Transaction> ts, String projectName, PrintWriter writer, Boolean useJira) {
 		int counter=ts.size();
 		writer.println("Missing "+counter +" commits");
-		List<Link> links = new ArrayList<Link>(); 
+		List<Link> links = new ArrayList<Link>();
 		for(Transaction t : ts) {
 			if (counter%100==0)
 				writer.println("Missing "+counter +" commits");
-			for (long bugId : t.getBugIds()){
-				Link l = new Link(t, bugId, projectName);
-				links.add(l);
-			}
+			if (useJira) {
+                for (long bugId : t.getBugIds()){
+                    Link l = new Link(t, bugId, projectName);
+                    links.add(l);
+                }
+            } else {
+			    Link l = new Link(t, projectName);
+			    links.add(l);
+            }
 			counter--;
 		}
 		return links;

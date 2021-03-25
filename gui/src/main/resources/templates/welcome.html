@@ -5,31 +5,26 @@
 <body>
 	<div class="container">
 
-		<div class="main">
+		<div class="main" id="page">
 			<h2>Welcome to OpenSZZ</h2>
-			<p>
 			<p>Here you can apply the SZZ algorithm inserting some
 				information about the project you want to analyze.
-			<p></p>
-			<br>
+			</p>
 			<p>
 				If I want to analyze the project BCEL of the Apache Software
-				Foundation, I have to fill the formular in this way: <br></br>
-			<p>
-				<b>Project Name</b> = BCEL <br></br>
-			<p>
-				<b>Git URL</b> = <a href=https://github.com/apache/commons-bcel.git>
-					https://github.com/apache/commons-bcel.git </a> <br></br>
-			<p>
-				<b>Jira URL</b> = <a
-					href=https://issues.apache.org/jira/projects/BCEL />
-				https://issues.apache.org/jira/projects/BCEL/ </a> <br></br>
-			<p>
-				<b>Email</b> = example@email.com
-			<div>
-				<p></p>
-				<p></p>
-			</div>
+				Foundation, I have to fill the formular in this way:
+			</p>
+            <p class="example-project-name"><b>Project Name</b> = BCEL</p>
+            <p class="example-git">
+                <b>Git URL</b> =
+                <a href=https://github.com/apache/commons-bcel.git>https://github.com/apache/commons-bcel.git </a>
+            </p>
+            <p class="example-search-query"><b>Search Query</b> = (fix(e[ds])?|bugs?|defects?|patch)+</p>
+            <p class="example-jira">
+                <b>Jira URL</b> =
+                <a href=https://issues.apache.org/jira/projects/BCEL /> https://issues.apache.org/jira/projects/BCEL/ </a>
+            </p>
+            <p class="example-email"><b>Email</b> = example@email.com</p>
 			<div>
 				<table class="table">
 					<tr>
@@ -40,59 +35,124 @@
 								>
 								<fieldset>
 									<div class="form-group">
-										<label class="col-md-4 control-label">Project Name</label>
+										<label class="col-md-4 control-label">Use Jira</label>
 										<div class="col-md-8 inputGroupContainer">
 											<div class="input-group">
-												<span class="input-group-addon"><i class="glyphicon"></i></span><input
-													id="fullName" name="fullName" placeholder="Project Name"
-													class="form-control" required="true" value=""
-													type="text" th:field="*{projectName}"
-													>
+												<input
+                                                    type="checkbox"
+                                                    id="useJiraCheckbox"
+                                                    name="use-jira"
+                                                    th:field="*{useJira}"
+                                                >
 											</div>
 										</div>
 									</div>
+
+                                    <div class="form-group" id="projectNameRow">
+                                        <label class="col-md-4 control-label">Project Name</label>
+                                        <div class="col-md-8 inputGroupContainer">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <i class="glyphicon"></i>
+                                                </span>
+                                                <input
+                                                    id="projectName"
+                                                    name="projectName"
+                                                    placeholder="Project Name"
+                                                    class="form-control"
+                                                    value=""
+                                                    type="text"
+                                                    th:field="*{projectName}"
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+
 									<div class="form-group">
-										<label class="col-md-4 control-label">Git URL</label>
+										<label class="col-md-4 control-label">Git URL *</label>
 										<div class="col-md-8 inputGroupContainer">
 											<div class="input-group">
-												<span class="input-group-addon"></span><input id="gitUrl"
-													name="gitUrl" placeholder="Git URL" class="form-control"
-													required="true" value="" type="url"  th:field="*{gitUrl}" >
+												<span class="input-group-addon"></span>
+                                                <input
+                                                    id="gitUrl"
+                                                    name="gitUrl"
+                                                    placeholder="Git URL"
+                                                    class="form-control"
+                                                    required="true"
+                                                    value=""
+                                                    type="url"
+                                                    th:field="*{gitUrl}" >
 											</div>
 										</div>
 									</div>
-									<div class="form-group">
-										<label class="col-md-4 control-label">Jira URL</label>
+									<div class="form-group" id="jiraUrlRow">
+										<label class="col-md-4 control-label">Jira URL *</label>
 										<div class="col-md-8 inputGroupContainer">
 											<div class="input-group">
-												<span class="input-group-addon"></span><input id="jiraUrl"
-													name="jiraUrl" placeholder="Jira URL" class="form-control"
-													required="true" value="" type="url" th:field="*{jiraUrl}" >
+												<span class="input-group-addon"></span>
+                                                <input
+                                                    id="jiraUrl"
+                                                    name="jiraUrl"
+                                                    placeholder="Jira URL"
+                                                    class="form-control"
+                                                    required="true"
+                                                    value=""
+                                                    type="url"
+                                                    th:field="*{jiraUrl}"
+                                                >
 											</div>
 										</div>
 									</div>
+
+                                    <div class="form-group" id="searchQueryRow">
+                                        <label class="col-md-4 control-label">Search query *</label>
+                                        <div class="col-md-8 inputGroupContainer">
+                                            <div class="input-group">
+                                                <span class="input-group-addon"></span>
+                                                <input
+                                                    id="searchQuery"
+                                                    name="searchQuery"
+                                                    placeholder="Regular expression to search bug-fixing commits"
+                                                    class="form-control"
+                                                    value=""
+                                                    type="text"
+                                                    th:field="*{searchQuery}"
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+
 									<div class="form-group">
 										<label class="col-md-4 control-label">Email</label>
 										<div class="col-md-8 inputGroupContainer">
 											<div class="input-group">
-												<span class="input-group-addon"></span><input id="email"
-													name="email" placeholder="Email" class="form-control"
-													required="true" value="" type="email" th:field="*{email}" >
+												<span class="input-group-addon"></span>
+                                                <input
+                                                    id="email"
+                                                    name="email"
+                                                    placeholder="Email"
+                                                    class="form-control"
+                                                    value=""
+                                                    type="email"
+                                                    th:field="*{email}"
+                                                >
 											</div>
 										</div>
 									</div>
+
 									<div class="form-group">
 										<label class="col-md-4 control-label"></label>
 										<div class="col-md-8 inputGroupContainer">
 											<div class="input-group">
-												<input class="btn btn-success" value="Start Analysis"
-													type="submit">
+												<input
+                                                    class="btn btn-success"
+                                                    value="Start Analysis"
+                                                    type="submit"
+                                                >
 											</div>
 										</div>
 									</div>
 								</fieldset>
-
-
 							</form>
 						</td>
 					</tr>
@@ -100,6 +160,20 @@
 			</div>
 		</div>
 	</div>
+
+    <script>
+        document.getElementById('useJiraCheckbox').addEventListener('click', function (e) {
+            var page = document.getElementById('page');
+            if (e.target.checked) {
+                page.classList.remove('withoutJira');
+            } else {
+                page.classList.add('withoutJira');
+            }
+
+            var jiraUrlInput = document.getElementById('jiraUrl').required = e.target.checked;
+            var searchQueryInput = document.getElementById('searchQuery').required = !e.target.checked;
+        }, false);
+    </script>
 
 </body>
 

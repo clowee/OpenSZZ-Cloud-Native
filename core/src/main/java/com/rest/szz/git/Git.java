@@ -125,7 +125,7 @@ public class Git {
 	}
 	public List<Transaction> getCommits() {
 		List<Transaction> transactions = new ArrayList<Transaction>();
-		
+
 		 String line="";
 		 String line1="";
 		 String hashId = "";
@@ -141,22 +141,21 @@ public class Git {
 		       List<FileInfo> filesAffected = new ArrayList<FileInfo>();
 		       line1 = br.readLine();
 		       if (line1 != null){
-		       while (!(line1).equals("")){
-		    	   int BUFFER_SIZE = 100000;
-		    	   br.mark(BUFFER_SIZE);
-		    	   if (!line1.startsWith("\'")){
-		    		   String[] subarray = line1.split("	");
-		    		   String status = subarray[0];
-		    		   String file = subarray[1];
-		    		   FileInfo fileInfo = new FileInfo(status, file);
-		    		   filesAffected.add(fileInfo);}
-		    	   else{
-		    		 br.reset();
-		    		 break;
-		    	   }
-		    	   line1 = br.readLine();
-
-		       }
+                   while (!(line1.equals(""))){
+                       int BUFFER_SIZE = 100000;
+                       br.mark(BUFFER_SIZE);
+                       if (!line1.startsWith("\'")){
+                           String[] subarray = line1.split("	");
+                           String status = subarray[0];
+                           String file = subarray[1];
+                           FileInfo fileInfo = new FileInfo(status, file);
+                           filesAffected.add(fileInfo);}
+                       else{
+                         br.reset();
+                         break;
+                       }
+                       line1 = br.readLine();
+                   }
 		       }
 		       Transaction transaction = new Transaction(
 						hashId,
@@ -294,7 +293,7 @@ public class Git {
 	   * index 2 of array ==> line 2
 	   * @param commitSha
 	   * @param file
-	   * @param git
+	   * @param lineNumber
 	   * @return
 	   */
 		//removed unused parameter PrintWriter l
