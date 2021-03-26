@@ -29,7 +29,7 @@ public class Application {
     public Application(){}
 
 
-	public boolean mineData(String git, String jira, String projectName, String searchQuery, String token) throws MalformedURLException {
+	public boolean mineData(String git, String jira, String projectName, String searchQuery, String token, Boolean addAllBFCToResult) throws MalformedURLException {
 		this.sourceCodeRepository = new URL(git);
 		this.projectName = projectName;
 		this.useJira = jira != null;
@@ -71,7 +71,7 @@ public class Application {
                 return  false;
             }
             writer.println("Calculating Bug inducing commits for project " + projectName);
-            calculateBugInducingCommits(links,projectName,token);
+            calculateBugInducingCommits(links,projectName,token,addAllBFCToResult);
             writer.println("Bug inducing commits for project calculated");
             writer.close();
 		} catch(Exception e){
@@ -186,35 +186,31 @@ public class Application {
 		}
 	}
 
-    private void calculateBugInducingCommits(List<Link> links,String projectName, String token){
+    private void calculateBugInducingCommits(List<Link> links,String projectName, String token, Boolean addAllBFCToResult){
         writer.println("Calculating Bug Inducing Commits");
         int count = links.size();
         PrintWriter printWriter;
         try {
             printWriter = new PrintWriter("home/"+token+".csv");
-            if (this.useJira) {
-                printWriter.println("bugFixingId;bugFixingTs;bugFixingFileChanged;bugInducingId;bugInducingTs;issueId");
-            } else {
-                printWriter.println("bugFixingId;bugFixingTs;bugFixingFileChanged;bugInducingId;bugInducingTs;bugFixingCommitMessage");
-            }
+            printWriter.println("bugFixingId;bugFixingTs;bugFixingFileChanged;bugInducingId;bugInducingTs;" + (this.useJira ? "issueId" : "bugFixingCommitMessage"));
             for (Link l : links){
                 if (count % 100 == 0)
                     writer.println(count + " Commits left");
                 l.calculateSuspects(transactionManager.getGit(),writer);
                 String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
                 SimpleDateFormat format1 = new SimpleDateFormat(pattern);
-                for (Suspect s : l.getSuspects()){
-                    String row = l.transaction.getId() + ";" +
-                        format1.format(l.transaction.getTimeStamp()) +";" +
-                        s.getFileName()		+ ";" +
-                        s.getCommitId()     + ";" +
-                        format1.format(s.getTs());
-                    if (this.useJira) {
-                        row += ";"+ projectName + "-" + l.issue.getId();
-                    } else {
-                        row += ";"+ l.transaction.getComment();
-                    }
-                    printWriter.println(row);
+                String lastValue = this.useJira ? (";" + projectName + "-" + l.issue.getId()) : (";" + l.transaction.getComment());
+                if (addAllBFCToResult && l.getSuspects().size() == 0) {
+                    printWriter.println(l.transaction.getId() + ";" +
+                        format1.format(l.transaction.getTimeStamp()) + ";;;" + lastValue);
+                }
+                for (Suspect s : l.getSuspects()) {
+                    printWriter.println(l.transaction.getId() + ";" +
+                        format1.format(l.transaction.getTimeStamp()) + ";" +
+                        s.getFileName() + ";" +
+                        s.getCommitId() + ";" +
+                        format1.format(s.getTs()) +
+                        lastValue);
                 }
                 count--;
             }

@@ -60,12 +60,15 @@ public class AppController {
         @RequestParam Boolean useJira,
         @RequestParam(required = false) String searchQuery,
         @RequestParam(required = false) String email,
-        @RequestParam(required = false) String projectName, Model model
+        @RequestParam(required = false) String projectName,
+        @RequestParam Boolean addAllBFCToResult,
+        Model model
     ) throws UnsupportedEncodingException {
 		String token = java.util.UUID.randomUUID().toString().split("-")[0];
         Analysis analysis = new Analysis();
         analysis.setUseJira(useJira);
         analysis.setGitUrl(git);
+        analysis.setAddAllBFCToResult(addAllBFCToResult);
         if (useJira) {
             analysis.setJiraUrl(jira);
         } else {
@@ -99,6 +102,7 @@ public class AppController {
         t.add(email);
         t.add(token);
         t.add(searchQuery);
+        t.add(addAllBFCToResult.toString());
         rabbitTemplate.convertAndSend("szz-analysis-exchange", "project.name."+analysis.getProjectName(), t);
         insertAnalysisDb(analysis);
         model.addAttribute(analysis);

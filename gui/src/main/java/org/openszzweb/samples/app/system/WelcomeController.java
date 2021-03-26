@@ -64,7 +64,8 @@ class WelcomeController {
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(analysisUri)
             .queryParam("git", analysis.getGitUrl())
-            .queryParam("useJira", analysis.getUseJira());
+            .queryParam("useJira", analysis.getUseJira())
+            .queryParam("addAllBFCToResult", analysis.getAddAllBFCToResult());
 
         if (analysis.getJiraUrl().length() > 0) {
             builder.queryParam("jira", analysis.getJiraUrl());

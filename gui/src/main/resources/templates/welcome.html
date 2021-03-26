@@ -138,6 +138,20 @@
                     </div>
 
                     <div class="form-group">
+                        <label class="col-md-2 control-label">Add all BFC to result</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <input
+                                    type="checkbox"
+                                    id="addAllBFCToResultCheckbox"
+                                    name="add-all-bfc-to-result"
+                                    th:field="*{addAllBFCToResult}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label class="col-md-2 control-label"></label>
                         <div class="col-md-10 inputGroupContainer">
                             <div class="input-group">
@@ -172,6 +186,11 @@
                 </p>
                 <p>
                     <b>Email</b> - optional. It defines email where result of the analysis will be sent.
+                </p>
+                <p>
+                    <b>Add all BFC to result</b> - required. False by default. It means that only bug-fixing commits with corresponding
+                    to them bug-introducing commits will be added to result. Set the field as checked to have bug-fixing
+                    commits without bug-introducing commits found added to result too.
                 </p>
             </div>
 		</div>

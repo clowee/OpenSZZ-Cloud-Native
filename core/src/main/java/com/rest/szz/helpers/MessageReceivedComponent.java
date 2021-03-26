@@ -63,14 +63,14 @@ public class MessageReceivedComponent implements MessageListener {
                 String token = list.get(3);
                 System.out.println(token);
                 String searchQuery = list.get(4);
-
+                Boolean addAllBFCToResult = Boolean.parseBoolean(list.get(5));
                 if (searchQuery != null) {
                     searchQuery = URLDecoder.decode(searchQuery, StandardCharsets.UTF_8.name());
                     searchQuery = URLDecoder.decode(searchQuery, StandardCharsets.UTF_8.name());
                 }
 
 				a = new Application();
-				if (a.mineData(gitUrl, jiraUrl, projectName, searchQuery, token)){
+				if (a.mineData(gitUrl, jiraUrl, projectName, searchQuery, token, addAllBFCToResult)){
 					File file = new File("home/"+ token + ".csv");
 					ObjectOutputStream objectOutputStream =
 						    new ObjectOutputStream(new FileOutputStream("object.data"));
