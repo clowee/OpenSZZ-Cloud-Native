@@ -21,6 +21,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.blame.BlameResult;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
@@ -200,7 +201,7 @@ public class Git {
 		            .call();
 		    ByteArrayOutputStream out = new ByteArrayOutputStream();
 		    DiffFormatter df = new DiffFormatter(out);
-		   // df.setDiffComparator(RawTextComparator.WS_IGNORE_LEADING);
+		    df.setDiffComparator(RawTextComparator.WS_IGNORE_TRAILING);
 		    df.setRepository(git.getRepository());
 
 		    for(DiffEntry diff : diffs)
@@ -257,7 +258,9 @@ public class Git {
 		     switch(line.charAt(0)){
 		     case '-':
 		    	 actualInt++;
-		    	 listMinus.add(actualInt);
+                 if (line.length() > 1) {
+                     listMinus.add(actualInt);
+                 }
 		    	 break;
 		     case '+':
 		     	break;
