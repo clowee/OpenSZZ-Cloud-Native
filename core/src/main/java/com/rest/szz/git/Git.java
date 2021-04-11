@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -258,7 +260,7 @@ public class Git {
 		     switch(line.charAt(0)){
 		     case '-':
 		    	 actualInt++;
-                 if (line.length() > 1) {
+                 if (line.length() > 1 && !lineHasOnlyCommentWithoutCode(line)) {
                      listMinus.add(actualInt);
                  }
 		    	 break;
@@ -269,8 +271,7 @@ public class Git {
 		    	 int stringCommma = line.indexOf(',');
 		    	 stringMinus++;
 		    	 String sM = line.substring(stringMinus, stringCommma);
-		    	 actualInt = Integer.parseInt(sM);
-		    	 line = scanner.nextLine();
+                 actualInt = Integer.parseInt(sM) - 1;
 		    	 actualSet = true;
 		    	 break;
 		     default:
@@ -376,4 +377,10 @@ public class Git {
 		}
 		  return finalSha;
 	  }
+
+    private Boolean lineHasOnlyCommentWithoutCode(String s) {
+        Pattern pattern = Pattern.compile("^-(\\s)*(\\/\\*(?!.*?\\*\\/)|\\/\\*.*?\\*\\/\\s*$|\\*|\\/\\/)");
+        Matcher matcher = pattern.matcher(s);
+        return matcher.find();
+    }
 }
