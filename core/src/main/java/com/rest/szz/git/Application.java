@@ -196,20 +196,16 @@ public class Application {
             for (Link l : links){
                 if (count % 100 == 0)
                     writer.println(count + " Commits left");
-                l.calculateSuspects(transactionManager.getGit(),writer);
+                l.calculateSuspects(transactionManager.getGit(),writer,addAllBFCToResult);
                 String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
                 SimpleDateFormat format1 = new SimpleDateFormat(pattern);
-                String lastValue = this.useJira ? (";" + projectName + "-" + l.issue.getId()) : (";" + l.transaction.getComment());
-                if (addAllBFCToResult && l.getSuspects().size() == 0) {
-                    printWriter.println(l.transaction.getId() + ";" +
-                        format1.format(l.transaction.getTimeStamp()) + ";;;" + lastValue);
-                }
+                String lastValue = this.useJira ? (projectName + "-" + l.issue.getId()) : l.transaction.getComment();
                 for (Suspect s : l.getSuspects()) {
                     printWriter.println(l.transaction.getId() + ";" +
                         format1.format(l.transaction.getTimeStamp()) + ";" +
                         s.getFileName() + ";" +
-                        s.getCommitId() + ";" +
-                        format1.format(s.getTs()) +
+                        (s.getCommitId() == null ? "" : s.getCommitId()) + ";" +
+                        (s.getTs() == null ? "" : format1.format(s.getTs())) + ";" +
                         lastValue);
                 }
                 count--;

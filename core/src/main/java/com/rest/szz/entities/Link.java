@@ -5,12 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -255,7 +250,7 @@ public class Link {
 	 *
 	 * @param git
 	 */
-	public void calculateSuspects(Git git, PrintWriter l) {
+	public void calculateSuspects(Git git, PrintWriter l, Boolean addAllBFCToResult) {
 		for (FileInfo fi : transaction.getFiles()) {
 			if (fi.filename.endsWith(".java")) {
 					String diff = git.getDiff(transaction.getId(), fi.filename, l);
@@ -268,9 +263,12 @@ public class Link {
 						return;
 					String previousCommit = git.getPreviousCommit(transaction.getId(), fi.filename,l);
 					if (previousCommit != null) {
-						Suspect s = getSuspect(previousCommit, git, fi.filename, linesMinus,l);
-						if (s != null)
-							this.suspects.add(s);
+						Suspect suspect = getSuspect(previousCommit, git, fi.filename, linesMinus,l);
+						if (suspect != null) {
+                            this.suspects.add(suspect);
+                        } else if (addAllBFCToResult) {
+                            this.suspects.add(new Suspect(null,null,fi.filename));
+                        }
 					}
 			}
 		}
