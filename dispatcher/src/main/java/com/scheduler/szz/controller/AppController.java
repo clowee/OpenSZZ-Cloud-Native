@@ -62,7 +62,7 @@ public class AppController {
         @RequestParam(required = false) String email,
         @RequestParam(required = false) String projectName,
         @RequestParam Boolean addAllBFCToResult,
-        @RequestParam Boolean useIsBrokenBy,
+        @RequestParam Boolean useIssueInfo,
         @RequestParam(required = false) String isBrokenByLinkName,
         Model model
     ) throws UnsupportedEncodingException {
@@ -71,7 +71,7 @@ public class AppController {
         analysis.setUseJira(useJira);
         analysis.setGitUrl(git);
         analysis.setAddAllBFCToResult(addAllBFCToResult);
-        analysis.setUseIsBrokenBy(useIsBrokenBy);
+        analysis.setUseIssueInfo(useIssueInfo);
 		if (isBrokenByLinkName != null) {
 			analysis.setIsBrokenByLinkName(isBrokenByLinkName);
 		}
@@ -109,7 +109,7 @@ public class AppController {
         t.add(token);
         t.add(searchQuery);
         t.add(addAllBFCToResult.toString());
-        t.add(useIsBrokenBy.toString());
+        t.add(useIssueInfo.toString());
         t.add(analysis.getIsBrokenByLinkName());
         rabbitTemplate.convertAndSend("szz-analysis-exchange", "project.name."+analysis.getProjectName(), t);
         insertAnalysisDb(analysis);

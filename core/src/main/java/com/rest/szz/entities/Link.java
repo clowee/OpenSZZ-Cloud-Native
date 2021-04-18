@@ -202,9 +202,10 @@ public class Link {
 					String type = s[7];
 					Set<String> attachments = stringToSet(s[8]);
 					Set<String> brokenBy = stringToSet(s[9]);
+                    String description = s[10].substring(1,s[10].length()-1);
 					String comments = s[10].substring(1,s[10].length()-1);
 
-					issue = new Issue(number, title, status, resolution, assignee, createdDate, resolvedDate, attachments, comments, type, brokenBy);
+					this.issue = new Issue(number, title, status, resolution, assignee, createdDate, resolvedDate, attachments, comments, type, brokenBy, description);
 					break;
 				}
 			}
@@ -290,19 +291,52 @@ public class Link {
 		return suspects.stream().filter(distinctByKey(s -> s.getCommitId())).collect(Collectors.toSet());
 	}
 
+    private void setSuspectsByIssueDescriptionAndComments(Git git) {
+        String lookBehind = "(?<=(((introduc(ed|ing)|started|broken) ((this|the) (bug|issue|error) )?(in|by|with)|caused by|due to|after|before|because( of)?|since) ))";
+        String lookAhead = "(?=( (introduced|caused)|[^.,:]* cause))";
+        String issueIdPattern = projectName+"[ ]*-[ ]*[0-9]+";
+        String commitShaPattern = "(\\b|(?<=(\\br)))[0-9a-f]{5,41}\\b";
+        String issuePattern = (lookBehind + issueIdPattern) + "|" + (issueIdPattern + lookAhead);
+        String commitPattern = (lookBehind + commitShaPattern) + "|" + (commitShaPattern + lookAhead);
+        String text = issue.getDescription()+issue.getComments();
+        Set<String> issueMatches = getMatches(text,issuePattern);
+        Set<String> commitMatches = getMatches(text,commitPattern);
+        Set<Suspect> newSuspects = getSuspectsByAddressedIssues(issueMatches, git,"description/comments");
+        commitMatches.forEach(sha -> {
+            RevCommit commit = git.getCommit(sha);
+            if (commit != null && !commit.getName().equals(transaction.getId())) {
+                newSuspects.add(generateSuspect(commit,"description/comments"));
+            }
+        });
+        suspects.addAll(newSuspects.stream().filter(distinctByKey(s -> s.getCommitId())).collect(Collectors.toSet()));
+    }
+
 	public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
 		Map<Object, Boolean> map = new ConcurrentHashMap<>();
 		return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
+
+    private Set<String> getMatches(String source, String regex) {
+        Pattern pattern = Pattern.compile(regex,Pattern.CASE_INSENSITIVE);
+        Set<String> result = new LinkedHashSet<>();
+        Matcher resultMatcher = pattern.matcher(source);
+        while (resultMatcher.find()) {
+            result.add(resultMatcher.group());
+        }
+        return result;
+    }
 
 	/**
 	 * For each modified file it calculates the suspect
 	 *
 	 * @param git
 	 */
-	public void calculateSuspects(Git git, PrintWriter l, Boolean addAllBFCToResult, Boolean useIsBrokenBy) {
-	    if (this.issue != null && useIsBrokenBy) {
+	public void calculateSuspects(Git git, PrintWriter l, Boolean addAllBFCToResult, Boolean useIssueInfo) {
+	    if (this.issue != null && useIssueInfo) {
             suspects.addAll(getSuspectsByAddressedIssues(this.issue.getBrokenBy(), git, "brokenBy"));
+            if (this.suspects.size() > 0) return;
+
+            setSuspectsByIssueDescriptionAndComments(git);
             if (this.suspects.size() > 0) return;
         }
 

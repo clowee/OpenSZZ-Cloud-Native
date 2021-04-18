@@ -47,12 +47,13 @@ public class Issue {
 	private  String title;
 	private String type;
     private Set<String> brokenBy;
+    private String description;
 
 
 	public Issue(
 			long id,String title,Status status,
 			Resolution resolution, String assignedTo,
-			long open,long close,Set<String> attachments ,String comments, String type, Set<String> brokenBy) {
+			long open,long close,Set<String> attachments ,String comments, String type, Set<String> brokenBy, String description) {
 		this.id = id;
 		this.status = status;
 		this.resolution = resolution;
@@ -64,6 +65,7 @@ public class Issue {
 		this.attachments = attachments;
 		this.type = type;
         this.brokenBy = brokenBy;
+        this.description = description;
 	}
 
 	public long getId(){
@@ -106,6 +108,8 @@ public class Issue {
 	}
 
     public Set<String> getBrokenBy(){ return this.brokenBy; }
+
+    public String getDescription(){ return this.description; }
 
 	@Override
 	public String toString(){

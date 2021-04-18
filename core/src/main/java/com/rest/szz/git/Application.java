@@ -29,7 +29,7 @@ public class Application {
     public Application(){}
 
 
-	public boolean mineData(String git, String jira, String projectName, String searchQuery, String token, Boolean addAllBFCToResult, Boolean useIsBrokenBy, String isBrokenByLinkName) throws MalformedURLException {
+	public boolean mineData(String git, String jira, String projectName, String searchQuery, String token, Boolean addAllBFCToResult, Boolean useIssueInfo, String isBrokenByLinkName) throws MalformedURLException {
 		this.sourceCodeRepository = new URL(git);
 		this.projectName = projectName;
 		this.useJira = jira != null;
@@ -71,7 +71,7 @@ public class Application {
                 return  false;
             }
             writer.println("Calculating Bug inducing commits for project " + projectName);
-            calculateBugInducingCommits(links,projectName,token,addAllBFCToResult,useIsBrokenBy);
+            calculateBugInducingCommits(links,projectName,token,addAllBFCToResult,useIssueInfo);
             writer.println("Bug inducing commits for project calculated");
             writer.close();
 		} catch(Exception e){
@@ -186,7 +186,7 @@ public class Application {
 		}
 	}
 
-    private void calculateBugInducingCommits(List<Link> links,String projectName, String token, Boolean addAllBFCToResult, Boolean useIsBrokenBy){
+    private void calculateBugInducingCommits(List<Link> links,String projectName, String token, Boolean addAllBFCToResult, Boolean useIssueInfo){
         writer.println("Calculating Bug Inducing Commits");
         int count = links.size();
         PrintWriter printWriter;
@@ -196,7 +196,7 @@ public class Application {
             for (Link l : links){
                 if (count % 100 == 0)
                     writer.println(count + " Commits left");
-                l.calculateSuspects(transactionManager.getGit(),writer,addAllBFCToResult,useIsBrokenBy);
+                l.calculateSuspects(transactionManager.getGit(),writer,addAllBFCToResult,useIssueInfo);
                 String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
                 SimpleDateFormat format1 = new SimpleDateFormat(pattern);
                 String lastValue = this.useJira ? (projectName + "-" + l.issue.getId()) : l.transaction.getComment();

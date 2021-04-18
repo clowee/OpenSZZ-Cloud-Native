@@ -66,7 +66,7 @@ class WelcomeController {
             .queryParam("git", analysis.getGitUrl())
             .queryParam("useJira", analysis.getUseJira())
             .queryParam("addAllBFCToResult", analysis.getAddAllBFCToResult())
-            .queryParam("useIsBrokenBy", analysis.getUseIsBrokenBy());
+            .queryParam("useIssueInfo", analysis.getUseIssueInfo());
 
         if (analysis.getJiraUrl().length() > 0) {
             builder.queryParam("jira", analysis.getJiraUrl());

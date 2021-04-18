@@ -100,15 +100,15 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group" id="useIsBrokenByRow">
-                        <label class="col-md-2 control-label">Use "is broken by" Jira issue links</label>
+                    <div class="form-group" id="useIssueInfoRow">
+                        <label class="col-md-2 control-label">Use issue info (links / description / comments)</label>
                         <div class="col-md-10 inputGroupContainer">
                             <div class="input-group">
                                 <input
                                         type="checkbox"
-                                        id="useIsBrokenByCheckbox"
+                                        id="useIssueInfoCheckbox"
                                         name="use-is-broken-by"
-                                        th:field="*{useIsBrokenBy}"
+                                        th:field="*{useIssueInfo}"
                                 >
                             </div>
                         </div>
@@ -212,10 +212,11 @@
                     It defines path to the Jira project used to track issues of specified repository.
                 </p>
                 <p>
-                    <b>Use "is broken by" Jira issue links</b> - required. True by default. Jira issues can be linked to
+                    <b>Use issue info (links / description / comments)</b> - required. True by default. Jira issues can be linked to
                     other Jira issues. When issue A is linked to issue B by "is broken by" link, it means that changes 
                     in code addressing the issue B introduced a bug reported by issue A. When an issue has such links,
                     commits that introduced a bug reported by the issue will be searched relying on the links.
+                    Such issues or bug-introducing commits can be found also in issue description and comments.
                 </p>
                 <p>
                     <b>Name of "is broken by" issue link type</b> - default value is "is broken by". The link type is not
@@ -248,7 +249,7 @@
             document.getElementById('jiraUrl').required = e.target.checked;
             document.getElementById('searchQuery').required = !e.target.checked;
         }, false);
-        document.getElementById('useIsBrokenByCheckbox').addEventListener('click', function (e) {
+        document.getElementById('useIssueInfoCheckbox').addEventListener('click', function (e) {
             var isBrokenByLinkNameRow = document.getElementById('isBrokenByLinkNameRow');
             if (e.target.checked) {
                 isBrokenByLinkNameRow.classList.remove('hidden');

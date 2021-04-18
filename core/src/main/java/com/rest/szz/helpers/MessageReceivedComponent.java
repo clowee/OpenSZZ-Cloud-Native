@@ -64,7 +64,7 @@ public class MessageReceivedComponent implements MessageListener {
                 System.out.println(token);
                 String searchQuery = list.get(4);
                 Boolean addAllBFCToResult = Boolean.parseBoolean(list.get(5));
-                Boolean useIsBrokenBy = Boolean.parseBoolean(list.get(6));
+                Boolean useIssueInfo = Boolean.parseBoolean(list.get(6));
                 String isBrokenByLinkName = list.get(7);
                 if (searchQuery != null) {
                     searchQuery = URLDecoder.decode(searchQuery, StandardCharsets.UTF_8.name());
@@ -72,7 +72,7 @@ public class MessageReceivedComponent implements MessageListener {
                 }
 
 				a = new Application();
-				if (a.mineData(gitUrl, jiraUrl, projectName, searchQuery, token, addAllBFCToResult, useIsBrokenBy, isBrokenByLinkName)){
+				if (a.mineData(gitUrl, jiraUrl, projectName, searchQuery, token, addAllBFCToResult, useIssueInfo, isBrokenByLinkName)){
 					File file = new File("home/"+ token + ".csv");
 					ObjectOutputStream objectOutputStream =
 						    new ObjectOutputStream(new FileOutputStream("object.data"));

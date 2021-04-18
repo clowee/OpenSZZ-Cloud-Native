@@ -159,7 +159,7 @@ public class JiraRetriever {
 	}
 
 	private void printHeader(PrintWriter pw){
-		String header = "issueKey;title;resolution;status;assignee;createdDateEpoch;resolvedDateEpoch;type;attachments;brokenBy;comments;";
+		String header = "issueKey;title;resolution;status;assignee;createdDateEpoch;resolvedDateEpoch;type;attachments;brokenBy;description;comments;";
 		pw.println(header);
 	}
 
@@ -185,6 +185,7 @@ public class JiraRetriever {
 			Node node = descNodes.item(i);
 			String issueKey = "";
 			String title = "";
+            String description = "";
 			String resolution = "";
 			String status = "";
 			String assignee = "";
@@ -269,19 +270,14 @@ public class JiraRetriever {
 						}
 						break;
 					}
+                    case "description": {
+                        description = getTextFromHtml(children.item(p).getTextContent());
+                        break;
+                    }
 				}
 			}
-			String toPrint = issueKey + ";"+
-						title    + ";"+
-						resolution+";" +
-						status   + ";"+
-						assignee + ";"+
-						createdDateEpoch + ";"+
-						resolvedDateEpoch + ";"+
-						type + ";"+
-						attachmentsList + ";" +
-						brokenBy +";[" +
-						comments + "];";
+            String toPrint = issueKey + ";" + title + ";" + resolution + ";" + status + ";" + assignee + ";" + createdDateEpoch + ";" + resolvedDateEpoch
+                + ";" + type + ";" + attachmentsList + ";" + brokenBy + ";[" + description + "];[" + comments + "];";
 			pw.println(toPrint);
 		}
 	}
