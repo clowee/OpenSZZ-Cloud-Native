@@ -29,7 +29,7 @@ public class Application {
     public Application(){}
 
 
-	public boolean mineData(String git, String jira, String projectName, String searchQuery, String token, Boolean addAllBFCToResult) throws MalformedURLException {
+	public boolean mineData(String git, String jira, String projectName, String searchQuery, String token, Boolean addAllBFCToResult, Boolean useIsBrokenBy, String isBrokenByLinkName) throws MalformedURLException {
 		this.sourceCodeRepository = new URL(git);
 		this.projectName = projectName;
 		this.useJira = jira != null;
@@ -40,7 +40,7 @@ public class Application {
 			writer = new PrintWriter(new FileOutputStream(logFile, false));
 
 			if (useJira) {
-                retrieveJiraIssues(jira, projectName);
+                retrieveJiraIssues(jira, projectName, isBrokenByLinkName);
             }
 
             writer.println("Downloading Git logs for project " + projectName);
@@ -71,7 +71,7 @@ public class Application {
                 return  false;
             }
             writer.println("Calculating Bug inducing commits for project " + projectName);
-            calculateBugInducingCommits(links,projectName,token,addAllBFCToResult);
+            calculateBugInducingCommits(links,projectName,token,addAllBFCToResult,useIsBrokenBy);
             writer.println("Bug inducing commits for project calculated");
             writer.close();
 		} catch(Exception e){
@@ -81,10 +81,10 @@ public class Application {
 		return  true;
 	}
 
-	private void retrieveJiraIssues(String jiraUrl, String projectName) {
+	private void retrieveJiraIssues(String jiraUrl, String projectName, String isBrokenByLinkName) {
         File jiraIssuesFile = new File("home" + File.separator + projectName + "_0.csv");
         if(!jiraIssuesFile.exists()) {
-            JiraRetriever jr = new JiraRetriever((jiraUrl),projectName);
+            JiraRetriever jr = new JiraRetriever((jiraUrl),projectName, isBrokenByLinkName);
             jr.printIssues();
         }
     }
@@ -186,7 +186,7 @@ public class Application {
 		}
 	}
 
-    private void calculateBugInducingCommits(List<Link> links,String projectName, String token, Boolean addAllBFCToResult){
+    private void calculateBugInducingCommits(List<Link> links,String projectName, String token, Boolean addAllBFCToResult, Boolean useIsBrokenBy){
         writer.println("Calculating Bug Inducing Commits");
         int count = links.size();
         PrintWriter printWriter;
@@ -196,14 +196,14 @@ public class Application {
             for (Link l : links){
                 if (count % 100 == 0)
                     writer.println(count + " Commits left");
-                l.calculateSuspects(transactionManager.getGit(),writer,addAllBFCToResult);
+                l.calculateSuspects(transactionManager.getGit(),writer,addAllBFCToResult,useIsBrokenBy);
                 String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
                 SimpleDateFormat format1 = new SimpleDateFormat(pattern);
                 String lastValue = this.useJira ? (projectName + "-" + l.issue.getId()) : l.transaction.getComment();
                 for (Suspect s : l.getSuspects()) {
                     printWriter.println(l.transaction.getId() + ";" +
                         format1.format(l.transaction.getTimeStamp()) + ";" +
-                        s.getFileName() + ";" +
+                        (s.getFileName() == null ? "" : s.getFileName()) + ";" +
                         (s.getCommitId() == null ? "" : s.getCommitId()) + ";" +
                         (s.getTs() == null ? "" : format1.format(s.getTs())) + ";" +
                         lastValue);

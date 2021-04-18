@@ -6,8 +6,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.eclipse.jgit.revwalk.RevCommit;
 
@@ -127,7 +131,7 @@ public class Link {
 	 */
 	private boolean checkAttachments() {
 		List<FileInfo> tFiles = transaction.getFiles();
-		List<String> bugFiles = issue.getAttachments();
+		Set<String> bugFiles = issue.getAttachments();
 
 		for (FileInfo f : tFiles) {
 			File p = new File(f.filename);
@@ -189,38 +193,56 @@ public class Link {
 				sCurrentLine = sCurrentLine.replaceAll("\"", "");
 				if (sCurrentLine.startsWith(projectName + "-" + number)) {
 					String[] s = sCurrentLine.split(";");
-					List<String> comments = new LinkedList<String>();
-					List<String> attachments = Arrays.asList(s[7].replace("[", "").replace("]", ""));
-					int i = 8;
-					while (i < s.length) {
-						comments.add(s[i]);
-						i++;
-					}
-					Issue.Status status = Issue.Status.UNCONFIRMED;
-					Resolution resolution = Resolution.NONE;
+					String title = s[1];
+					Resolution resolution = getResolutionFromString(s[2]);
+					Issue.Status status = getStatusFromString(s[3]);
+					String assignee = s[4];
+					Long createdDate = Long.parseLong(s[5]);
+					Long resolvedDate = Long.parseLong(s[6]);
+					String type = s[7];
+					Set<String> attachments = stringToSet(s[8]);
+					Set<String> brokenBy = stringToSet(s[9]);
+					String comments = s[10].substring(1,s[10].length()-1);
 
-					try{
-						Issue.Status.valueOf(s[3].toUpperCase());
-					}
-					catch(Exception e){
-						status = Issue.Status.UNCONFIRMED;
-					}
-
-					try{
-						resolution = Resolution.valueOf(s[2].toUpperCase().replace(" ", "").replace("'", ""));
-					}
-					catch(Exception e){
-						 resolution = Resolution.NONE;
-					}
-
-					issue = new Issue(number, s[1], status,resolution, s[4],
-							Long.parseLong(s[5]), Long.parseLong(s[6]),attachments, comments,s[7]);
+					issue = new Issue(number, title, status, resolution, assignee, createdDate, resolvedDate, attachments, comments, type, brokenBy);
 					break;
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private Resolution getResolutionFromString(String str) {
+		Resolution resolution;
+		try{
+			resolution = Resolution.valueOf(str.toUpperCase().replace(" ", "").replace("'", ""));
+		}
+		catch(Exception e){
+			resolution = Resolution.NONE;
+		}
+		return resolution;
+	}
+
+	private Issue.Status getStatusFromString(String str) {
+		Issue.Status status;
+		try{
+			status = Issue.Status.valueOf(str.toUpperCase());
+		}
+		catch(Exception e){
+			status = Issue.Status.UNCONFIRMED;
+		}
+		return status;
+	}
+
+	private Set<String> stringToSet(String str) {
+		String resultString = str.replace("[", "").replace("]", "");
+		Set<String> result = new HashSet<>();
+		if (resultString.length() > 0) {
+			List<String> resultsList = Arrays.asList(resultString.split("\\s*,\\s*"));
+			result = new HashSet<>(resultsList);
+		}
+		return result;
 	}
 
 	private boolean containsKeywords() {
@@ -251,32 +273,58 @@ public class Link {
         return extensionsToIgnore.stream().noneMatch(extension -> file.filename.endsWith("." + extension));
     }
 
+	private Set<Suspect> getSuspectsByAddressedIssues(Set<String> issueIds,Git git,String source) {
+		Set<Suspect> suspects = new LinkedHashSet<>();
+		issueIds.stream()
+				.filter(issueId -> !issueId.equals(this.projectName + "-" + this.issue.getId()))
+				.forEach(issueId -> {
+					List<Transaction> transactions = git.getCommits(issueId);
+					if (transactions.size() > 0) {
+						List<Suspect> foundSuspects = transactions.stream()
+                                .filter(t -> !t.getId().equals(this.transaction.getId()))
+								.map(t -> new Suspect(t.getId(),t.getTimeStamp(),source))
+								.collect(Collectors.toList());
+						suspects.addAll(foundSuspects);
+					}
+				});
+		return suspects.stream().filter(distinctByKey(s -> s.getCommitId())).collect(Collectors.toSet());
+	}
+
+	public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
+		Map<Object, Boolean> map = new ConcurrentHashMap<>();
+		return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
+
 	/**
 	 * For each modified file it calculates the suspect
 	 *
 	 * @param git
 	 */
-	public void calculateSuspects(Git git, PrintWriter l, Boolean addAllBFCToResult) {
+	public void calculateSuspects(Git git, PrintWriter l, Boolean addAllBFCToResult, Boolean useIsBrokenBy) {
+	    if (this.issue != null && useIsBrokenBy) {
+            suspects.addAll(getSuspectsByAddressedIssues(this.issue.getBrokenBy(), git, "brokenBy"));
+            if (this.suspects.size() > 0) return;
+        }
+
 		for (FileInfo fi : transaction.getFiles()) {
             if (isCodeFile(fi)) {
-					String diff = git.getDiff(transaction.getId(), fi.filename, l);
-					if (diff == null)
-						break;
-					List<Integer> linesMinus = git.getLinesMinus(diff);
-					if (linesMinus == null)
-						return;
-					if (linesMinus.size() == 0)
-						return;
-					String previousCommit = git.getPreviousCommit(transaction.getId(), fi.filename,l);
-					if (previousCommit != null) {
-						Suspect suspect = getSuspect(previousCommit, git, fi.filename, linesMinus,l);
-						if (suspect != null) {
-                            this.suspects.add(suspect);
-                        } else if (addAllBFCToResult) {
-                            this.suspects.add(new Suspect(null,null,fi.filename));
-                        }
-					}
-			}
+                String diff = git.getDiff(transaction.getId(), fi.filename, l);
+                if (diff == null)
+                    continue;
+                List<Integer> linesMinus = git.getLinesMinus(diff);
+                if (linesMinus == null || linesMinus.size() == 0)
+                    continue;
+                String previousCommit = git.getPreviousCommit(transaction.getId(), l);
+                Suspect suspect = null;
+                if (previousCommit != null) {
+                    suspect = getSuspect(previousCommit, git, fi.filename, linesMinus, l);
+                }
+                if (suspect != null && !suspect.getCommitId().equals(transaction.getId())) {
+                    this.suspects.add(suspect);
+                } else if (addAllBFCToResult) {
+                    this.suspects.add(new Suspect(null, null, fi.filename));
+                }
+            }
 		}
 	}
 
@@ -297,10 +345,10 @@ public class Link {
     			String sha = git.getBlameAt(previous,fileName,i);
     			if (sha == null)
     				break;
-    			RevCommit commit = git.getCommit(sha,l);
+    			RevCommit commit = git.getCommit(sha);
     			long difference;
     			if (issue == null) {
-                    RevCommit bugFixingCommit = git.getCommit(transaction.getId(), l);
+                    RevCommit bugFixingCommit = git.getCommit(transaction.getId());
                     difference = bugFixingCommit.getCommitTime() - commit.getCommitTime();
                 } else {
                     difference = (issue.getOpen()/1000) - (commit.getCommitTime());
@@ -315,13 +363,16 @@ public class Link {
     				l.println(e);
     			}
     	}
-    	if (closestCommit != null){
-    		Long temp = Long.parseLong(closestCommit.getCommitTime()+"") * 1000;
-    		Suspect s = new Suspect(closestCommit.getName(), new Date(temp), fileName);
-    	    return s;
-    	}
+        if (closestCommit != null){
+            return generateSuspect(closestCommit,fileName);
+        }
 
 		return null;
+	}
+
+	private Suspect generateSuspect(RevCommit commit, String fileName) {
+		Long temp = Long.parseLong(commit.getCommitTime()+"") * 1000;
+		return new Suspect(commit.getName(), new Date(temp), fileName);
 	}
 
 }

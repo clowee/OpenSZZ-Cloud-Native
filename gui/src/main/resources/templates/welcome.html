@@ -100,6 +100,37 @@
                             </div>
                         </div>
                     </div>
+                    <div class="form-group" id="useIsBrokenByRow">
+                        <label class="col-md-2 control-label">Use "is broken by" Jira issue links</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <input
+                                        type="checkbox"
+                                        id="useIsBrokenByCheckbox"
+                                        name="use-is-broken-by"
+                                        th:field="*{useIsBrokenBy}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group hidden" id="isBrokenByLinkNameRow">
+                        <label class="col-md-2 control-label">Name of "is broken by" issue link type</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <span class="input-group-addon"></span>
+                                <input
+                                        id="isBrokenByLinkName"
+                                        name="is-broken-by-link-name"
+                                        placeholder="is broken by"
+                                        class="form-control"
+                                        value=""
+                                        type="text"
+                                        th:field="*{isBrokenByLinkName}"
+                                >
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="form-group" id="searchQueryRow">
                         <label class="col-md-2 control-label">Search query *</label>
@@ -181,6 +212,16 @@
                     It defines path to the Jira project used to track issues of specified repository.
                 </p>
                 <p>
+                    <b>Use "is broken by" Jira issue links</b> - required. True by default. Jira issues can be linked to
+                    other Jira issues. When issue A is linked to issue B by "is broken by" link, it means that changes 
+                    in code addressing the issue B introduced a bug reported by issue A. When an issue has such links,
+                    commits that introduced a bug reported by the issue will be searched relying on the links.
+                </p>
+                <p>
+                    <b>Name of "is broken by" issue link type</b> - default value is "is broken by". The link type is not
+                    a default Jira link type, so its name can be different for different projects.
+                </p>
+                <p>
                     <b>Search Query</b> - required (when Use Jira is unchecked). It takes a regular expression as a value.
                     The regular expression is applied to commit messages to filter specific commits.
                 </p>
@@ -204,8 +245,17 @@
             } else {
                 page.classList.add('withoutJira');
             }
-            var jiraUrlInput = document.getElementById('jiraUrl').required = e.target.checked;
-            var searchQueryInput = document.getElementById('searchQuery').required = !e.target.checked;
+            document.getElementById('jiraUrl').required = e.target.checked;
+            document.getElementById('searchQuery').required = !e.target.checked;
+        }, false);
+        document.getElementById('useIsBrokenByCheckbox').addEventListener('click', function (e) {
+            var isBrokenByLinkNameRow = document.getElementById('isBrokenByLinkNameRow');
+            if (e.target.checked) {
+                isBrokenByLinkNameRow.classList.remove('hidden');
+            } else {
+                isBrokenByLinkNameRow.classList.add('hidden');
+            }
+            document.getElementById('isBrokenByLinkName').required = e.target.checked;
         }, false);
     </script>
 

@@ -126,7 +126,7 @@ public class Git {
 		Process p = pb.start();
         p.waitFor();
 	}
-	public List<Transaction> getCommits() {
+    public List<Transaction> getCommits(String message) {
 		List<Transaction> transactions = new ArrayList<Transaction>();
 
 		 String line="";
@@ -137,10 +137,13 @@ public class Git {
 		       if (!line.isEmpty() && line.startsWith("\'")){
 		    	   line = line.replaceAll("\'", "");
 		    	   String[] array = line.split(";");
+                   String comment = array[3];
+
+                   if (message != null && !comment.toLowerCase().contains(message.toLowerCase())) continue;
+
 		    	   hashId = array[0];
 				   String timestamp = array[1];
 				   String author = array[2];
-				   String comment = array[3];
 		       List<FileInfo> filesAffected = new ArrayList<FileInfo>();
 		       line1 = br.readLine();
 		       if (line1 != null){
@@ -178,6 +181,10 @@ public class Git {
 
 		return transactions;
 	}
+
+    public List<Transaction> getCommits() {
+        return getCommits(null);
+    }
 
 	  /**
 	   * Returns String with differences of fileName done by a shaCommit
@@ -323,59 +330,34 @@ public class Git {
 	   * It gets commit object starting from a specific sha
 	   *
 	   */
-	  public RevCommit getCommit(String sha, PrintWriter l){
+	  public RevCommit getCommit(String sha){
 		  File  localRepo1 = new File(workingDirectory+"");
-		  //Repository repository = git.getRepository();
-		  RevCommit commit = null;
 		  try{
 			  org.eclipse.jgit.api.Git git = org.eclipse.jgit.api.Git.open(localRepo1);
 			  Repository repository = git.getRepository();
 			  RevWalk walk = new RevWalk( repository);
 			  ObjectId commitId = ObjectId.fromString( sha);
-			   commit = walk.parseCommit( commitId );
-			  //System.out.println(commit.getCommitTime());
+			  return walk.parseCommit( commitId );
 			} catch (Exception e) {
 				e.printStackTrace();
-				l.println((e));
 				return null;
 			}
-		  return commit;
 	  }
 
 	  /**
-	   * Get Commit that changed the file before the parameter commit
+	   * Get Commit before the parameter commit
 	   * @param sha
-	   * @param file
 	   * @return
 	   */
-	  public String getPreviousCommit (String sha, String file, PrintWriter l){
-		  if (sha.equals("a8da84c614ba6e6e87c6c91e0c426ddfec2766a2"))
-			  System.out.println();
-		  File  localRepo1 = new File(workingDirectory+"");
-		  Iterable<RevCommit> iterable;
-		  String finalSha = "";
-		  RevCommit latestCommit = null;
-		  String path = file;
+	  public String getPreviousCommit (String sha, PrintWriter l){
 		  try {
-			org.eclipse.jgit.api.Git git = org.eclipse.jgit.api.Git.open(localRepo1);
-			RevWalk revWalk = new RevWalk( git.getRepository() );
-		    RevCommit revCommit = getCommit(sha, null);
-		    revWalk.markStart( revCommit );
-		    revWalk.sort( RevSort.COMMIT_TIME_DESC );
-		    revWalk.setTreeFilter( AndTreeFilter.create( PathFilter.create( path ), TreeFilter.ANY_DIFF ) );
-		    latestCommit = revWalk.next();
-		    while (!latestCommit.getName().equals(sha))
-		    	latestCommit = revWalk.next();
-		    latestCommit = revWalk.next();
-		    if (latestCommit == null)
-		    	return null;
-		    finalSha =  latestCommit.getName();
-
+            RevCommit revCommit = getCommit(sha);
+            RevCommit parent = revCommit.getParent(0);
+            return parent.getName();
 		  } catch (Exception e) {
-			 l.println("No Predecessor-Commits found for "+sha +"for file " + file);
+			 l.println("No Predecessor-Commits found for "+sha);
 			return null;
 		}
-		  return finalSha;
 	  }
 
     private Boolean lineHasOnlyCommentWithoutCode(String s) {

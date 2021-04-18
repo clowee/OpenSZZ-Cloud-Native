@@ -13,6 +13,8 @@ public class Analysis extends BaseEntity {
 	private String email;
 	private Boolean useJira = true;
 	private Boolean addAllBFCToResult = false;
+    private Boolean useIsBrokenBy = false;
+    private String isBrokenByLinkName = "is broken by";
 	private String searchQuery;
 	private String message;
 	private String status;
@@ -75,6 +77,18 @@ public class Analysis extends BaseEntity {
     }
     public void setAddAllBFCToResult(Boolean addAllBFCToResult) {
         this.addAllBFCToResult = addAllBFCToResult;
+    }
+    public Boolean getUseIsBrokenBy() {
+        return useIsBrokenBy;
+    }
+    public void setUseIsBrokenBy(Boolean useIsBrokenBy) {
+        this.useIsBrokenBy = useIsBrokenBy;
+    }
+    public String getIsBrokenByLinkName() {
+        return isBrokenByLinkName;
+    }
+    public void setIsBrokenByLinkName(String isBrokenByLinkName) {
+        this.isBrokenByLinkName = isBrokenByLinkName;
     }
     public String getSearchQuery() {
         return searchQuery;

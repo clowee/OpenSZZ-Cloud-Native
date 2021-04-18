@@ -253,6 +253,8 @@ input[type="checkbox"] {
     }
     &:not(.withoutJira) {
         #jiraUrlRow,
+        #useIsBrokenByRow,
+        #isBrokenByLinkNameRow,
         .example-jira {
             display: block;
         }
@@ -263,6 +265,8 @@ input[type="checkbox"] {
     }
     &.withoutJira {
         #jiraUrlRow,
+        #useIsBrokenByRow,
+        #isBrokenByLinkNameRow,
         .example-jira  {
             display: none;
         }
@@ -270,6 +274,9 @@ input[type="checkbox"] {
         .example-search-query {
             display: block;
         }
+    }
+    #isBrokenByLinkNameRow.hidden {
+        display: none !important;
     }
     form {
         margin: 30px 0;
