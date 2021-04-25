@@ -249,9 +249,10 @@ public class Git {
 	  /**
 	   * It gets removed lines from a commit starting from the diffString
 	   * @param diffString
+	   * @param filename
 	   * @return
 	   */
-	  public  List<Integer> getLinesMinus(String diffString){
+	  public  List<Integer> getLinesMinus(String diffString, String filename){
 
 		  int actualInt = 1;
 		  boolean actualSet = false;
@@ -267,9 +268,9 @@ public class Git {
 		     switch(line.charAt(0)){
 		     case '-':
 		    	 actualInt++;
-                 if (line.length() > 1 && !lineHasOnlyCommentWithoutCode(line)) {
-                     listMinus.add(actualInt);
-                 }
+                 if (line.length() <= 1) break;
+				 if (filename.endsWith(".java") && lineHasOnlyCommentWithoutCode(line)) break;
+				 listMinus.add(actualInt);
 		    	 break;
 		     case '+':
 		     	break;

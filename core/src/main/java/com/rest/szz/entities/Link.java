@@ -345,7 +345,7 @@ public class Link {
                 String diff = git.getDiff(transaction.getId(), fi.filename, l);
                 if (diff == null)
                     continue;
-                List<Integer> linesMinus = git.getLinesMinus(diff);
+                List<Integer> linesMinus = git.getLinesMinus(diff,fi.filename);
                 if (linesMinus == null || linesMinus.size() == 0)
                     continue;
                 String previousCommit = git.getPreviousCommit(transaction.getId(), l);
