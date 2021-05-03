@@ -192,12 +192,12 @@ public class Application {
         PrintWriter printWriter;
         try {
             printWriter = new PrintWriter("home/"+token+".csv");
-            printWriter.println("bugFixingId;bugFixingTs;bugFixingFileChanged;bugInducingId;bugInducingTs;" + (this.useJira ? "issueId" : "bugFixingCommitMessage"));
+            printWriter.println("bugFixingId;bugFixingTs;bugFixingFileChanged;bugInducingId;bugInducingTs;" + (this.useJira ? "issueId" : "bugFixingCommitMessage") + ";note");
             for (Link l : links){
                 if (count % 100 == 0)
                     writer.println(count + " Commits left");
                 l.calculateSuspects(transactionManager.getGit(),writer,addAllBFCToResult,useIssueInfo);
-                String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+                String pattern = "yyyy-MM-dd'T'HH:mm:ssZ";
                 SimpleDateFormat format1 = new SimpleDateFormat(pattern);
                 String lastValue = this.useJira ? (projectName + "-" + l.issue.getId()) : l.transaction.getComment();
                 for (Suspect s : l.getSuspects()) {
@@ -206,7 +206,8 @@ public class Application {
                         (s.getFileName() == null ? "" : s.getFileName()) + ";" +
                         (s.getCommitId() == null ? "" : s.getCommitId()) + ";" +
                         (s.getTs() == null ? "" : format1.format(s.getTs())) + ";" +
-                        lastValue);
+                        lastValue + ";" +
+                        (s.getNote() == null ? "" : s.getNote()));
                 }
                 count--;
             }

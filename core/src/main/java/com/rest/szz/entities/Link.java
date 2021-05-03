@@ -280,10 +280,14 @@ public class Link {
 				.filter(issueId -> !issueId.equals(this.projectName + "-" + this.issue.getId()))
 				.forEach(issueId -> {
 					List<Transaction> transactions = git.getCommits(issueId);
-					if (transactions.size() > 0) {
+                    List<Transaction> filteredTransactions = transactions.stream().filter(t -> {
+                        List<FileInfo> changedCodeFiles = t.getFiles().stream().filter(file -> isCodeFile(file)).collect(Collectors.toList());
+                        return changedCodeFiles.size() > 0;
+                    }).collect(Collectors.toList());
+                    if (filteredTransactions.size() > 0) {
 						List<Suspect> foundSuspects = transactions.stream()
                                 .filter(t -> !t.getId().equals(this.transaction.getId()))
-								.map(t -> new Suspect(t.getId(),t.getTimeStamp(),source))
+								.map(t -> new Suspect(t.getId(),t.getTimeStamp(),null,source))
 								.collect(Collectors.toList());
 						suspects.addAll(foundSuspects);
 					}
@@ -343,11 +347,15 @@ public class Link {
 		for (FileInfo fi : transaction.getFiles()) {
             if (isCodeFile(fi)) {
                 String diff = git.getDiff(transaction.getId(), fi.filename, l);
-                if (diff == null)
+                if (diff == null) {
+                    if (addAllBFCToResult) this.suspects.add(new Suspect(null,null, null, "No changes in commit"));
                     continue;
+                }
                 List<Integer> linesMinus = git.getLinesMinus(diff,fi.filename);
-                if (linesMinus == null || linesMinus.size() == 0)
+                if (linesMinus == null || linesMinus.size() == 0) {
+                    if (addAllBFCToResult) this.suspects.add(new Suspect(null,null, fi.filename, "No changed lines, only additions"));
                     continue;
+                }
                 String previousCommit = git.getPreviousCommit(transaction.getId(), l);
                 Suspect suspect = null;
                 if (previousCommit != null) {
@@ -356,8 +364,10 @@ public class Link {
                 if (suspect != null && !suspect.getCommitId().equals(transaction.getId())) {
                     this.suspects.add(suspect);
                 } else if (addAllBFCToResult) {
-                    this.suspects.add(new Suspect(null, null, fi.filename));
+                    this.suspects.add(new Suspect(null, null, fi.filename, null));
                 }
+            } else if (addAllBFCToResult) {
+                this.suspects.add(new Suspect(null, null, fi.filename, "Ignored file type"));
             }
 		}
 	}
@@ -406,7 +416,7 @@ public class Link {
 
 	private Suspect generateSuspect(RevCommit commit, String fileName) {
 		Long temp = Long.parseLong(commit.getCommitTime()+"") * 1000;
-		return new Suspect(commit.getName(), new Date(temp), fileName);
+		return new Suspect(commit.getName(), new Date(temp), fileName, null);
 	}
 
 }
