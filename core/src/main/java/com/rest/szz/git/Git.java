@@ -146,23 +146,21 @@ public class Git {
 				   String author = array[2];
 		       List<FileInfo> filesAffected = new ArrayList<FileInfo>();
 		       line1 = br.readLine();
-		       if (line1 != null){
-                   while (!(line1.equals(""))){
-                       int BUFFER_SIZE = 100000;
-                       br.mark(BUFFER_SIZE);
-                       if (!line1.startsWith("\'")){
-                           String[] subarray = line1.split("	");
-                           String status = subarray[0];
-                           String file = subarray[1];
-                           FileInfo fileInfo = new FileInfo(status, file);
-                           filesAffected.add(fileInfo);}
-                       else{
-                         br.reset();
-                         break;
-                       }
-                       line1 = br.readLine();
-                   }
-		       }
+			   while (line1 != null && !(line1.equals(""))){
+					int BUFFER_SIZE = 100000;
+					br.mark(BUFFER_SIZE);
+					if (!line1.startsWith("\'")){
+						String[] subarray = line1.split("	");
+						String status = subarray[0];
+						String file = subarray[1];
+						FileInfo fileInfo = new FileInfo(status, file);
+						filesAffected.add(fileInfo);}
+					else{
+						br.reset();
+						break;
+					}
+					line1 = br.readLine();
+				}
 		       Transaction transaction = new Transaction(
 						hashId,
 						timestamp,

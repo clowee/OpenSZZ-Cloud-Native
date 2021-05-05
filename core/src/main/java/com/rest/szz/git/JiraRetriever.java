@@ -75,6 +75,10 @@ public class JiraRetriever {
 		return doc;
 	}
 
+	private int getIssueIdFromKey(String key) {
+		return Integer.parseInt(key.replaceFirst(".*?(\\d+).*", "$1"));
+	}
+
 	private int getTotalNumberIssues(){
 		String tempQuery = "?jqlQuery=project+%3D+{0}+ORDER+BY+key+DESC&issuetype=Bug&tempMax=1";
 		tempQuery = tempQuery.replace("{0}", projectName);
@@ -87,8 +91,7 @@ public class JiraRetriever {
 			for (int p = 0; p < node.getChildNodes().getLength(); p++) {
 			if (node.getChildNodes().item(p).getNodeName().equals("key")){
 				String key = (node.getChildNodes().item(p).getTextContent());
-				key = key.replaceFirst(".*?(\\d+).*", "$1");
-				return Integer.parseInt(key);
+				return getIssueIdFromKey(key);
 			}}
 		} catch (Exception e) {
 			pw.println(e.getMessage());
@@ -100,6 +103,7 @@ public class JiraRetriever {
 	public void printIssues(){
 		int page = 0;
 		int totalePages = (int) Math.ceil(((double) getTotalNumberIssues() / 1000));
+		int numberOfIssues = 0;
 		String fileName = projectName + "_" + page + ".csv";
 		File file = new File("home" + File.separator + projectName + "/" + fileName);
 		while (file.exists() ) {
@@ -117,7 +121,7 @@ public class JiraRetriever {
 		while (true) {
 			String tempQuery = "?jqlQuery=project+%3D+{0}+ORDER+BY+key+ASC&issuetype=Bug&tempMax=1000&pager/start={1}";
 			tempQuery = tempQuery.replace("{0}", projectName);
-			tempQuery = tempQuery.replace("{1}", ((page) * 1000) + "");
+			tempQuery = tempQuery.replace("{1}", numberOfIssues + 1 + "");
 			if (totalePages >= (page + 1))
 				pw.println("Download Jira issues. Page: " + (page + 1) + "/" + totalePages);
 			try {
@@ -141,7 +145,7 @@ public class JiraRetriever {
 					e1.printStackTrace();
 				}
 				printHeader(pw);
-				printIssuesOfPage(d, pw);
+				numberOfIssues += printIssuesOfPage(d, pw, page);
 				pw.close();
 				page++;
 			} catch (Exception e) {
@@ -178,10 +182,11 @@ public class JiraRetriever {
 	 * @param pw
 	 * @return
 	 */
-	private void printIssuesOfPage(Document doc, PrintWriter pw) {
+	private int printIssuesOfPage(Document doc, PrintWriter pw, int pageNumber) {
 		NodeList descNodes = doc.getElementsByTagName("item");
 		SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
-		for (int i = 0; i < descNodes.getLength(); i++) {
+		int numberOfIssues = 0;
+		loop: for (int i = 0; i < descNodes.getLength(); i++) {
 			Node node = descNodes.item(i);
 			String issueKey = "";
 			String title = "";
@@ -205,7 +210,9 @@ public class JiraRetriever {
 						resolution = children.item(p).getTextContent();
 						break;
 					case "key":
-						issueKey = children.item(p).getTextContent();
+						String key = children.item(p).getTextContent();
+						if (getIssueIdFromKey(key) >= (pageNumber + 1) * 1000) break loop;
+						issueKey = key;
 						break;
 					case "created":
 						String createdDate = children.item(p).getTextContent();
@@ -256,7 +263,7 @@ public class JiraRetriever {
 								Node issueLinkTypeChild = nodes.item(n);
 								if (issueLinkTypeChild.getAttributes() != null
 										&& issueLinkTypeChild.getAttributes().getNamedItem("description") != null
-										&& issueLinkTypeChild.getAttributes().getNamedItem("description").getNodeValue().equals("is broken by")
+										&& issueLinkTypeChild.getAttributes().getNamedItem("description").getNodeValue().equals(this.isBrokenByLinkName)
 								) {
 									NodeList brokenByLinks = issueLinkTypeChild.getChildNodes();
 									for (int b = 0; b < brokenByLinks.getLength(); b++) {
@@ -279,6 +286,8 @@ public class JiraRetriever {
             String toPrint = issueKey + ";" + title + ";" + resolution + ";" + status + ";" + assignee + ";" + createdDateEpoch + ";" + resolvedDateEpoch
                 + ";" + type + ";" + attachmentsList + ";" + brokenBy + ";[" + description + "];[" + comments + "];";
 			pw.println(toPrint);
+			numberOfIssues++;
 		}
+		return numberOfIssues;
 	}
 }
