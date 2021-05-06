@@ -9,10 +9,10 @@
             <div>
                 <h2>Welcome to OpenSZZ</h2>
                 <p>Here you can apply the SZZ algorithm inserting some
-                    information about the project you want to analyze.
+                    information about the project you want to analyse.
                 </p>
                 <div class="text-block">
-                    <p>Example values to analyze the project BCEL of the Apache Software Foundation:</p>
+                    <p>Example values to analyse the project BCEL of the Apache Software Foundation:</p>
                     <p class="example-project-name"><b>Project Name</b> = BCEL</p>
                     <p class="example-git">
                         <b>Git URL</b> =
@@ -183,6 +183,20 @@
                     </div>
 
                     <div class="form-group">
+                        <label class="col-md-2 control-label">Use working files from previous analysis</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <input
+                                        type="checkbox"
+                                        id="reuseWorkingFilesCheckbox"
+                                        name="reuse-working-files"
+                                        th:field="*{reuseWorkingFiles}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label class="col-md-2 control-label"></label>
                         <div class="col-md-10 inputGroupContainer">
                             <div class="input-group">
@@ -203,20 +217,20 @@
                     searched by linking commits to issues from Jira or by applying Search Query to commit messages.
                 </p>
                 <p>
-                    <b>Project Name</b> - optional. Value of the field is used on ANALYZED PROJECTS page.
-                    If not set repository name will be used by default.
+                    <b>Project Name</b> - optional. Value of the field is used on ANALYSED PROJECTS page.
+                    Repository name will be used by default if the values is not set.
                 </p>
-                <p><b>Git URL</b> - required. It defines repository to be analysed.</p>
+                <p><b>Git URL</b> - required. It defines a repository to be analysed.</p>
                 <p>
                     <b>Jira URL</b> - required (when Use Jira is checked).
-                    It defines path to the Jira project used to track issues of specified repository.
+                    It defines a path to the Jira project used to track issues of the specified repository.
                 </p>
                 <p>
                     <b>Use issue info (links / description / comments)</b> - required. True by default. Jira issues can be linked to
                     other Jira issues. When issue A is linked to issue B by "is broken by" link, it means that changes 
                     in code addressing the issue B introduced a bug reported by issue A. When an issue has such links,
                     commits that introduced a bug reported by the issue will be searched relying on the links.
-                    Such issues or bug-introducing commits can be found also in issue description and comments.
+                    Such issues or bug-introducing commits can also be found in issue description and comments.
                 </p>
                 <p>
                     <b>Name of "is broken by" issue link type</b> - default value is "is broken by". The link type is not
@@ -227,12 +241,20 @@
                     The regular expression is applied to commit messages to filter specific commits.
                 </p>
                 <p>
-                    <b>Email</b> - optional. It defines email where result of the analysis will be sent.
+                    <b>Email</b> - optional. It defines email where the analysis result will be sent.
                 </p>
                 <p>
-                    <b>Add all BFC to result</b> - required. False by default. It means that only bug-fixing commits with corresponding
+                    <b>Add all BFC to result</b> - required. False by default. It means that only bug-fixing commits and corresponding
                     to them bug-introducing commits will be added to result. Set the field as checked to have bug-fixing
                     commits without bug-introducing commits found added to result too.
+                </p>
+                <p>
+                    <b>Use working files from previous analysis</b> - required. False by default. Working files are cloned git-repository,
+                    files with fetched Jira issues, a file with git-repository commits. When the option is enabled, OpenSZZ
+                    will reuse the files. It will speed up the analysis (by skipping the preparations). It also may be
+                    helpful for testing different OpenSZZ options with a guarantee that commits and Jira issues remain the same.
+                    Set Project Name with a unique value to ensure that working files will not be deleted by running another
+                    analysis for the same repository with disabled "Use working files from previous analysis".
                 </p>
             </div>
 		</div>

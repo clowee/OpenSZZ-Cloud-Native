@@ -25,8 +25,15 @@ public class Application {
 
     private String projectName;
     private Boolean useJira;
+    private static String workingDirectory;
 
-    public Application(){}
+	public static String getWorkingDirectory() {
+		return Application.workingDirectory;
+	}
+
+    public Application(String workingDirectory){
+		Application.workingDirectory = workingDirectory;
+	}
 
 
 	public boolean mineData(String git, String jira, String projectName, String searchQuery, String token, Boolean addAllBFCToResult, Boolean useIssueInfo, String isBrokenByLinkName) throws MalformedURLException {
@@ -35,8 +42,7 @@ public class Application {
 		this.useJira = jira != null;
 
 		try {
-			File logFile = new File("home" + File.separator + projectName+".log");
-			logFile.getParentFile().mkdirs();
+			File logFile = new File(Application.workingDirectory + File.separator + projectName+".log");
 			writer = new PrintWriter(new FileOutputStream(logFile, false));
 
 			if (useJira) {
@@ -82,9 +88,9 @@ public class Application {
 	}
 
 	private void retrieveJiraIssues(String jiraUrl, String projectName, String isBrokenByLinkName) {
-        File jiraIssuesFile = new File("home" + File.separator + projectName + "_0.csv");
+        File jiraIssuesFile = new File(Application.workingDirectory + File.separator + projectName + "_0.csv");
         if(!jiraIssuesFile.exists()) {
-            JiraRetriever jr = new JiraRetriever((jiraUrl),projectName, isBrokenByLinkName);
+            JiraRetriever jr = new JiraRetriever(jiraUrl,projectName,isBrokenByLinkName);
             jr.printIssues();
         }
     }
@@ -158,7 +164,7 @@ public class Application {
 	 */
 	private void saveBugFixingCommits(List<Link> links,String projectName){
 		try {
-			PrintWriter printWriter = new PrintWriter(new File("home" + File.separator + projectName+"_BugFixingCommit.csv"));
+			PrintWriter printWriter = new PrintWriter(new File(Application.workingDirectory + File.separator + projectName+"_BugFixingCommit.csv"));
             String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
             SimpleDateFormat format = new SimpleDateFormat(pattern);
 			if (this.useJira) {
@@ -191,7 +197,7 @@ public class Application {
         int count = links.size();
         PrintWriter printWriter;
         try {
-            printWriter = new PrintWriter("home/"+token+".csv");
+            printWriter = new PrintWriter(Application.workingDirectory + File.separator+token+".csv");
             printWriter.println("bugFixingId;bugFixingTs;bugFixingFileChanged;bugInducingId;bugInducingTs;" + (this.useJira ? "issueId" : "bugFixingCommitMessage") + ";note");
             for (Link l : links){
                 if (count % 100 == 0)

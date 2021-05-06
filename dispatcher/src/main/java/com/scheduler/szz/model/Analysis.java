@@ -15,6 +15,7 @@ public class Analysis extends BaseEntity {
     private Boolean addAllBFCToResult = false;
     private Boolean useIssueInfo = false;
     private String isBrokenByLinkName = "is broken by";
+    private Boolean reuseWorkingFiles = false;
     private String searchQuery;
 	private String message;
 	private String status;
@@ -75,6 +76,12 @@ public class Analysis extends BaseEntity {
     }
     public void setIsBrokenByLinkName(String isBrokenByLinkName) {
         this.isBrokenByLinkName = isBrokenByLinkName;
+    }
+    public Boolean getReuseWorkingFiles() {
+        return reuseWorkingFiles;
+    }
+    public void setReuseWorkingFiles(Boolean reuseWorkingFiles) {
+        this.reuseWorkingFiles = reuseWorkingFiles;
     }
     public String getSearchQuery() {
         return searchQuery;

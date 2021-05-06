@@ -8,10 +8,13 @@ import java.io.ObjectOutputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
@@ -70,10 +73,17 @@ public class MessageReceivedComponent implements MessageListener {
                     searchQuery = URLDecoder.decode(searchQuery, StandardCharsets.UTF_8.name());
                     searchQuery = URLDecoder.decode(searchQuery, StandardCharsets.UTF_8.name());
                 }
+                Boolean reuseWorkingFiles = Boolean.parseBoolean(list.get(8));
 
-				a = new Application();
+                File workingDirectory = Paths.get(System.getProperty("user.dir") + File.separator + "home" + File.separator + projectName).toFile();
+                workingDirectory.mkdirs();
+                
+				if (!reuseWorkingFiles) {
+                    FileUtils.cleanDirectory(workingDirectory);
+                }
+                a = new Application(workingDirectory.toString());
 				if (a.mineData(gitUrl, jiraUrl, projectName, searchQuery, token, addAllBFCToResult, useIssueInfo, isBrokenByLinkName)){
-					File file = new File("home/"+ token + ".csv");
+					File file = new File(workingDirectory.toString() + File.separator + token + ".csv");
 					ObjectOutputStream objectOutputStream =
 						    new ObjectOutputStream(new FileOutputStream("object.data"));
 					objectOutputStream.writeObject(Files.readAllBytes(file.toPath()));
@@ -85,7 +95,6 @@ public class MessageReceivedComponent implements MessageListener {
                         email = "example@email.com";
                     }
                     rabbitTemplate.convertAndSend("szz-results-exchange", "project.results."+projectName +"." +token+"."+email, m);
-//					FileUtils.cleanDirectory(new File("home"));
 				}
 				ois.close();
 			} catch (Exception e) {

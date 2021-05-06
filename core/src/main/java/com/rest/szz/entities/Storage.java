@@ -19,10 +19,7 @@ public class Storage {
 	private final Pattern pGit = Pattern.compile(".+\\.git$");
 
 	public Storage() {
-	    this.fileStoragePath = Paths.get(
-            System.getProperty("user.dir") + File.separator + "home"
-        );
-        fileStoragePath.toFile().mkdirs();
+	    this.fileStoragePath = Paths.get(Application.getWorkingDirectory());
     }
 
 
@@ -40,7 +37,7 @@ public class Storage {
 		if(mGit.find()) {
 			this.git = new Git(fileStoragePath, url);
 			try {
-				File bugFixingCommitsFile = new File("home" + File.separator + projectName + ".txt");
+				File bugFixingCommitsFile = new File(Application.getWorkingDirectory() + File.separator + projectName + ".txt");
 				if(!bugFixingCommitsFile.exists()) {
 					this.git.cloneRepository();
 					this.git.pullUpdates();

@@ -39,6 +39,7 @@ public class JiraRetriever {
 	 *
 	 * @param jiraURL
 	 * @param projectName
+     * @param isBrokenByLinkName
 	 */
 	public JiraRetriever(String jiraURL, String projectName, String isBrokenByLinkName) {
 		this.jiraURL = jiraURL;
@@ -46,7 +47,7 @@ public class JiraRetriever {
 		this.isBrokenByLinkName = isBrokenByLinkName;
 		try {
 			 pw = new PrintWriter(new FileOutputStream(
-				    new File("home" + File.separator + projectName + "-log.txt"),
+				    new File(Application.getWorkingDirectory() + File.separator + projectName + "-log.txt"),
 				    true /* append = true */));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -105,16 +106,16 @@ public class JiraRetriever {
 		int totalePages = (int) Math.ceil(((double) getTotalNumberIssues() / 1000));
 		int numberOfIssues = 0;
 		String fileName = projectName + "_" + page + ".csv";
-		File file = new File("home" + File.separator + projectName + "/" + fileName);
+		File file = new File(Application.getWorkingDirectory() + File.separator + fileName);
 		while (file.exists() ) {
 			page++;
 			fileName = projectName + "_" + page + ".csv";
-			file = new File("home" + File.separator + projectName + "/" + fileName);
+			file = new File(Application.getWorkingDirectory() + File.separator + fileName);
 		}
 		if (page > 0){
 			page--;
 			fileName = projectName + "_" + page + ".csv";
-			file = new File("home" + File.separator + projectName + "/" + fileName);
+			file = new File(Application.getWorkingDirectory() + File.separator + fileName);
 			file.delete();
 		}
 
@@ -133,7 +134,7 @@ public class JiraRetriever {
 				if (descNodes.getLength() == 0)
 					return;
 				fileName = projectName + "_" + page + ".csv";
-				file = new File("home" + File.separator + fileName);
+				file = new File(Application.getWorkingDirectory() + File.separator + fileName);
 				if (file.exists() && !file.isDirectory()) {
 					return;
 				}

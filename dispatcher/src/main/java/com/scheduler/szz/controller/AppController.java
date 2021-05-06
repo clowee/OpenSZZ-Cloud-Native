@@ -64,6 +64,7 @@ public class AppController {
         @RequestParam Boolean addAllBFCToResult,
         @RequestParam Boolean useIssueInfo,
         @RequestParam(required = false) String isBrokenByLinkName,
+        @RequestParam Boolean reuseWorkingFiles,
         Model model
     ) throws UnsupportedEncodingException {
 		String token = java.util.UUID.randomUUID().toString().split("-")[0];
@@ -72,6 +73,7 @@ public class AppController {
         analysis.setGitUrl(git);
         analysis.setAddAllBFCToResult(addAllBFCToResult);
         analysis.setUseIssueInfo(useIssueInfo);
+        analysis.setReuseWorkingFiles(reuseWorkingFiles);
 		if (isBrokenByLinkName != null) {
 			analysis.setIsBrokenByLinkName(isBrokenByLinkName);
 		}
@@ -111,6 +113,7 @@ public class AppController {
         t.add(addAllBFCToResult.toString());
         t.add(useIssueInfo.toString());
         t.add(analysis.getIsBrokenByLinkName());
+        t.add(analysis.getReuseWorkingFiles().toString());
         rabbitTemplate.convertAndSend("szz-analysis-exchange", "project.name."+analysis.getProjectName(), t);
         insertAnalysisDb(analysis);
         model.addAttribute(analysis);
