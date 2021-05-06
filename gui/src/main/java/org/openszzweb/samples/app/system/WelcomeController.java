@@ -30,7 +30,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 class WelcomeController {
 
 	 private final RabbitTemplate rabbitTemplate;
-     private String jiraAPI = "/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
+     private String jiraAPI = "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
      final String port = System.getenv("DISPATCHER_PORT");
      final String analysisUri = "http://results:"+port+"/doAnalysis";
      final String analysesUri  = "http://results:"+port+"/getAnalyses";
@@ -147,7 +147,7 @@ class WelcomeController {
 		}
 		if (analysis.getUseJira()) {
             try {
-                String[] array = analysis.getJiraUrl().split("/jira/projects/");
+                String[] array = analysis.getJiraUrl().split("/projects/");
                 String projectName = array[1].replaceAll("/", "");
                 String jiraUrl = array[0] + jiraAPI;
                 URL url = new URL(jiraUrl);

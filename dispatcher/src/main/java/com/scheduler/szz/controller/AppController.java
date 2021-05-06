@@ -37,7 +37,7 @@ public class AppController {
 	 DBEntryDao dbEntryDao;
 
 	 private final RabbitTemplate rabbitTemplate;
-     private String jiraAPI = "/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
+     private String jiraAPI = "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
 
     /**
      * Controller for managing exchanges between gui and core containers
@@ -181,7 +181,7 @@ public class AppController {
 		if (analysis.getUseJira()) {
             //Checks url jira
             try {
-                String[] array = analysis.getJiraUrl().split("/jira/projects/");
+                String[] array = analysis.getJiraUrl().split("/projects/");
                 String projectName = array[1].replaceAll("/", "");
                 String jiraUrl = array[0] + jiraAPI;
                 URL url = new URL(jiraUrl);

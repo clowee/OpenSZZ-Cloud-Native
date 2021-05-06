@@ -29,7 +29,7 @@ public class AppController {
 	private HashMap<String, Future> map = new HashMap<String, Future>();
 	private HashMap<String, String> mapNames = new HashMap<String, String>();
 	private HashMap<String, String> mapEmails = new HashMap<String, String>();
-	private String jiraAPI = "/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
+	private String jiraAPI = "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
 	private String requestUrl = "";
 
 

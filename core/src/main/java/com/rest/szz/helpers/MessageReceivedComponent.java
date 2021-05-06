@@ -27,7 +27,7 @@ import com.rest.szz.git.Application;
 public class MessageReceivedComponent implements MessageListener {
 
 	RabbitTemplate rabbitTemplate;
-	private String jiraAPI = "/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
+	private String jiraAPI = "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
 
 	private Application a;
 
@@ -55,7 +55,7 @@ public class MessageReceivedComponent implements MessageListener {
 				l.info(jiraUrl);
 				String email = list.get(2);
 				if (jiraUrl != null) {
-                    array = jiraUrl.split("/jira/projects/");
+                    array = jiraUrl.split("/projects/");
                     projectName = array[1].replaceAll("/", "");
                     jiraUrl = array[0] + jiraAPI;
                     jiraUrl = jiraUrl.replace("{0}", projectName);
