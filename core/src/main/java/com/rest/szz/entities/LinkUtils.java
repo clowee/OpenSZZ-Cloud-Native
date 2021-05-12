@@ -100,14 +100,17 @@ public class LinkUtils {
         return result;
     }
 
-    public static List<Integer> getLinesMinus(Git git, String commitId, String fileName, PrintWriter l) {
+    public static List<Integer> getLinesMinus(Git git, String commitId, String fileName, boolean ignoreCommentChanges, PrintWriter l) {
         List<Integer> linesMinus = new LinkedList<>();
         String diff = git.getDiff(commitId, fileName, l);
         if (diff == null || diff.isEmpty()) return linesMinus;
-        String parent = git.getPreviousCommit(commitId, l);
-        List<Integer> commentLines = git.getCommentLines(parent, fileName);
         linesMinus = git.getLinesMinus(diff);
-        return linesMinus.stream().filter(line -> !commentLines.contains(line)).collect(Collectors.toList());
+        if (ignoreCommentChanges) {
+            String parent = git.getPreviousCommit(commitId, l);
+            List<Integer> commentLines = git.getCommentLines(parent, fileName);
+            linesMinus = linesMinus.stream().filter(line -> !commentLines.contains(line)).collect(Collectors.toList());
+        }
+        return linesMinus;
     }
 
 

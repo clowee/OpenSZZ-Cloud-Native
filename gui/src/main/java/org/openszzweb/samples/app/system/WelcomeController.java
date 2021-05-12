@@ -67,7 +67,8 @@ class WelcomeController {
             .queryParam("useJira", analysis.getUseJira())
             .queryParam("addAllBFCToResult", analysis.getAddAllBFCToResult())
             .queryParam("useIssueInfo", analysis.getUseIssueInfo())
-            .queryParam("reuseWorkingFiles",analysis.getReuseWorkingFiles());
+            .queryParam("reuseWorkingFiles",analysis.getReuseWorkingFiles())
+            .queryParam("ignoreCommentChanges",analysis.getIgnoreCommentChanges());
 
         if (analysis.getJiraUrl().length() > 0) {
             builder.queryParam("jira", analysis.getJiraUrl());

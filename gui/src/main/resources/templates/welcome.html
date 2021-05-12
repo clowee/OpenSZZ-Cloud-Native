@@ -169,6 +169,20 @@
                     </div>
 
                     <div class="form-group">
+                        <label class="col-md-2 control-label">Ignore changes in comment lines</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <input
+                                    type="checkbox"
+                                    id="ignoreCommentChangesCheckbox"
+                                    name="ignore-comment-changes"
+                                    th:field="*{ignoreCommentChanges}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label class="col-md-2 control-label">Add all BFC to result</label>
                         <div class="col-md-10 inputGroupContainer">
                             <div class="input-group">
@@ -242,6 +256,9 @@
                 </p>
                 <p>
                     <b>Email</b> - optional. It defines email where the analysis result will be sent.
+                </p>
+                <p>
+                    <b>Ignore changes in comment lines</b> - required. False by default.
                 </p>
                 <p>
                     <b>Add all BFC to result</b> - required. False by default. It means that only bug-fixing commits and corresponding

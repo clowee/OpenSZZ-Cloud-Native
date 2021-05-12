@@ -190,7 +190,7 @@ public class Link {
 	 *
 	 * @param git
 	 */
-	public void calculateSuspects(Git git, PrintWriter l, Boolean addAllBFCToResult, Boolean useIssueInfo) {
+	public void calculateSuspects(Git git, PrintWriter l, Boolean addAllBFCToResult, Boolean useIssueInfo, boolean ignoreCommentChanges) {
 	    if (this.issue != null && useIssueInfo) {
             suspects.addAll(LinkUtils.getSuspectsByAddressedIssues(this.issue.getBrokenBy(), this.projectName + this.issue.getId(), git,"brokenBy"));
             if (this.suspects.size() > 0) return;
@@ -201,7 +201,7 @@ public class Link {
 
 		for (FileInfo fi : transaction.getFiles()) {
             if (LinkUtils.isCodeFile(fi)) {
-                List<Integer> linesMinus = LinkUtils.getLinesMinus(git, transaction.getId(), fi.filename, l);
+                List<Integer> linesMinus = LinkUtils.getLinesMinus(git, transaction.getId(), fi.filename, ignoreCommentChanges, l);
                 if (linesMinus == null || linesMinus.isEmpty()) {
                     this.suspects.add(new Suspect(null, null, fi.filename, "No changed lines, only additions"));
                     continue;

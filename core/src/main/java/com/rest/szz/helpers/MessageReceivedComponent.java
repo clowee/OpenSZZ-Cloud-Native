@@ -74,6 +74,7 @@ public class MessageReceivedComponent implements MessageListener {
                     searchQuery = URLDecoder.decode(searchQuery, StandardCharsets.UTF_8.name());
                 }
                 Boolean reuseWorkingFiles = Boolean.parseBoolean(list.get(8));
+                Boolean ignoreCommentChanges = Boolean.parseBoolean(list.get(9));
 
                 File workingDirectory = Paths.get(System.getProperty("user.dir") + File.separator + "home" + File.separator + projectName).toFile();
                 workingDirectory.mkdirs();
@@ -82,7 +83,7 @@ public class MessageReceivedComponent implements MessageListener {
                     FileUtils.cleanDirectory(workingDirectory);
                 }
                 a = new Application(workingDirectory.toString());
-				if (a.mineData(gitUrl, jiraUrl, projectName, searchQuery, token, addAllBFCToResult, useIssueInfo, isBrokenByLinkName)){
+				if (a.mineData(gitUrl, jiraUrl, projectName, searchQuery, token, addAllBFCToResult, useIssueInfo, isBrokenByLinkName, ignoreCommentChanges)){
 					File file = new File(workingDirectory.toString() + File.separator + token + ".csv");
 					ObjectOutputStream objectOutputStream =
 						    new ObjectOutputStream(new FileOutputStream("object.data"));

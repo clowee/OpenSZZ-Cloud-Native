@@ -16,6 +16,7 @@ public class Analysis extends BaseEntity {
     private Boolean useIssueInfo = false;
     private String isBrokenByLinkName = "is broken by";
     private Boolean reuseWorkingFiles = false;
+    private Boolean ignoreCommentChanges = false;
 	private String searchQuery;
 	private String message;
 	private String status;
@@ -96,6 +97,12 @@ public class Analysis extends BaseEntity {
     }
     public void setReuseWorkingFiles(Boolean reuseWorkingFiles) {
         this.reuseWorkingFiles = reuseWorkingFiles;
+    }
+    public Boolean getIgnoreCommentChanges() {
+        return ignoreCommentChanges;
+    }
+    public void setIgnoreCommentChanges(Boolean ignoreCommentChanges) {
+        this.ignoreCommentChanges = ignoreCommentChanges;
     }
     public String getSearchQuery() {
         return searchQuery;

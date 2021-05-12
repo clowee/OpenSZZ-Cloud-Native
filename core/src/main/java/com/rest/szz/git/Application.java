@@ -25,6 +25,7 @@ public class Application {
 
     private String projectName;
     private Boolean useJira;
+    private Boolean ignoreCommentChanges;
     private static String workingDirectory;
 
 	public static String getWorkingDirectory() {
@@ -36,10 +37,11 @@ public class Application {
 	}
 
 
-	public boolean mineData(String git, String jira, String projectName, String searchQuery, String token, Boolean addAllBFCToResult, Boolean useIssueInfo, String isBrokenByLinkName) throws MalformedURLException {
+	public boolean mineData(String git, String jira, String projectName, String searchQuery, String token, Boolean addAllBFCToResult, Boolean useIssueInfo, String isBrokenByLinkName, Boolean ignoreCommentChanges) throws MalformedURLException {
 		this.sourceCodeRepository = new URL(git);
 		this.projectName = projectName;
 		this.useJira = jira != null;
+		this.ignoreCommentChanges = ignoreCommentChanges != null;
 
 		try {
 			File logFile = new File(Application.workingDirectory + File.separator + projectName+".log");
@@ -202,7 +204,7 @@ public class Application {
             for (Link l : links){
                 if (count % 100 == 0)
                     writer.println(count + " Commits left");
-                l.calculateSuspects(transactionManager.getGit(),writer,addAllBFCToResult,useIssueInfo);
+                l.calculateSuspects(transactionManager.getGit(),writer,addAllBFCToResult,useIssueInfo, this.ignoreCommentChanges);
                 String pattern = "yyyy-MM-dd'T'HH:mm:ssZ";
                 SimpleDateFormat format1 = new SimpleDateFormat(pattern);
                 String lastValue = this.useJira ? (projectName + "-" + l.issue.getId()) : l.transaction.getComment();
