@@ -18,6 +18,8 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.rest.szz.entities.FileContent;
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.blame.BlameResult;
@@ -26,15 +28,18 @@ import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 
 import com.rest.szz.entities.Transaction;
 import com.rest.szz.entities.Transaction.FileInfo;
-
+import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 
 public class Git {
@@ -244,10 +249,9 @@ public class Git {
 	  /**
 	   * It gets removed lines from a commit starting from the diffString
 	   * @param diffString
-	   * @param filename
 	   * @return
 	   */
-	  public  List<Integer> getLinesMinus(String diffString, String filename){
+	  public  List<Integer> getLinesMinus(String diffString){
 
 		  int actualInt = 1;
 		  boolean actualSet = false;
@@ -263,7 +267,6 @@ public class Git {
 		     case '-':
 		    	 actualInt++;
                  if (line.length() <= 1) break;
-				 if (filename.endsWith(".java") && lineHasOnlyCommentWithoutCode(line)) break;
 				 listMinus.add(actualInt);
 		    	 break;
 		     case '+':
@@ -284,11 +287,40 @@ public class Git {
 		  }
 		  }
 		  catch(Exception e){
-			  return null;
+              e.printStackTrace();
 		  }
 		  return listMinus;
 
 	  }
+
+    public List<Integer> getCommentLines(String commitId, String fileName) {
+        RevCommit commit = getCommit(commitId);
+        byte[] fileContentBytes = getFileContent(commit, fileName);
+        if (fileContentBytes == null) return new LinkedList<>();
+        FileContent fileContent = new FileContent(fileContentBytes, FilenameUtils.getExtension(fileName).toLowerCase());
+        return fileContent.getCommentLines();
+    }
+
+    public byte[] getFileContent(RevCommit commit, String fileName) {
+        byte[] fileContent = null;
+        try(
+            Repository repository = org.eclipse.jgit.api.Git.open(workingDirectory).getRepository();
+            TreeWalk treeWalk = new TreeWalk(repository)
+        ){
+            RevTree tree = commit.getTree();
+            treeWalk.addTree(tree);
+            treeWalk.setRecursive(true);
+            treeWalk.setFilter(PathFilter.create(fileName));
+            if (treeWalk.next()) {
+                ObjectId objectId = treeWalk.getObjectId(0);
+                ObjectLoader loader = repository.open(objectId);
+                fileContent = loader.getBytes();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return fileContent;
+    }
 
 
 	  /**

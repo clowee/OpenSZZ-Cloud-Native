@@ -103,8 +103,11 @@ public class LinkUtils {
     public static List<Integer> getLinesMinus(Git git, String commitId, String fileName, PrintWriter l) {
         List<Integer> linesMinus = new LinkedList<>();
         String diff = git.getDiff(commitId, fileName, l);
-        if (diff == null) return linesMinus;
-        return git.getLinesMinus(diff, fileName);
+        if (diff == null || diff.isEmpty()) return linesMinus;
+        String parent = git.getPreviousCommit(commitId, l);
+        List<Integer> commentLines = git.getCommentLines(parent, fileName);
+        linesMinus = git.getLinesMinus(diff);
+        return linesMinus.stream().filter(line -> !commentLines.contains(line)).collect(Collectors.toList());
     }
 
 
