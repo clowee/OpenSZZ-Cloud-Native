@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 
+import gr.uom.java.xmi.diff.CodeRange;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 import com.rest.szz.entities.Issue.Resolution;
@@ -190,7 +191,7 @@ public class Link {
 	 *
 	 * @param git
 	 */
-	public void calculateSuspects(Git git, PrintWriter l, Boolean addAllBFCToResult, Boolean useIssueInfo, boolean ignoreCommentChanges) {
+	public void calculateSuspects(Git git, PrintWriter l, Boolean addAllBFCToResult, Boolean useIssueInfo, boolean ignoreCommentChanges,RefactoringMiner refactoringMiner) {
 	    if (this.issue != null && useIssueInfo) {
             suspects.addAll(LinkUtils.getSuspectsByAddressedIssues(this.issue.getBrokenBy(), this.projectName + this.issue.getId(), git,"brokenBy"));
             if (this.suspects.size() > 0) return;
@@ -199,9 +200,16 @@ public class Link {
             if (this.suspects.size() > 0) return;
         }
 
+        ArrayList<CodeRange> refactoringCodeRanges = new ArrayList<>();
+        if (transaction.getFiles().stream().anyMatch(file -> LinkUtils.isJavaFile(file))) {
+            refactoringCodeRanges = refactoringMiner.getRefactoringCodeRangesForTransaction(transaction);
+        }
+
 		for (FileInfo fi : transaction.getFiles()) {
             if (LinkUtils.isCodeFile(fi)) {
-                List<Integer> linesMinus = LinkUtils.getLinesMinus(git, transaction.getId(), fi.filename, ignoreCommentChanges, l);
+                List<Integer> linesMinus = LinkUtils.isJavaFile(fi)
+                    ? LinkUtils.getLinesMinusJava(git, transaction.getId(), fi.filename, ignoreCommentChanges, l, refactoringCodeRanges)
+                    : LinkUtils.getLinesMinus(git, transaction.getId(), fi.filename, ignoreCommentChanges, l);
                 if (linesMinus == null || linesMinus.isEmpty()) {
                     this.suspects.add(new Suspect(null, null, fi.filename, "No changed lines, only additions"));
                     continue;
