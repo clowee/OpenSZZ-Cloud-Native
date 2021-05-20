@@ -70,6 +70,15 @@
             <version>2.1.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.incava</groupId>
+            <artifactId>diffj</artifactId>
+            <version>1.6.4</version>
+            <scope>system</scope>
+            <systemPath>diffj-1.6.4.jar</systemPath>
+        </dependency>
+
+
 
 	</dependencies>
 

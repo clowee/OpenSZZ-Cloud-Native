@@ -1,5 +1,6 @@
 package com.rest.szz.entities;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,11 +9,13 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.rest.szz.entities.Transaction.FileInfo;
 import com.rest.szz.git.Git;
 import gr.uom.java.xmi.diff.CodeRange;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.incava.ijdk.text.LocationRange;
 
 public class LinkUtils {
     public static String longestCommonSubstrings(String s, String t) {
@@ -110,6 +113,39 @@ public class LinkUtils {
         return linesMinus;
     }
 
+    private static boolean isInsideRefactoringRange(LocationRange change, CodeRange refRange) {
+        boolean startBelongsToRefactoringRange = change.getStart().line > refRange.getStartLine()
+            || change.getStart().line == refRange.getStartLine() && change.getStart().column >= refRange.getStartColumn();
+        boolean endBelongsToRefactoringRange = change.getEnd().line < refRange.getEndLine()
+            || change.getEnd().line == refRange.getEndLine() && change.getEnd().column >= refRange.getEndColumn();
+        boolean isInsideRefactoringRange = startBelongsToRefactoringRange && endBelongsToRefactoringRange;
+        return isInsideRefactoringRange;
+    }
+
+    private static List<LocationRange> excludeRefactoringChanges(List<LocationRange> changes, ArrayList<CodeRange> refactoringCodeRanges, String filename) {
+        for (CodeRange refRange: refactoringCodeRanges) {
+            if (refRange.getFilePath().equals(filename)) {
+                changes.removeIf(change -> isInsideRefactoringRange(change, refRange));
+            }
+        }
+        return changes;
+    }
+
+    private static List<Integer> getLinesMinusFromLocationRanges(List<LocationRange> changes) {
+        List<Integer> linesMinus = new LinkedList<>();
+        changes.forEach(change -> {
+            Integer startLine = change.getStart().line;
+            Integer endLine = change.getEnd().line;
+            if (startLine.equals(endLine)) {
+                linesMinus.add(startLine);
+            } else {
+                List<Integer> range = IntStream.rangeClosed(startLine, endLine).boxed().collect(Collectors.toList());
+                linesMinus.addAll(range);
+            }
+        });
+        return linesMinus;
+    }
+
     public static List<Integer> getLinesMinus(Git git, String commitId, String fileName, boolean ignoreCommentChanges, PrintWriter l) {
         List<Integer> linesMinus = new LinkedList<>();
         String diff = git.getDiff(commitId, fileName, l);
@@ -121,6 +157,19 @@ public class LinkUtils {
             linesMinus = linesMinus.stream().filter(line -> !commentLines.contains(line)).collect(Collectors.toList());
         }
         return linesMinus;
+    }
+
+    public static List<Integer> getLinesMinusForJavaFile(Git git, String commitId, String fileName, PrintWriter l, ArrayList<CodeRange> refactoringCodeRanges) {
+        List<LocationRange> changes = null;
+        try {
+            changes = DiffJWorker.getChanges(git,commitId,fileName);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return getLinesMinus(git, commitId, fileName, true, l);
+        }
+        if (changes.isEmpty()) return new LinkedList<>();
+        changes = excludeRefactoringChanges(changes, refactoringCodeRanges, fileName);
+        return getLinesMinusFromLocationRanges(changes);
     }
 
     public static List<Integer> getLinesMinusJava(Git git, String commitId, String fileName, boolean ignoreCommentChanges, PrintWriter l, ArrayList<CodeRange> refactoringCodeRanges) {

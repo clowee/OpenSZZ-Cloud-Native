@@ -208,6 +208,7 @@ public class Link {
 		for (FileInfo fi : transaction.getFiles()) {
             if (LinkUtils.isCodeFile(fi)) {
                 List<Integer> linesMinus = LinkUtils.isJavaFile(fi)
+//                    ? LinkUtils.getLinesMinusForJavaFile(git, transaction.getId(), fi.filename, l, refactoringCodeRanges) // uses DiffJ
                     ? LinkUtils.getLinesMinusJava(git, transaction.getId(), fi.filename, ignoreCommentChanges, l, refactoringCodeRanges)
                     : LinkUtils.getLinesMinus(git, transaction.getId(), fi.filename, ignoreCommentChanges, l);
                 if (linesMinus == null || linesMinus.isEmpty()) {

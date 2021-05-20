@@ -1,5 +1,6 @@
 FROM maven:3.6.3-jdk-11-slim AS build
 WORKDIR /src/app
+COPY src/main/resources/diffj-1.6.4.jar .
 COPY pom.xml .
 RUN mvn dependency:go-offline
 
