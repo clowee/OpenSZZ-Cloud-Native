@@ -240,6 +240,50 @@ hr {
   border-top: 1px dotted @spring-brown;
 }
 
+input[type="checkbox"] {
+    height: 30px;
+}
+.text-block {
+    margin-top: 30px;
+}
+#page {
+    padding: 30px;
+    p {
+       margin: 10px 0;
+    }
+    &:not(.withoutJira) {
+        #jiraUrlRow,
+        #useIssueInfoRow,
+        #isBrokenByLinkNameRow,
+        .example-jira {
+            display: block;
+        }
+        #searchQueryRow,
+        .example-search-query {
+            display: none;
+        }
+    }
+    &.withoutJira {
+        #jiraUrlRow,
+        #useIssueInfoRow,
+        #isBrokenByLinkNameRow,
+        .example-jira  {
+            display: none;
+        }
+        #searchQueryRow,
+        .example-search-query {
+            display: block;
+        }
+    }
+    #isBrokenByLinkNameRow.hidden {
+        display: none !important;
+    }
+    form {
+        margin: 30px 0;
+        padding: 30px;
+    }
+}
+
 @import "typography.less";
 @import "header.less";
 @import "responsive.less";

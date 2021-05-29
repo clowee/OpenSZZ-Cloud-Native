@@ -5,19 +5,26 @@ import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 
 @Entity
-public class Analysis extends BaseEntity { 
-	
+public class Analysis extends BaseEntity {
+
 	private String jiraUrl;
 	private String gitUrl;
 	private String projectName;
 	private String email;
+	private Boolean useJira = true;
+	private Boolean addAllBFCToResult = false;
+    private Boolean useIssueInfo = false;
+    private String isBrokenByLinkName = "is broken by";
+    private Boolean reuseWorkingFiles = false;
+    private Boolean ignoreCommentChanges = false;
+	private String searchQuery;
 	private String message;
 	private String status;
 	private String token;
 	private String tokenURL;
 	private long dateStart;
 	private long dateEnd;
-	
+
 	public long getDateStart() {
 		return dateStart;
 	}
@@ -42,7 +49,7 @@ public class Analysis extends BaseEntity {
 	public void setToken(String token) {
 		this.token = token;
 	}
-	
+
 	public String getTokenUrl() {
 		return tokenURL;
 	}
@@ -55,12 +62,54 @@ public class Analysis extends BaseEntity {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	public String getJiraUrl() {
-		return jiraUrl;
-	}
-	public void setJiraUrl(String jiraUrl) {
-		this.jiraUrl = jiraUrl;
-	}
+    public String getJiraUrl() {
+        return jiraUrl;
+    }
+    public void setJiraUrl(String jiraUrl) {
+        this.jiraUrl = jiraUrl;
+    }
+    public Boolean getUseJira() {
+        return useJira;
+    }
+    public void setUseJira(Boolean useJira) {
+        this.useJira = useJira;
+    }
+    public Boolean getAddAllBFCToResult() {
+        return addAllBFCToResult;
+    }
+    public void setAddAllBFCToResult(Boolean addAllBFCToResult) {
+        this.addAllBFCToResult = addAllBFCToResult;
+    }
+    public Boolean getUseIssueInfo() {
+        return useIssueInfo;
+    }
+    public void setUseIssueInfo(Boolean useIssueInfo) {
+        this.useIssueInfo = useIssueInfo;
+    }
+    public String getIsBrokenByLinkName() {
+        return isBrokenByLinkName;
+    }
+    public void setIsBrokenByLinkName(String isBrokenByLinkName) {
+        this.isBrokenByLinkName = isBrokenByLinkName;
+    }
+    public Boolean getReuseWorkingFiles() {
+        return reuseWorkingFiles;
+    }
+    public void setReuseWorkingFiles(Boolean reuseWorkingFiles) {
+        this.reuseWorkingFiles = reuseWorkingFiles;
+    }
+    public Boolean getIgnoreCommentChanges() {
+        return ignoreCommentChanges;
+    }
+    public void setIgnoreCommentChanges(Boolean ignoreCommentChanges) {
+        this.ignoreCommentChanges = ignoreCommentChanges;
+    }
+    public String getSearchQuery() {
+        return searchQuery;
+    }
+    public void setSearchQuery(String searchQuery) {
+        this.searchQuery = searchQuery;
+    }
 	public String getGitUrl() {
 		return gitUrl;
 	}
@@ -78,5 +127,5 @@ public class Analysis extends BaseEntity {
 	}
 	public void setEmail(String email) {
 		this.email = email;
-	}	
+	}
 }

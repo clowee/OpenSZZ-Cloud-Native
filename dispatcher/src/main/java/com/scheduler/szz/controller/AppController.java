@@ -3,15 +3,12 @@ package com.scheduler.szz.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.io.UnsupportedEncodingException;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -20,10 +17,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,12 +32,12 @@ import com.scheduler.szz.model.DBEntry;
 
 @RestController
 public class AppController {
-	
+
 	 @Autowired
 	 DBEntryDao dbEntryDao;
-	
+
 	 private final RabbitTemplate rabbitTemplate;
-     private String jiraAPI = "/jira/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
+     private String jiraAPI = "/sr/jira.issueviews:searchrequest-xml/temp/SearchRequest.xml";
 
     /**
      * Controller for managing exchanges between gui and core containers
@@ -52,37 +46,83 @@ public class AppController {
     public AppController (RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
-    
+
     @RequestMapping(value = "/removeAnalysis",method = RequestMethod.GET)
 	public String remove(@RequestParam String token) {
     	dbEntryDao.deleteByToken(token);
     	return "remove";
     }
-	
+
 	@RequestMapping(value = "/doAnalysis",method = RequestMethod.GET)
-	public String doAnalysis(@RequestParam String git,@RequestParam String jira,@RequestParam String email, @RequestParam String projectName, Model model) {
-		String token = java.util.UUID.randomUUID().toString().split("-")[0];   
-		 List<String> t = new LinkedList<String>();
-	        t.add(git);
-	        t.add(jira);
-	        t.add(email); 
-	        t.add(token);
-	        Analysis analysis = new Analysis();
-	        analysis.setEmail(email);
-	        analysis.setGitUrl(git);
-	        analysis.setJiraUrl(jira);
-	        analysis.setToken(token);
-	        analysis.setStatus("PROCESSING");
-	        analysis.setDateStart(new Date().getTime());
-	        analysis.setProjectName(projectName);
-	   	    if (!checkCorrectness(analysis))
-	     		return "error";
-	        rabbitTemplate.convertAndSend("szz-analysis-exchange", "project.name."+analysis.getProjectName(), t);
-	        insertAnalysisDb(analysis);
-	        model.addAttribute(analysis);
-	        return "resultPage";
+	public String doAnalysis(
+	    @RequestParam String git,
+        @RequestParam(required = false) String jira,
+        @RequestParam Boolean useJira,
+        @RequestParam(required = false) String searchQuery,
+        @RequestParam(required = false) String email,
+        @RequestParam(required = false) String projectName,
+        @RequestParam Boolean addAllBFCToResult,
+        @RequestParam Boolean useIssueInfo,
+        @RequestParam(required = false) String isBrokenByLinkName,
+        @RequestParam Boolean reuseWorkingFiles,
+        @RequestParam Boolean ignoreCommentChanges,
+        Model model
+    ) throws UnsupportedEncodingException {
+		String token = java.util.UUID.randomUUID().toString().split("-")[0];
+        Analysis analysis = new Analysis();
+        analysis.setUseJira(useJira);
+        analysis.setGitUrl(git);
+        analysis.setAddAllBFCToResult(addAllBFCToResult);
+        analysis.setUseIssueInfo(useIssueInfo);
+        analysis.setReuseWorkingFiles(reuseWorkingFiles);
+        analysis.setIgnoreCommentChanges(ignoreCommentChanges);
+		if (isBrokenByLinkName != null) {
+			analysis.setIsBrokenByLinkName(isBrokenByLinkName);
+		}
+        if (useJira) {
+            analysis.setJiraUrl(jira);
+        } else {
+            analysis.setSearchQuery(searchQuery);
+        }
+        if (projectName != null) {
+            analysis.setProjectName(projectName);
+        } else {
+            Pattern pattern = Pattern.compile("[^/]+(?=.git$)");
+            Matcher matcher = pattern.matcher(git);
+            if (matcher.find())
+            {
+                analysis.setProjectName(matcher.group(0));
+            }
+        }
+        if (email != null) {
+            analysis.setEmail(email);
+        }
+        analysis.setToken(token);
+        analysis.setStatus("PROCESSING");
+        analysis.setDateStart(new Date().getTime());
+        List<String> errors = checkCorrectness(analysis);
+        if (errors.size() != 0){
+            analysis.setMessage(String.join(",", errors));
+            model.addAttribute("analysis", analysis);
+            return "error";
+        }
+        List<String> t = new LinkedList<String>();
+        t.add(git);
+        t.add(jira);
+        t.add(email);
+        t.add(token);
+        t.add(searchQuery);
+        t.add(addAllBFCToResult.toString());
+        t.add(useIssueInfo.toString());
+        t.add(analysis.getIsBrokenByLinkName());
+        t.add(analysis.getReuseWorkingFiles().toString());
+        t.add(analysis.getIgnoreCommentChanges().toString());
+        rabbitTemplate.convertAndSend("szz-analysis-exchange", "project.name."+analysis.getProjectName(), t);
+        insertAnalysisDb(analysis);
+        model.addAttribute(analysis);
+        return "resultPage";
 	}
-	
+
 	@RequestMapping(value = "/getAnalyses",method = RequestMethod.GET)
 	public List<Analysis> getAnalyses() {
 		List<DBEntry> ded = dbEntryDao.findAll();
@@ -103,8 +143,8 @@ public class AppController {
 		}
 		return analyses;
 	}
-	
-	
+
+
 	/**
 	 * Inserts analysis into a mongo  db
 	 * @param a
@@ -121,50 +161,56 @@ public class AppController {
 		dbe.setStatus(DBEntry.Status.PROCESSING);
 		dbEntryDao.insert(dbe);
 	}
-	
-	
+
+
 	/**
 	 * Checks whether the input are formerly correct
 	 * @param analysis
 	 * @return
 	 */
-	private boolean checkCorrectness(Analysis analysis){
-		if (!analysis.getGitUrl().endsWith(".git"))
-			return false;
-		
+	private List<String> checkCorrectness(Analysis analysis){
+        List<String> errors = new ArrayList<>();
+
+		if (!analysis.getGitUrl().endsWith(".git")) {
+		    errors.add("Git URL is invalid");
+        }
+
 		//Checks url github
 		try {
 		    URL url = new URL(analysis.getGitUrl());
 		    URLConnection conn = url.openConnection();
 		    conn.connect();
 		} catch (Exception e) {
-		    return false;
-		} 
-		//Checks url github
-		try {
-			String[] array = analysis.getJiraUrl().split("/jira/projects/");
-			String projectName = array[1].replaceAll("/", "");
-			String jiraUrl = array[0] + jiraAPI;
-		    URL url = new URL(jiraUrl);
-		    URLConnection conn = url.openConnection();
-		    conn.connect();
-		} catch (Exception e) {
-		    return false;
-		} 
-		
-		  boolean result = true;
-		  EmailValidator emailValidator = new IsEmailEmailValidator();
-		  State emailState = emailValidator.validate(analysis.getEmail()).getState();
-		  System.out.println(emailState);
-		  if (emailState != State.OK){
-			  System.out.println(emailState);
-			  return false;
-		  }
-		  
-		return true;
+            errors.add("Git URL is invalid");
+		}
+
+		if (analysis.getUseJira()) {
+            //Checks url jira
+            try {
+                String[] array = analysis.getJiraUrl().split("/projects/");
+                String projectName = array[1].replaceAll("/", "");
+                String jiraUrl = array[0] + jiraAPI;
+                URL url = new URL(jiraUrl);
+                URLConnection conn = url.openConnection();
+                conn.connect();
+            } catch (Exception e) {
+                errors.add("Jira URL is invalid");
+            }
+        }
+        if (analysis.getEmail() != null) {
+            EmailValidator emailValidator = new IsEmailEmailValidator();
+            State emailState = emailValidator.validate(analysis.getEmail()).getState();
+            System.out.println(emailState);
+            if (emailState != State.OK){
+                System.out.println(emailState);
+                errors.add("Email is not valid");
+            }
+        }
+
+		return errors;
 	}
-	
-	
+
+
 	/**
 	 * It returns results of a completed analysis
 	 * @param token
@@ -199,7 +245,7 @@ public class AppController {
 		}
 
 	}
-	
+
 	public DBEntryDao getDao(){
 		return dbEntryDao;
 	}

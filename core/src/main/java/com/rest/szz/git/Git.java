@@ -8,33 +8,38 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import com.rest.szz.entities.FileContent;
+import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.blame.BlameResult;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.diff.RawTextComparator;
 import org.eclipse.jgit.errors.IncorrectObjectTypeException;
 import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.ObjectLoader;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevSort;
+import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
-import org.eclipse.jgit.treewalk.filter.AndTreeFilter;
-import org.eclipse.jgit.treewalk.filter.PathFilter;
-import org.eclipse.jgit.treewalk.filter.TreeFilter;
 
 import com.rest.szz.entities.Transaction;
 import com.rest.szz.entities.Transaction.FileInfo;
-
+import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 
 public class Git {
@@ -47,6 +52,8 @@ public class Git {
 	public final File logFile;
 	public final File csvFile;
 	private BlameResult blame;
+    private String lastAnalysedCommit;
+    private String lastAnalysedFile;
 
 	private static final char DELIMITER = ';';
 
@@ -88,7 +95,9 @@ public class Git {
 	}
 
 	public void cloneRepository() throws Exception {
-		execute(this.cloneCommand, this.storagePath);
+		if (!Files.exists(workingDirectory.toPath())) {
+			execute(this.cloneCommand, this.storagePath);
+		}
 	}
 
 	public void pullUpdates() throws Exception {
@@ -120,9 +129,9 @@ public class Git {
 		Process p = pb.start();
         p.waitFor();
 	}
-	public List<Transaction> getCommits() {
+    public List<Transaction> getCommits(String message) {
 		List<Transaction> transactions = new ArrayList<Transaction>();
-		
+
 		 String line="";
 		 String line1="";
 		 String hashId = "";
@@ -131,30 +140,30 @@ public class Git {
 		       if (!line.isEmpty() && line.startsWith("\'")){
 		    	   line = line.replaceAll("\'", "");
 		    	   String[] array = line.split(";");
+                   String comment = array[3];
+
+                   if (message != null && !comment.toLowerCase().contains(message.toLowerCase())) continue;
+
 		    	   hashId = array[0];
 				   String timestamp = array[1];
 				   String author = array[2];
-				   String comment = array[3];
 		       List<FileInfo> filesAffected = new ArrayList<FileInfo>();
 		       line1 = br.readLine();
-		       if (line1 != null){
-		       while (!(line1).equals("")){
-		    	   int BUFFER_SIZE = 100000;
-		    	   br.mark(BUFFER_SIZE);
-		    	   if (!line1.startsWith("\'")){
-		    		   String[] subarray = line1.split("	");
-		    		   String status = subarray[0];
-		    		   String file = subarray[1];
-		    		   FileInfo fileInfo = new FileInfo(status, file);
-		    		   filesAffected.add(fileInfo);}
-		    	   else{
-		    		 br.reset();
-		    		 break;
-		    	   }
-		    	   line1 = br.readLine();
-
-		       }
-		       }
+			   while (line1 != null && !line1.equals("")){
+					int BUFFER_SIZE = 100000;
+					br.mark(BUFFER_SIZE);
+					if (!line1.startsWith("\'")){
+						String[] subarray = line1.split("	");
+						String status = subarray[0];
+						String file = subarray[1];
+						FileInfo fileInfo = new FileInfo(status, file);
+						filesAffected.add(fileInfo);}
+					else{
+						br.reset();
+						break;
+					}
+					line1 = br.readLine();
+				}
 		       Transaction transaction = new Transaction(
 						hashId,
 						timestamp,
@@ -174,6 +183,10 @@ public class Git {
 		return transactions;
 	}
 
+    public List<Transaction> getCommits() {
+        return getCommits(null);
+    }
+
 	  /**
 	   * Returns String with differences of fileName done by a shaCommit
 	   * @param shaCommit
@@ -182,15 +195,14 @@ public class Git {
 	   */
 	  public  String getDiff (String shaCommit, String fileName, PrintWriter l)  {
 		String result = "";
-		File  localRepo1 = new File(workingDirectory+"");
-		try {
-		org.eclipse.jgit.api.Git git = org.eclipse.jgit.api.Git.open(localRepo1);
-	    ObjectId  oldId = git.getRepository().resolve(shaCommit+"^^{tree}");
-	    ObjectId headId = git.getRepository().resolve(shaCommit + "^{tree}");
-	    ObjectReader reader = git.getRepository().newObjectReader();
-	    CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
-	    oldTreeIter.reset(reader, oldId);
-	    CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
+
+		  try (org.eclipse.jgit.api.Git git = org.eclipse.jgit.api.Git.open(workingDirectory)){
+            ObjectId  oldId = git.getRepository().resolve(shaCommit+"^^{tree}");
+            ObjectId headId = git.getRepository().resolve(shaCommit + "^{tree}");
+            ObjectReader reader = git.getRepository().newObjectReader();
+            CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
+            oldTreeIter.reset(reader, oldId);
+            CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
 			newTreeIter.reset(reader, headId);
 		    List<DiffEntry> diffs= git.diff()
 		            .setNewTree(newTreeIter)
@@ -198,7 +210,7 @@ public class Git {
 		            .call();
 		    ByteArrayOutputStream out = new ByteArrayOutputStream();
 		    DiffFormatter df = new DiffFormatter(out);
-		   // df.setDiffComparator(RawTextComparator.WS_IGNORE_LEADING);
+		    df.setDiffComparator(RawTextComparator.WS_IGNORE_TRAILING);
 		    df.setRepository(git.getRepository());
 
 		    for(DiffEntry diff : diffs)
@@ -210,11 +222,11 @@ public class Git {
 		          diff.getOldId();
 		          String diffText = out.toString("UTF-8");
 		          result = diffText;
-		          out.reset();
-		          df.close();
 		          break;
 		      }
 		    }
+		    out.reset();
+            df.close();
 		} catch (IncorrectObjectTypeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -244,8 +256,7 @@ public class Git {
 		  int actualInt = 1;
 		  boolean actualSet = false;
 		  List<Integer> listMinus = new LinkedList<Integer>();
-		  try{
-		  Scanner scanner = new Scanner(diffString);
+          try (Scanner scanner = new Scanner(diffString)){
 		  scanner.nextLine();
 		  scanner.nextLine();
 		  scanner.nextLine();
@@ -255,7 +266,8 @@ public class Git {
 		     switch(line.charAt(0)){
 		     case '-':
 		    	 actualInt++;
-		    	 listMinus.add(actualInt);
+                 if (line.length() <= 1) break;
+				 listMinus.add(actualInt);
 		    	 break;
 		     case '+':
 		     	break;
@@ -264,8 +276,7 @@ public class Git {
 		    	 int stringCommma = line.indexOf(',');
 		    	 stringMinus++;
 		    	 String sM = line.substring(stringMinus, stringCommma);
-		    	 actualInt = Integer.parseInt(sM);
-		    	 line = scanner.nextLine();
+                 actualInt = Integer.parseInt(sM) - 1;
 		    	 actualSet = true;
 		    	 break;
 		     default:
@@ -274,14 +285,42 @@ public class Git {
 		    	 break;
 		     }
 		  }
-		  scanner.close();
 		  }
 		  catch(Exception e){
-			  return null;
+              e.printStackTrace();
 		  }
 		  return listMinus;
 
 	  }
+
+    public List<Integer> getCommentLines(String commitId, String fileName) {
+        RevCommit commit = getCommit(commitId);
+        byte[] fileContentBytes = getFileContent(commit, fileName);
+        if (fileContentBytes == null) return new LinkedList<>();
+        FileContent fileContent = new FileContent(fileContentBytes, FilenameUtils.getExtension(fileName).toLowerCase());
+        return fileContent.getCommentLines();
+    }
+
+    public byte[] getFileContent(RevCommit commit, String fileName) {
+        byte[] fileContent = null;
+        try(
+            Repository repository = org.eclipse.jgit.api.Git.open(workingDirectory).getRepository();
+            TreeWalk treeWalk = new TreeWalk(repository)
+        ){
+            RevTree tree = commit.getTree();
+            treeWalk.addTree(tree);
+            treeWalk.setRecursive(true);
+            treeWalk.setFilter(PathFilter.create(fileName));
+            if (treeWalk.next()) {
+                ObjectId objectId = treeWalk.getObjectId(0);
+                ObjectLoader loader = repository.open(objectId);
+                fileContent = loader.getBytes();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return fileContent;
+    }
 
 
 	  /**
@@ -291,85 +330,74 @@ public class Git {
 	   * index 2 of array ==> line 2
 	   * @param commitSha
 	   * @param file
-	   * @param git
+	   * @param lineNumber
 	   * @return
 	   */
 		//removed unused parameter PrintWriter l
 	  public  String getBlameAt(String commitSha, String file, int lineNumber) {
-		  File  localRepo1 = new File(workingDirectory+"");
-		try {
-			if (blame==null){
-			  org.eclipse.jgit.api.Git git = org.eclipse.jgit.api.Git.open(localRepo1);
-			  Repository repository = git.getRepository();
-		      BlameCommand blamer = new BlameCommand(repository);
-		      ObjectId commitID;
-			  commitID = repository.resolve(commitSha);
-		      blamer.setStartCommit(commitID);
-		      blamer.setFilePath(file);
-		      blame = blamer.call();}
-		      RevCommit commit = blame.getSourceCommit(lineNumber);
-		      return commit.getName();
+          if (this.blame == null
+              || !this.lastAnalysedCommit.equals(commitSha)
+              || !this.lastAnalysedFile.equals(file)) {
+              resetBlameResult(commitSha, file);
+          }
+          try {
+              if (this.blame == null) return null;
+              RevCommit resultCommit = this.blame.getSourceCommit(lineNumber - 1);
+              return resultCommit.getName();
 		} catch (Exception e) {
 			return null;
 		}
 	  }
 
+        private void resetBlameResult(String commitSha, String file) {
+            lastAnalysedCommit = commitSha;
+            lastAnalysedFile = file;
+            try(Repository repository = org.eclipse.jgit.api.Git.open(workingDirectory).getRepository()){
+                BlameCommand blamer = new BlameCommand(repository);
+                ObjectId commitID = repository.resolve(commitSha);
+                blamer.setStartCommit(commitID);
+                blamer.setFilePath(file);
+                this.blame = blamer.call();
+            } catch (Exception e) {
+                this.blame = null;
+            }
+        }
+
 	  /**
 	   * It gets commit object starting from a specific sha
 	   *
 	   */
-	  public RevCommit getCommit(String sha, PrintWriter l){
-		  File  localRepo1 = new File(workingDirectory+"");
-		  //Repository repository = git.getRepository();
-		  RevCommit commit = null;
-		  try{
-			  org.eclipse.jgit.api.Git git = org.eclipse.jgit.api.Git.open(localRepo1);
-			  Repository repository = git.getRepository();
-			  RevWalk walk = new RevWalk( repository);
-			  ObjectId commitId = ObjectId.fromString( sha);
-			   commit = walk.parseCommit( commitId );
-			  //System.out.println(commit.getCommitTime());
-			} catch (Exception e) {
-				e.printStackTrace();
-				l.println((e));
-				return null;
-			}
-		  return commit;
-	  }
+      public RevCommit getCommit(String sha) {
+          try (
+              Repository repository = org.eclipse.jgit.api.Git.open(workingDirectory).getRepository();
+              RevWalk walk = new RevWalk(repository)) {
+              ObjectId commitId = ObjectId.fromString(sha);
+              return walk.parseCommit(commitId);
+          } catch (Exception e) {
+              e.printStackTrace();
+              return null;
+          }
+      }
 
 	  /**
-	   * Get Commit that changed the file before the parameter commit
+	   * Get Commit before the parameter commit
 	   * @param sha
-	   * @param file
 	   * @return
 	   */
-	  public String getPreviousCommit (String sha, String file, PrintWriter l){
-		  if (sha.equals("a8da84c614ba6e6e87c6c91e0c426ddfec2766a2"))
-			  System.out.println();
-		  File  localRepo1 = new File(workingDirectory+"");
-		  Iterable<RevCommit> iterable;
-		  String finalSha = "";
-		  RevCommit latestCommit = null;
-		  String path = file;
+	  public String getPreviousCommit (String sha, PrintWriter l){
 		  try {
-			org.eclipse.jgit.api.Git git = org.eclipse.jgit.api.Git.open(localRepo1);
-			RevWalk revWalk = new RevWalk( git.getRepository() );
-		    RevCommit revCommit = getCommit(sha, null);
-		    revWalk.markStart( revCommit );
-		    revWalk.sort( RevSort.COMMIT_TIME_DESC );
-		    revWalk.setTreeFilter( AndTreeFilter.create( PathFilter.create( path ), TreeFilter.ANY_DIFF ) );
-		    latestCommit = revWalk.next();
-		    while (!latestCommit.getName().equals(sha))
-		    	latestCommit = revWalk.next();
-		    latestCommit = revWalk.next();
-		    if (latestCommit == null)
-		    	return null;
-		    finalSha =  latestCommit.getName();
-
+            RevCommit revCommit = getCommit(sha);
+            RevCommit parent = revCommit.getParent(0);
+            return parent.getName();
 		  } catch (Exception e) {
-			 l.println("No Predecessor-Commits found for "+sha +"for file " + file);
+			 l.println("No Predecessor-Commits found for "+sha);
 			return null;
 		}
-		  return finalSha;
 	  }
+
+    private Boolean lineHasOnlyCommentWithoutCode(String s) {
+        Pattern pattern = Pattern.compile("^-(\\s)*(\\/\\*(?!.*?\\*\\/)|\\/\\*.*?\\*\\/\\s*$|\\*|\\/\\/)");
+        Matcher matcher = pattern.matcher(s);
+        return matcher.find();
+    }
 }

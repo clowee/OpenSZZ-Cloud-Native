@@ -1,12 +1,13 @@
-FROM maven:alpine as build
+FROM maven:3.6.3-jdk-11-slim AS build
 WORKDIR /src/app
+COPY src/main/resources/diffj-1.6.4.jar .
 COPY pom.xml .
 RUN mvn dependency:go-offline
 
 COPY src/ ./src
 RUN mvn install -X
 
-FROM openjdk:8-jdk-alpine
+FROM adoptopenjdk/openjdk11:jre-11.0.9.1_1-alpine
 VOLUME /tmp
 ARG JAR_FILE
 

@@ -5,101 +5,299 @@
 <body>
 	<div class="container">
 
-		<div class="main">
-			<h2>Welcome to OpenSZZ</h2>
-			<p>
-			<p>Here you can apply the SZZ algorithm inserting some
-				information about the project you want to analyze.
-			<p></p>
-			<br>
-			<p>
-				If I want to analyze the project BCEL of the Apache Software
-				Foundation, I have to fill the formular in this way: <br></br>
-			<p>
-				<b>Project Name</b> = BCEL <br></br>
-			<p>
-				<b>Git URL</b> = <a href=https://github.com/apache/commons-bcel.git>
-					https://github.com/apache/commons-bcel.git </a> <br></br>
-			<p>
-				<b>Jira URL</b> = <a
-					href=https://issues.apache.org/jira/projects/BCEL />
-				https://issues.apache.org/jira/projects/BCEL/ </a> <br></br>
-			<p>
-				<b>Email</b> = example@email.com
-			<div>
-				<p></p>
-				<p></p>
-			</div>
-			<div>
-				<table class="table">
-					<tr>
-						<td colspan="1">
-							<form class="well form-horizontal"
-								style="background-color: white;"
-							    th:action="@{/doAnalysis}" th:object="${analysis}" method="post"
-								>
-								<fieldset>
-									<div class="form-group">
-										<label class="col-md-4 control-label">Project Name</label>
-										<div class="col-md-8 inputGroupContainer">
-											<div class="input-group">
-												<span class="input-group-addon"><i class="glyphicon"></i></span><input
-													id="fullName" name="fullName" placeholder="Project Name"
-													class="form-control" required="true" value=""
-													type="text" th:field="*{projectName}"
-													>
-											</div>
-										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-md-4 control-label">Git URL</label>
-										<div class="col-md-8 inputGroupContainer">
-											<div class="input-group">
-												<span class="input-group-addon"></span><input id="gitUrl"
-													name="gitUrl" placeholder="Git URL" class="form-control"
-													required="true" value="" type="url"  th:field="*{gitUrl}" >
-											</div>
-										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-md-4 control-label">Jira URL</label>
-										<div class="col-md-8 inputGroupContainer">
-											<div class="input-group">
-												<span class="input-group-addon"></span><input id="jiraUrl"
-													name="jiraUrl" placeholder="Jira URL" class="form-control"
-													required="true" value="" type="url" th:field="*{jiraUrl}" >
-											</div>
-										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-md-4 control-label">Email</label>
-										<div class="col-md-8 inputGroupContainer">
-											<div class="input-group">
-												<span class="input-group-addon"></span><input id="email"
-													name="email" placeholder="Email" class="form-control"
-													required="true" value="" type="email" th:field="*{email}" >
-											</div>
-										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-md-4 control-label"></label>
-										<div class="col-md-8 inputGroupContainer">
-											<div class="input-group">
-												<input class="btn btn-success" value="Start Analysis"
-													type="submit">
-											</div>
-										</div>
-									</div>
-								</fieldset>
+		<div class="main" id="page">
+            <div>
+                <h2>Welcome to OpenSZZ</h2>
+                <p>Here you can apply the SZZ algorithm inserting some
+                    information about the project you want to analyse.
+                </p>
+                <div class="text-block">
+                    <p>Example values to analyse the project BCEL of the Apache Software Foundation:</p>
+                    <p class="example-project-name"><b>Project Name</b> = BCEL</p>
+                    <p class="example-git">
+                        <b>Git URL</b> =
+                        <a href=https://github.com/apache/commons-bcel.git>https://github.com/apache/commons-bcel.git </a>
+                    </p>
+                    <p class="example-search-query"><b>Search Query</b> = (fix(e[ds])?|bugs?|defects?|patch)+</p>
+                    <p class="example-jira">
+                        <b>Jira URL</b> =
+                        <a href=https://issues.apache.org/jira/projects/BCEL /> https://issues.apache.org/jira/projects/BCEL/ </a>
+                    </p>
+                    <p class="example-email"><b>Email</b> = example@email.com</p>
+                </div>
+            </div>
+            <form class="well form-horizontal"
+                style="background-color: white;"
+                th:action="@{/doAnalysis}" th:object="${analysis}" method="post"
+                >
+                <fieldset>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Use Jira</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <input
+                                    type="checkbox"
+                                    id="useJiraCheckbox"
+                                    name="use-jira"
+                                    th:field="*{useJira}"
+                                >
+                            </div>
+                        </div>
+                    </div>
 
+                    <div class="form-group" id="projectNameRow">
+                        <label class="col-md-2 control-label">Project Name</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <span class="input-group-addon">
+                                    <i class="glyphicon"></i>
+                                </span>
+                                <input
+                                    id="projectName"
+                                    name="projectName"
+                                    placeholder="Project Name"
+                                    class="form-control"
+                                    value=""
+                                    type="text"
+                                    th:field="*{projectName}"
+                                >
+                            </div>
+                        </div>
+                    </div>
 
-							</form>
-						</td>
-					</tr>
-				</table>
-			</div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Git URL *</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <span class="input-group-addon"></span>
+                                <input
+                                    id="gitUrl"
+                                    name="gitUrl"
+                                    placeholder="Git URL"
+                                    class="form-control"
+                                    required="true"
+                                    value=""
+                                    type="url"
+                                    th:field="*{gitUrl}" >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="jiraUrlRow">
+                        <label class="col-md-2 control-label">Jira URL *</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <span class="input-group-addon"></span>
+                                <input
+                                    id="jiraUrl"
+                                    name="jiraUrl"
+                                    placeholder="Jira URL"
+                                    class="form-control"
+                                    required="true"
+                                    value=""
+                                    type="url"
+                                    th:field="*{jiraUrl}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" id="useIssueInfoRow">
+                        <label class="col-md-2 control-label">Use issue info (links / description / comments)</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <input
+                                        type="checkbox"
+                                        id="useIssueInfoCheckbox"
+                                        name="use-is-broken-by"
+                                        th:field="*{useIssueInfo}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group hidden" id="isBrokenByLinkNameRow">
+                        <label class="col-md-2 control-label">Name of "is broken by" issue link type</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <span class="input-group-addon"></span>
+                                <input
+                                        id="isBrokenByLinkName"
+                                        name="is-broken-by-link-name"
+                                        placeholder="is broken by"
+                                        class="form-control"
+                                        value=""
+                                        type="text"
+                                        th:field="*{isBrokenByLinkName}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="searchQueryRow">
+                        <label class="col-md-2 control-label">Search query *</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <span class="input-group-addon"></span>
+                                <input
+                                    id="searchQuery"
+                                    name="searchQuery"
+                                    placeholder="Regular expression to search bug-fixing commits"
+                                    class="form-control"
+                                    value=""
+                                    type="text"
+                                    th:field="*{searchQuery}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Email</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <span class="input-group-addon"></span>
+                                <input
+                                    id="email"
+                                    name="email"
+                                    placeholder="Email"
+                                    class="form-control"
+                                    value=""
+                                    type="email"
+                                    th:field="*{email}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Ignore changes in comment lines</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <input
+                                    type="checkbox"
+                                    id="ignoreCommentChangesCheckbox"
+                                    name="ignore-comment-changes"
+                                    th:field="*{ignoreCommentChanges}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Add all BFC to result</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <input
+                                    type="checkbox"
+                                    id="addAllBFCToResultCheckbox"
+                                    name="add-all-bfc-to-result"
+                                    th:field="*{addAllBFCToResult}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label">Use working files from previous analysis</label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <input
+                                        type="checkbox"
+                                        id="reuseWorkingFilesCheckbox"
+                                        name="reuse-working-files"
+                                        th:field="*{reuseWorkingFiles}"
+                                >
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-md-2 control-label"></label>
+                        <div class="col-md-10 inputGroupContainer">
+                            <div class="input-group">
+                                <input
+                                    class="btn btn-success"
+                                    value="Start Analysis"
+                                    type="submit"
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+            <div>
+                <p>Fields description:</p>
+                <p>
+                    <b>Use Jira</b> - required. True by default. If defines whether bug-fixing commits will be
+                    searched by linking commits to issues from Jira or by applying Search Query to commit messages.
+                </p>
+                <p>
+                    <b>Project Name</b> - optional. Value of the field is used on ANALYSED PROJECTS page.
+                    Repository name will be used by default if the values is not set.
+                </p>
+                <p><b>Git URL</b> - required. It defines a repository to be analysed.</p>
+                <p>
+                    <b>Jira URL</b> - required (when Use Jira is checked).
+                    It defines a path to the Jira project used to track issues of the specified repository.
+                </p>
+                <p>
+                    <b>Use issue info (links / description / comments)</b> - required. True by default. Jira issues can be linked to
+                    other Jira issues. When issue A is linked to issue B by "is broken by" link, it means that changes 
+                    in code addressing the issue B introduced a bug reported by issue A. When an issue has such links,
+                    commits that introduced a bug reported by the issue will be searched relying on the links.
+                    Such issues or bug-introducing commits can also be found in issue description and comments.
+                </p>
+                <p>
+                    <b>Name of "is broken by" issue link type</b> - default value is "is broken by". The link type is not
+                    a default Jira link type, so its name can be different for different projects.
+                </p>
+                <p>
+                    <b>Search Query</b> - required (when Use Jira is unchecked). It takes a regular expression as a value.
+                    The regular expression is applied to commit messages to filter specific commits.
+                </p>
+                <p>
+                    <b>Email</b> - optional. It defines email where the analysis result will be sent.
+                </p>
+                <p>
+                    <b>Ignore changes in comment lines</b> - required. False by default.
+                </p>
+                <p>
+                    <b>Add all BFC to result</b> - required. False by default. It means that only bug-fixing commits and corresponding
+                    to them bug-introducing commits will be added to result. Set the field as checked to have bug-fixing
+                    commits without bug-introducing commits found added to result too.
+                </p>
+                <p>
+                    <b>Use working files from previous analysis</b> - required. False by default. Working files are cloned git-repository,
+                    files with fetched Jira issues, a file with git-repository commits. When the option is enabled, OpenSZZ
+                    will reuse the files. It will speed up the analysis (by skipping the preparations). It also may be
+                    helpful for testing different OpenSZZ options with a guarantee that commits and Jira issues remain the same.
+                    Set Project Name with a unique value to ensure that working files will not be deleted by running another
+                    analysis for the same repository with disabled "Use working files from previous analysis".
+                </p>
+            </div>
 		</div>
 	</div>
+
+    <script>
+        document.getElementById('useJiraCheckbox').addEventListener('click', function (e) {
+            var page = document.getElementById('page');
+            if (e.target.checked) {
+                page.classList.remove('withoutJira');
+            } else {
+                page.classList.add('withoutJira');
+            }
+            document.getElementById('jiraUrl').required = e.target.checked;
+            document.getElementById('searchQuery').required = !e.target.checked;
+        }, false);
+        document.getElementById('useIssueInfoCheckbox').addEventListener('click', function (e) {
+            var isBrokenByLinkNameRow = document.getElementById('isBrokenByLinkNameRow');
+            if (e.target.checked) {
+                isBrokenByLinkNameRow.classList.remove('hidden');
+            } else {
+                isBrokenByLinkNameRow.classList.add('hidden');
+            }
+            document.getElementById('isBrokenByLinkName').required = e.target.checked;
+        }, false);
+    </script>
 
 </body>
 
