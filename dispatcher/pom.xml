@@ -30,7 +30,7 @@
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
-			<version>2.1.8.RELEASE</version>
+			<version>3.3.5</version>
 		</dependency>
 		<dependency>
     <groupId>com.github.lite2073</groupId>
